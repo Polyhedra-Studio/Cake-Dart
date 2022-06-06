@@ -5,12 +5,12 @@ import 'test_result.dart';
 
 class Test<T> {
   String title;
-  void Function(TestContext)? setup;
-  void Function(TestContext)? action;
-  List<Expect<T>> Function(TestContext)? assertions;
+  void Function(TestContext<T> context)? setup;
+  void Function(TestContext<T> context)? action;
+  List<Expect<T>> Function(TestContext<T> context)? assertions;
   TestResult? result;
   List<TestFailure> assertFailures = [];
-  TestContext context;
+  TestContext<T> context;
 
   Test(
     this.title, {
@@ -66,9 +66,9 @@ class Test<T> {
     }
   }
 
-  List<Expect<T>> defaultAssertion(TestContext context) {
+  List<Expect<T>> defaultAssertion(TestContext<T> context) {
     return [
-      Expect(ExpectType.equals,
+      Expect<T>(ExpectType.equals,
           expected: context.expected, actual: context.actual)
     ];
   }
