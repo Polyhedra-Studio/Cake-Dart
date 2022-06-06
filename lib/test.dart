@@ -7,7 +7,7 @@ class Test<T> {
   String title;
   void Function(TestContext<T> context)? setup;
   void Function(TestContext<T> context)? action;
-  List<Expect<T>> Function(TestContext<T> context)? assertions;
+  List<Expect<dynamic>> Function(TestContext<T> context)? assertions;
   TestResult? result;
   List<TestFailure> assertFailures = [];
   TestContext<T> context;
