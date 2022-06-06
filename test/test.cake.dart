@@ -3,6 +3,7 @@ import 'package:cake/test.dart';
 
 void main(List<String> arguments) async {
   [
+    // Generic Constructor
     Test<bool>('True is true - shorthand', expected: true, actual: true),
     Test<bool>('True is true - assertion',
         assertions: ((context) => [
@@ -22,5 +23,28 @@ void main(List<String> arguments) async {
         context.actual = true;
       },
     ),
+
+    // Equals expect
+    Test<bool>('Equals, true is true',
+        expected: true,
+        actual: true,
+        assertions: (context) => [
+              Expect.equals(expected: context.expected, actual: context.actual)
+            ]),
+
+    // isNull expect
+    Test<bool>('IsNull, null is null',
+        actual: null,
+        assertions: (context) => [Expect.isNull(actual: context.actual)]),
+
+    // isNotNull expect
+    Test<bool>('IsNotNull, true is not null',
+        actual: true,
+        assertions: (context) => [Expect.isNotNull(actual: context.actual)]),
+
+    // isType expect
+    Test<bool>('IsType, true is bool',
+        actual: true,
+        assertions: (context) => [Expect.isType(actual: context.actual)]),
   ];
 }
