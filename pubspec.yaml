@@ -7,8 +7,5 @@ publish_to: http://butterfree.lan:30117
 environment:
   sdk: '>=2.17.1 <3.0.0'
 
-# dependencies:
-#   path: ^1.8.0
-
 dev_dependencies:
   lints: ^2.0.0
