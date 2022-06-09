@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:cake/test_message.dart';
+
 void main(List<String> arguments) async {
   // Search for all files in this directory that end with _cake or .cake in them
   Stream<FileSystemEntity> streamList = Directory.current.list(recursive: true);
@@ -10,7 +12,10 @@ void main(List<String> arguments) async {
 
   List<FileSystemEntity> cakeList = await cakeStreamList.toList();
   if (cakeList.isEmpty) {
-    throw 'No tests found in this directory. Cake tests should end with ".cake.dart"';
+    return TestMessage('Cake Test Runner',
+            message:
+                'No tests found in this directory. Cake tests should end with ".cake.dart"')
+        .report();
   }
 
   // Run all the runners

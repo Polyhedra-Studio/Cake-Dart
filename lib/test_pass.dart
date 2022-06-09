@@ -7,9 +7,11 @@ class TestPass extends TestResult {
   TestPass() : super('');
 
   @override
-  void report() {
+  void report({int spacerCount = 0}) {
+    super.report(spacerCount: spacerCount);
+
     if (testTitle.isNotEmpty) {
-      Printer.pass('(O) $testTitle');
+      Printer.pass('$spacer(O) $testTitle');
     }
   }
 }

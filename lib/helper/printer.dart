@@ -6,4 +6,8 @@ class Printer {
   static void fail(String message) {
     print('\x1B[31m$message\x1B[0m');
   }
+
+  static void neutral(String message) {
+    print('\x1B[90m$message\x1B[0m');
+  }
 }

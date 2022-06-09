@@ -10,14 +10,19 @@ class TestFailure extends TestResult {
   TestFailure(this.message, {this.err}) : super('');
 
   @override
-  void report() {
-    if (testTitle.isNotEmpty) {
-      Printer.fail('[X] $testTitle: $message');
-    } else {
-      Printer.fail(message);
-    }
+  void report({int spacerCount = 0}) {
+    super.report(spacerCount: spacerCount);
+    Printer.fail(spacer + _formatMessage());
     if (err != null && err is String) {
-      Printer.fail(err as String);
+      Printer.fail(spacer + (err as String));
+    }
+  }
+
+  String _formatMessage() {
+    if (testTitle.isNotEmpty) {
+      return '[X] $testTitle: $message';
+    } else {
+      return '    $message';
     }
   }
 }
