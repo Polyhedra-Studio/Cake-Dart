@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:cake/context.dart';
 import 'package:cake/contextual.dart';
-import 'package:cake/test_context.dart';
 import 'package:cake/test_neutral.dart';
 
 import 'expect.dart';
@@ -10,41 +10,41 @@ import 'test_pass.dart';
 import 'test_result.dart';
 
 class Test<T> extends Contextual<T> {
-  final FutureOr<void> Function(TestContext<T> context)? action;
-  List<Expect<dynamic>> Function(TestContext<T> context)? assertions;
+  final FutureOr<void> Function(Context<T> context)? action;
+  List<Expect<dynamic>> Function(Context<T> context)? assertions;
   final List<TestFailure> assertFailures = [];
 
   Test(
     String title, {
     T? expected,
     T? actual,
-    FutureOr<void> Function(TestContext<T> context)? setup,
-    FutureOr<void> Function(TestContext<T> context)? teardown,
+    FutureOr<void> Function(Context<T> context)? setup,
+    FutureOr<void> Function(Context<T> context)? teardown,
     this.action,
     this.assertions,
   }) : super(title,
             setup: setup,
             teardown: teardown,
-            context: TestContext(expected: expected, actual: actual));
+            context: Context.Test(expected: expected, actual: actual));
 
   Test.single(
     String title, {
     T? expected,
     T? actual,
-    FutureOr<void> Function(TestContext<T> context)? setup,
-    FutureOr<void> Function(TestContext<T> context)? teardown,
+    FutureOr<void> Function(Context<T> context)? setup,
+    FutureOr<void> Function(Context<T> context)? teardown,
     this.action,
     this.assertions,
   }) : super(
           title,
           setup: setup,
           teardown: teardown,
-          context: TestContext(expected: expected, actual: actual),
+          context: Context.Test(expected: expected, actual: actual),
           standalone: true,
         );
 
   @override
-  Future<TestResult> getResult(TestContext testContext) async {
+  Future<TestResult> getResult(Context testContext) async {
     // Assign parent context on top of current
     context.applyParentContext(testContext);
 
@@ -99,7 +99,7 @@ class Test<T> extends Contextual<T> {
     }
   }
 
-  List<Expect<T>> defaultAssertion(TestContext<T> context) {
+  List<Expect<T>> defaultAssertion(Context<T> context) {
     return [
       Expect<T>(ExpectType.equals,
           expected: context.expected, actual: context.actual)
