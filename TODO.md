@@ -11,6 +11,7 @@
             [X] Groups should have a setup and teardown step
         [X] Add teardown for individual tests
         [ ] Add skip constructor
+        [ ] Allow for extending the context item
 
     - ExpectTypes
         - More?

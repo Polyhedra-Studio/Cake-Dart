@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:cake/context.dart';
 import 'package:cake/contextual.dart';
 import 'package:cake/test.dart';
-import 'package:cake/test_context.dart';
 import 'package:cake/test_failure.dart';
 import 'package:cake/test_neutral.dart';
 import 'package:cake/test_pass.dart';
@@ -16,8 +16,8 @@ class Group extends Contextual {
 
   Group(
     String title, {
-    FutureOr<void> Function(TestContext context)? setup,
-    FutureOr<void> Function(TestContext context)? teardown,
+    FutureOr<void> Function(Context context)? setup,
+    FutureOr<void> Function(Context context)? teardown,
     this.children,
   }) : super(
           title,
@@ -29,8 +29,8 @@ class Group extends Contextual {
 
   Group.single(
     String title, {
-    FutureOr<void> Function(TestContext context)? setup,
-    FutureOr<void> Function(TestContext context)? teardown,
+    FutureOr<void> Function(Context context)? setup,
+    FutureOr<void> Function(Context context)? teardown,
     this.children,
   }) : super(
           title,
@@ -55,7 +55,7 @@ class Group extends Contextual {
   }
 
   @override
-  Future<TestResult> getResult(TestContext testContext) async {
+  Future<TestResult> getResult(Context testContext) async {
     // This is just a stub if there's no children - do nothing.
     if (children == null || children!.isEmpty) {
       return TestNeutral.result(title, message: 'Empty - no tests');
@@ -71,7 +71,8 @@ class Group extends Contextual {
     int childFailCount = 0;
     for (Contextual child in children!) {
       // Create a new context so siblings don't affect each other
-      TestContext childContext = TestContext.deepCopy(testContext);
+
+      Context childContext = child.translateContext(testContext);
       TestResult result = await child.run(childContext);
       child.result = result;
       if (result is TestPass) childSuccessCount++;

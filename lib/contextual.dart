@@ -1,32 +1,33 @@
 import 'dart:async';
 
-import 'package:cake/test_context.dart';
+import 'package:cake/context.dart';
+
 import 'package:cake/test_failure.dart';
 import 'package:cake/test_pass.dart';
 import 'package:cake/test_result.dart';
 
 abstract class Contextual<T> {
   String title;
-  final FutureOr<void> Function(TestContext<T> context)? setup;
-  final FutureOr<void> Function(TestContext<T> context)? teardown;
-  final TestContext<T> context;
+  final FutureOr<void> Function(Context<T> context)? setup;
+  final FutureOr<void> Function(Context<T> context)? teardown;
+  final Context<T> context;
   int parentCount = 0;
   TestResult? result;
   List<TestResult> messages = [];
   bool? standalone;
 
   Contextual(this.title,
-      {this.setup, this.teardown, TestContext<T>? context, this.standalone})
-      : context = context ?? TestContext<T>.empty() {
+      {this.setup, this.teardown, Context<T>? context, this.standalone})
+      : context = context ?? Context<T>() {
     if (standalone == true) {
       _runAndReport();
     }
   }
 
   void report();
-  Future<TestResult> getResult(TestContext testContext);
+  Future<TestResult> getResult(Context<T> testContext);
 
-  Future<TestResult> run(TestContext testContext) async {
+  Future<TestResult> run(Context<T> testContext) async {
     result = await getResult(testContext);
     return result!;
   }
@@ -39,7 +40,7 @@ abstract class Contextual<T> {
     parentCount++;
   }
 
-  Future<TestResult?> runSetup(TestContext<T> testContext) async {
+  Future<TestResult?> runSetup(Context<T> testContext) async {
     if (setup != null) {
       try {
         await setup!(testContext);
@@ -51,7 +52,7 @@ abstract class Contextual<T> {
     return null;
   }
 
-  Future<TestResult?> runTeardown(TestContext<T> testContext) async {
+  Future<TestResult?> runTeardown(Context<T> testContext) async {
     if (teardown != null) {
       try {
         await teardown!(testContext);
@@ -67,5 +68,9 @@ abstract class Contextual<T> {
       }
     }
     return null;
+  }
+
+  Context<T> translateContext(Context oldContext) {
+    return Context<T>.deepCopy(oldContext);
   }
 }
