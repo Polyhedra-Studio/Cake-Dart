@@ -30,16 +30,38 @@ void main() async {
   TestRunnerWithContext<String, _Extended<String>>(
       'Test Runner with context passes context to children',
       [
-        GroupWithContext<bool, _SuperExtended<bool>>(
+        GroupWithContext(
+          'Group with same context passes context to children',
+          children: [
+            TestWithContext(
+              'Child has parent context',
+              expected: 'yes',
+              actual: 'yes',
+              setup: (test) => test.value = 'setup',
+              action: (test) => test.value = 'action',
+              assertions: (test) => [
+                Expect.equals(expected: test.expected, actual: test.actual),
+                Expect<String>.isType(actual: test.value),
+                Expect.equals(expected: test.value, actual: 'action')
+              ],
+              teardown: (test) => test.value = 'teardown',
+            ),
+          ],
+        ),
+        GroupWithContext<String, _SuperExtended<String>>(
             'Group with context passes context to children',
             contextBuilder: _SuperExtended.new,
             children: [
-              Test(
+              TestWithContext<String, _SuperExtended<String>>(
                 'Test inherits parent context at all steps',
-                expected: 'blah',
-                actual: 'nah',
-                // setup: (test) => test.value = 'setup',
-              )
+                expected: 'yes',
+                actual: 'yes',
+                setup: (test) => test.value = 'setup',
+              ),
+              TestWithContext('Test automatically inherits parent context',
+                  expected: 'yes',
+                  actual: 'yes',
+                  setup: (test) => test.value = 'setup'),
             ]),
       ],
       contextBuilder: _Extended.new);

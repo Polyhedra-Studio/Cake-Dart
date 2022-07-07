@@ -18,54 +18,6 @@ class Test<T> extends _Test<T, Context<T>> {
           action: action,
           assertions: assertions,
         );
-
-  @override
-  Future<_TestResult> _getResult(Context testContext) async {
-    // Assign parent context on top of current
-    simpleContext!.applyParentContext(testContext);
-
-    _TestResult? setupFailure = await _runSetup(simpleContext!);
-    if (setupFailure != null) {
-      return setupFailure;
-    }
-
-    if (action != null) {
-      try {
-        await action!(simpleContext!);
-      } catch (err) {
-        // We want to try to teardown anything we've set up even if it's all haywire at this point
-        _result = _TestFailure.result(title, 'Failed during action', err: err);
-      }
-    }
-
-    // Don't bother running assertions if we've already come up if this is pass or fail
-    if (_result == null) {
-      assertions ??= _defaultAssertion;
-      List<Expect> asserts = assertions!(simpleContext!);
-
-      for (Expect expect in asserts) {
-        _TestResult assertResult = expect._run();
-        if (assertResult is _TestFailure) {
-          assertFailures.add(assertResult);
-        }
-      }
-
-      if (assertFailures.isEmpty) {
-        _result = _TestPass.result(title);
-      } else {
-        _result = _TestFailure.result(title, 'Assert failed');
-      }
-    }
-
-    _TestResult? teardownFailure = await _runTeardown(simpleContext!);
-    if (teardownFailure != null) {
-      return teardownFailure;
-    }
-    _result ??= _TestNeutral.result(title,
-        message:
-            'Expected result by now! Is this there something running asynchronously?');
-    return _result!;
-  }
 }
 
 class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
@@ -77,7 +29,7 @@ class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
     FutureOr<void> Function(C test)? teardown,
     FutureOr<void> Function(C test)? action,
     List<Expect> Function(C test)? assertions,
-    required C Function() contextBuilder,
+    C Function()? contextBuilder,
   }) : super.context(
           title,
           expected: expected,
@@ -88,54 +40,6 @@ class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
           assertions: assertions,
           contextBuilder: contextBuilder,
         );
-
-  @override
-  Future<_TestResult> _getResultWithContext(C testContext) async {
-    // Assign parent context on top of current
-    context!.applyParentContext(testContext);
-
-    _TestResult? setupFailure = await _runSetupWithContext(context!);
-    if (setupFailure != null) {
-      return setupFailure;
-    }
-
-    if (actionWithContext != null) {
-      try {
-        await actionWithContext!(context!);
-      } catch (err) {
-        // We want to try to teardown anything we've set up even if it's all haywire at this point
-        _result = _TestFailure.result(title, 'Failed during action', err: err);
-      }
-    }
-
-    // Don't bother running assertions if we've already come up if this is pass or fail
-    if (_result == null) {
-      assertionsWithContext ??= _defaultAssertionWithContext;
-      List<Expect> asserts = assertionsWithContext!(context!);
-
-      for (Expect expect in asserts) {
-        _TestResult assertResult = expect._run();
-        if (assertResult is _TestFailure) {
-          assertFailures.add(assertResult);
-        }
-      }
-
-      if (assertFailures.isEmpty) {
-        _result = _TestPass.result(title);
-      } else {
-        _result = _TestFailure.result(title, 'Assert failed');
-      }
-    }
-
-    _TestResult? teardownFailure = await _runTeardownWithContext(context!);
-    if (teardownFailure != null) {
-      return teardownFailure;
-    }
-    _result ??= _TestNeutral.result(title,
-        message:
-            'Expected result by now! Is this there something running asynchronously?');
-    return _result!;
-  }
 }
 
 class _Test<T, C extends Context<T>> extends Contextual<T, C> {
@@ -144,6 +48,8 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   List<Expect<dynamic>> Function(Context<T> test)? assertions;
   List<Expect<dynamic>> Function(C test)? assertionsWithContext;
   final List<_TestFailure> assertFailures = [];
+  final T? _actual;
+  final T? _expected;
 
   _Test(
     String title, {
@@ -155,6 +61,8 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     this.assertions,
   })  : actionWithContext = null,
         assertionsWithContext = null,
+        _actual = actual,
+        _expected = expected,
         super(title,
             setup: setup,
             teardown: teardown,
@@ -171,26 +79,49 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     FutureOr<void> Function(C test)? teardown,
     FutureOr<void> Function(C test)? action,
     List<Expect> Function(C test)? assertions,
-    required C Function() contextBuilder,
+    C Function()? contextBuilder,
   })  : actionWithContext = action,
         assertionsWithContext = assertions,
         action = null,
         assertions = null,
-        super.context(title,
-            setupWithContext: setup,
-            teardownWithContext: teardown,
-            contextBuilder: contextBuilder, context: () {
-          C context = contextBuilder();
-          context.actual = actual;
-          context.expected = expected;
-          return context;
-        }());
+        _actual = actual,
+        _expected = expected,
+        super.context(
+          title,
+          setupWithContext: setup,
+          teardownWithContext: teardown,
+          contextBuilder: contextBuilder,
+          context: () {
+            if (contextBuilder != null) {
+              C context = contextBuilder();
+              context.actual = actual;
+              context.expected = expected;
+              return context;
+            }
+            return null;
+          }(),
+        );
+
+  @override
+  void _assignParent(dynamic parentContextBuilder) {
+    super._assignParent(parentContextBuilder);
+    if (_contextBuilder != null) {
+      try {
+        C newContext = _contextBuilder!();
+        newContext.actual = _actual;
+        newContext.expected = _expected;
+        _context = newContext;
+      } catch (err) {
+        throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
+      }
+    }
+  }
 
   @override
   void report() {
-    _result!.report(spacerCount: parentCount);
+    _result!.report(spacerCount: _parentCount);
     for (_TestFailure element in assertFailures) {
-      element.report(spacerCount: parentCount);
+      element.report(spacerCount: _parentCount);
     }
   }
 
@@ -209,14 +140,98 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  Future<_TestResult> _getResult(Context<T> testContext) async {
-    return _TestFailure(
-        'Setup Error. getResult should not be called from this class.');
+  Future<_TestResult> _getResult(Context testContext) async {
+    // Assign parent context on top of current
+    simpleContext!.applyParentContext(testContext);
+
+    _TestResult? setupFailure = await _runSetup(simpleContext!);
+    if (setupFailure != null) {
+      return setupFailure;
+    }
+
+    if (action != null) {
+      try {
+        await action!(simpleContext!);
+      } catch (err) {
+        // We want to try to teardown anything we've set up even if it's all haywire at this point
+        _result = _TestFailure.result(_title, 'Failed during action', err: err);
+      }
+    }
+
+    // Don't bother running assertions if we've already come up if this is pass or fail
+    if (_result == null) {
+      assertions ??= _defaultAssertion;
+      List<Expect> asserts = assertions!(simpleContext!);
+
+      for (Expect expect in asserts) {
+        _TestResult assertResult = expect._run();
+        if (assertResult is _TestFailure) {
+          assertFailures.add(assertResult);
+        }
+      }
+
+      if (assertFailures.isEmpty) {
+        _result = _TestPass.result(_title);
+      } else {
+        _result = _TestFailure.result(_title, 'Assert failed');
+      }
+    }
+
+    _TestResult? teardownFailure = await _runTeardown(simpleContext!);
+    if (teardownFailure != null) {
+      return teardownFailure;
+    }
+    _result ??= _TestNeutral.result(_title,
+        message:
+            'Expected result by now! Is this there something running asynchronously?');
+    return _result!;
   }
 
   @override
   Future<_TestResult> _getResultWithContext(C testContext) async {
-    return _TestFailure(
-        'Setup Error. getResultWithContext should not be called from this class.');
+    // Assign parent context on top of current
+    _context!.applyParentContext(testContext);
+
+    _TestResult? setupFailure = await _runSetupWithContext(_context!);
+    if (setupFailure != null) {
+      return setupFailure;
+    }
+
+    if (actionWithContext != null) {
+      try {
+        await actionWithContext!(_context!);
+      } catch (err) {
+        // We want to try to teardown anything we've set up even if it's all haywire at this point
+        _result = _TestFailure.result(_title, 'Failed during action', err: err);
+      }
+    }
+
+    // Don't bother running assertions if we've already come up if this is pass or fail
+    if (_result == null) {
+      assertionsWithContext ??= _defaultAssertionWithContext;
+      List<Expect> asserts = assertionsWithContext!(_context!);
+
+      for (Expect expect in asserts) {
+        _TestResult assertResult = expect._run();
+        if (assertResult is _TestFailure) {
+          assertFailures.add(assertResult);
+        }
+      }
+
+      if (assertFailures.isEmpty) {
+        _result = _TestPass.result(_title);
+      } else {
+        _result = _TestFailure.result(_title, 'Assert failed');
+      }
+    }
+
+    _TestResult? teardownFailure = await _runTeardownWithContext(_context!);
+    if (teardownFailure != null) {
+      return teardownFailure;
+    }
+    _result ??= _TestNeutral.result(_title,
+        message:
+            'Expected result by now! Is this there something running asynchronously?');
+    return _result!;
   }
 }
