@@ -44,5 +44,16 @@ void main(List<String> arguments) async {
     Test<bool>('IsType, true is bool',
         actual: true,
         assertions: (context) => [Expect<bool>.isType(context.actual)]),
+    // isTrue expect
+    Test<bool>('IsTrue, true is true',
+        actual: true, assertions: (test) => [Expect.isTrue(test.actual)]),
+    // isFalse expect
+    Test<bool>('IsFalse, false is false',
+        actual: false, assertions: (test) => [Expect.isFalse(test.actual)]),
+    // Other
+    Test<bool>('Action can accept return type',
+        action: (test) => true,
+        assertions: (test) =>
+            [Expect.equals(actual: test.actual, expected: true)]),
   ]);
 }
