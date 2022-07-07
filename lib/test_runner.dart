@@ -5,13 +5,13 @@ class TestRunner extends _TestRunner {
 }
 
 class TestRunnerWithContext<T, C extends Context<T>> extends _TestRunner<T, C> {
-  TestRunnerWithContext(String title, List<Contextual> tests,
+  TestRunnerWithContext(String title, List<Contextual<T, C>> tests,
       {required C Function() contextBuilder})
       : super.context(title, tests, contextBuilder: contextBuilder);
 }
 
 class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
-  final List<Contextual> tests;
+  final List<Contextual<T, C>> tests;
 
   _TestRunner(String title, this.tests) : super(title, children: tests) {
     _runAll();
@@ -31,7 +31,7 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   }
 
   Future<void> _runAllWithContext() async {
-    await _runWithContext(context!);
+    await _runWithContext(_context!);
     report();
   }
 

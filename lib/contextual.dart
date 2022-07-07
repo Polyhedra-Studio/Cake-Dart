@@ -1,39 +1,40 @@
 part of cake;
 
 abstract class Contextual<T, C extends Context<T>> {
-  String title;
+  final String _title;
   final FutureOr<void> Function(Context<T> test)? setup;
   final FutureOr<void> Function(C test)? setupWithContext;
   final FutureOr<void> Function(Context<T> test)? teardown;
   final FutureOr<void> Function(C test)? teardownWithContext;
 
   final Context<T>? simpleContext;
-  final C? context;
-  final C Function()? contextBuilder;
+  C? _context;
 
-  int parentCount = 0;
+  C Function()? _contextBuilder;
+  int _parentCount = 0;
   _TestResult? _result;
   final List<_TestResult> _messages = [];
-  bool hasCustomContext;
+  bool _hasCustomContext = false;
 
   Contextual(
-    this.title, {
+    this._title, {
     this.setup,
     this.teardown,
     this.simpleContext,
-  })  : hasCustomContext = false,
-        context = null,
+  })  : _context = null,
         setupWithContext = null,
         teardownWithContext = null,
-        contextBuilder = null;
+        _contextBuilder = null;
 
   Contextual.context(
-    this.title, {
+    this._title, {
     required this.setupWithContext,
     required this.teardownWithContext,
-    required this.contextBuilder,
-    required this.context,
-  })  : hasCustomContext = true,
+    C Function()? contextBuilder,
+    required C? context,
+  })  : _hasCustomContext = true,
+        _context = context,
+        _contextBuilder = contextBuilder,
         setup = null,
         teardown = null,
         simpleContext = null;
@@ -52,8 +53,13 @@ abstract class Contextual<T, C extends Context<T>> {
     return _result!;
   }
 
-  void _assignParent() {
-    parentCount++;
+  void _assignParent(dynamic parentContextBuilder) {
+    _parentCount++;
+    // Assign and inherit the parent contextBuilder
+    if (parentContextBuilder != null && _contextBuilder == null) {
+      _contextBuilder = parentContextBuilder;
+      _hasCustomContext = true;
+    }
   }
 
   Future<_TestResult?> _runSetup(Context<T> simpleContext) async {
@@ -61,7 +67,7 @@ abstract class Contextual<T, C extends Context<T>> {
       try {
         await setup!(simpleContext);
       } catch (err) {
-        return _TestFailure.result(title, 'Failed during setup', err: err);
+        return _TestFailure.result(_title, 'Failed during setup', err: err);
       }
     }
 
@@ -73,7 +79,7 @@ abstract class Contextual<T, C extends Context<T>> {
       try {
         await setupWithContext!(context);
       } catch (err) {
-        return _TestFailure.result(title, 'Failed during setup', err: err);
+        return _TestFailure.result(_title, 'Failed during setup', err: err);
       }
     }
     return null;
@@ -86,11 +92,11 @@ abstract class Contextual<T, C extends Context<T>> {
       } catch (err) {
         if (_result is _TestPass) {
           return _TestFailure.result(
-              title, 'Tests passed, but failed during teardown.',
+              _title, 'Tests passed, but failed during teardown.',
               err: err);
         } else {
           _messages.add(
-              _TestFailure.result(title, 'Failed during teardown', err: err));
+              _TestFailure.result(_title, 'Failed during teardown', err: err));
         }
       }
     }
@@ -104,11 +110,11 @@ abstract class Contextual<T, C extends Context<T>> {
       } catch (err) {
         if (_result is _TestPass) {
           return _TestFailure.result(
-              title, 'Tests passed, but failed during teardown.',
+              _title, 'Tests passed, but failed during teardown.',
               err: err);
         } else {
           _messages.add(
-              _TestFailure.result(title, 'Failed during teardown', err: err));
+              _TestFailure.result(_title, 'Failed during teardown', err: err));
         }
       }
     }
@@ -120,6 +126,6 @@ abstract class Contextual<T, C extends Context<T>> {
   }
 
   C _translateContext(Context oldContext) {
-    return contextBuilder!()..copy(oldContext);
+    return _contextBuilder!()..copy(oldContext);
   }
 }

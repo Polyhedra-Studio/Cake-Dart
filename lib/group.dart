@@ -19,8 +19,8 @@ class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
     String title, {
     FutureOr<void> Function(C context)? setup,
     FutureOr<void> Function(C context)? teardown,
-    required C Function() contextBuilder,
-    List<Contextual>? children,
+    C Function()? contextBuilder,
+    List<Contextual<T, C>>? children,
   }) : super.context(
           title,
           setup: setup,
@@ -31,7 +31,7 @@ class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
 }
 
 class _Group<T, C extends Context<T>> extends Contextual<T, C> {
-  final List<Contextual>? children;
+  final List<Contextual<T, C>>? children;
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
@@ -54,14 +54,14 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     String title, {
     FutureOr<void> Function(C context)? setup,
     FutureOr<void> Function(C context)? teardown,
-    required C Function() contextBuilder,
+    required C Function()? contextBuilder,
     this.children,
   }) : super.context(
           title,
           setupWithContext: setup,
           teardownWithContext: teardown,
           contextBuilder: contextBuilder,
-          context: contextBuilder(),
+          context: contextBuilder != null ? contextBuilder() : null,
         ) {
     _assignChildren();
   }
@@ -69,13 +69,20 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   void _assignChildren() {
     if (children == null) return;
     for (Contextual child in children!) {
-      child._assignParent();
+      child._assignParent(_contextBuilder);
     }
   }
 
   @override
-  void _assignParent() {
-    super._assignParent();
+  void _assignParent(dynamic parentContextBuilder) {
+    super._assignParent(parentContextBuilder);
+    if (_contextBuilder != null) {
+      try {
+        _context = _contextBuilder!();
+      } catch (err) {
+        throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
+      }
+    }
     _assignChildren();
   }
 
@@ -83,7 +90,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   Future<_TestResult> _getResult(Context<T> testContext) async {
     // This is just a stub if there's no children - do nothing.
     if (children == null || children!.isEmpty) {
-      return _TestNeutral.result(title, message: 'Empty - no tests');
+      return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
     _TestResult? setupFailure = await _runSetup(testContext);
@@ -96,8 +103,14 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     int childFailCount = 0;
     for (Contextual child in children!) {
       // Create a new context so siblings don't affect each other
-      var childContext = child._translateContextSimple(testContext);
-      _TestResult result = await child._run(childContext);
+      _TestResult result;
+      if (child._hasCustomContext) {
+        var childContext = child._translateContext(testContext);
+        result = await child._runWithContext(childContext);
+      } else {
+        var childContext = child._translateContextSimple(testContext);
+        result = await child._run(childContext);
+      }
       child._result = result;
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;
@@ -114,24 +127,24 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     }
 
     if (childFailCount > 0) {
-      return _TestFailure.result(title, 'Some tests failed.');
+      return _TestFailure.result(_title, 'Some tests failed.');
     }
 
     if (childSuccessCount < 1) {
-      return _TestNeutral.result(title);
+      return _TestNeutral.result(_title);
     }
 
-    return _TestPass.result(title);
+    return _TestPass.result(_title);
   }
 
   @override
   Future<_TestResult> _getResultWithContext(C testContext) async {
     // This is just a stub if there's no children - do nothing.
     if (children == null || children!.isEmpty) {
-      return _TestNeutral.result(title, message: 'Empty - no tests');
+      return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
-    _TestResult? setupFailure = await _runSetupWithContext(context!);
+    _TestResult? setupFailure = await _runSetupWithContext(_context!);
     if (setupFailure != null) {
       return setupFailure;
     }
@@ -142,7 +155,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     for (Contextual child in children!) {
       // Create a new context so siblings don't affect each other
       var childContext = child._translateContext(testContext);
-      _TestResult result = await child._run(childContext);
+      _TestResult result = await child._runWithContext(childContext);
       child._result = result;
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;
@@ -159,19 +172,19 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     }
 
     if (childFailCount > 0) {
-      return _TestFailure.result(title, 'Some tests failed.');
+      return _TestFailure.result(_title, 'Some tests failed.');
     }
 
     if (childSuccessCount < 1) {
-      return _TestNeutral.result(title);
+      return _TestNeutral.result(_title);
     }
 
-    return _TestPass.result(title);
+    return _TestPass.result(_title);
   }
 
   @override
   void report() {
-    _result!.report(spacerCount: parentCount);
+    _result!.report(spacerCount: _parentCount);
     if (children != null && children!.isNotEmpty) {
       for (Contextual child in children!) {
         child.report();
