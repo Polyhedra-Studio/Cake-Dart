@@ -37,8 +37,12 @@ void main() async {
               'Child has parent context',
               expected: 'yes',
               actual: 'yes',
-              setup: (test) => test.value = 'setup',
-              action: (test) => test.value = 'action',
+              setup: (test) {
+                test.value = 'setup';
+              },
+              action: (test) {
+                test.value = 'action';
+              },
               assertions: (test) => [
                 Expect.equals(expected: test.expected, actual: test.actual),
                 Expect<String>.isType(test.value),
