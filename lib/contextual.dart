@@ -8,6 +8,8 @@ abstract class Contextual<T, C extends Context<T>> {
   final FutureOr<void> Function(C test)? teardownWithContext;
 
   final Context<T>? simpleContext;
+  // For some reason dart's not picking up that this is getting changed in a extended class
+  // ignore: prefer_final_fields
   C? _context;
 
   C Function()? _contextBuilder;
