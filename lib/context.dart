@@ -1,5 +1,7 @@
+part of cake;
+
 class Context<T> implements Map<String, dynamic> {
-  Map<String, dynamic> _context = {};
+  final Map<String, dynamic> _context = {};
   T? expected;
   T? actual;
 
@@ -9,7 +11,13 @@ class Context<T> implements Map<String, dynamic> {
     actual = siblingContext.actual;
   }
   Context();
-  Context.Test({this.expected, this.actual});
+  Context.test({this.expected, this.actual});
+
+  void copy(Context siblingContext) {
+    addAll(siblingContext);
+    expected = siblingContext.expected;
+    actual = siblingContext.actual;
+  }
 
   void applyParentContext(Context parentContext) {
     addAll(parentContext);

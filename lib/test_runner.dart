@@ -1,19 +1,37 @@
-import 'package:cake/contextual.dart';
-import 'package:cake/group.dart';
-import 'package:cake/helper/printer.dart';
-import 'package:cake/test_failure.dart';
-import 'package:cake/test_neutral.dart';
-import 'package:cake/test_pass.dart';
+part of cake;
 
-class TestRunner extends Group {
+class TestRunner extends _TestRunner {
+  TestRunner(String title, List<Contextual> tests) : super(title, tests);
+}
+
+class TestRunnerWithContext<T, C extends Context<T>> extends _TestRunner<T, C> {
+  TestRunnerWithContext(String title, List<Contextual> tests,
+      {required C Function() contextBuilder})
+      : super.context(title, tests, contextBuilder: contextBuilder);
+}
+
+class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   final List<Contextual> tests;
 
-  TestRunner(String title, this.tests) : super(title, children: tests) {
+  _TestRunner(String title, this.tests) : super(title, children: tests) {
     _runAll();
   }
 
+  _TestRunner.context(
+    String title,
+    this.tests, {
+    required C Function() contextBuilder,
+  }) : super.context(title, children: tests, contextBuilder: contextBuilder) {
+    _runAllWithContext();
+  }
+
   Future<void> _runAll() async {
-    await run(context);
+    await _run(simpleContext!);
+    report();
+  }
+
+  Future<void> _runAllWithContext() async {
+    await _runWithContext(context!);
     report();
   }
 
@@ -32,13 +50,13 @@ class TestRunner extends Group {
 |  - $neutrals skipped/inconclusive.  |
 -------------------------------
 ''';
-    if (result is TestPass) {
+    if (_result is _TestPass) {
       Printer.pass(message);
     }
-    if (result is TestFailure) {
+    if (_result is _TestFailure) {
       Printer.fail(message);
     }
-    if (result is TestNeutral) {
+    if (_result is _TestNeutral) {
       Printer.neutral(message);
     }
   }

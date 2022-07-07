@@ -1,10 +1,8 @@
-import 'package:cake/helper/printer.dart';
+part of cake;
 
-import 'test_result.dart';
-
-class TestPass extends TestResult {
-  TestPass.result(String test) : super(test);
-  TestPass() : super('');
+class _TestPass extends _TestResult {
+  _TestPass.result(String test) : super(test);
+  _TestPass() : super('');
 
   @override
   void report({int spacerCount = 0}) {
