@@ -2,6 +2,7 @@
 - [ADD] You can now return a value on the `action` setup to assign that value to "test.actual"
 - [MOD] When creating an Expect, by default the "actual" value will appear before the "expected". This is to mirror other popular testing frameworks.
 - [BREAKING] Minor change, Expect.Null, Expect.IsNotNull, Expect.Type no longer needs a named parameter. Expect.isNotNull(actual: test.actual) => Expect.isNotNull(test.actual)
+- [ADD] Expect.isTrue and Expect.isFalse - does about what it say on the tin. Also only takes one parameter like .null, .isNotNull, and .type.
 
 ## 3.0.0
 - [BREAKING] All code refactored into a library. Pros - less imports. Cons - Breaks all current imports. Good thing this isn't public.

@@ -11,6 +11,8 @@ class Expect<T> {
   Expect.isNull(this.actual) : type = ExpectType.isNull;
   Expect.isNotNull(this.actual) : type = ExpectType.isNotNull;
   Expect.isType(this.actual) : type = ExpectType.isType;
+  Expect.isTrue(this.actual) : type = ExpectType.isTrue;
+  Expect.isFalse(this.actual) : type = ExpectType.isFalse;
 
   _TestResult _run() {
     switch (type) {
@@ -22,6 +24,10 @@ class Expect<T> {
         return _isNotNull();
       case ExpectType.isType:
         return _isType();
+      case ExpectType.isTrue:
+        return _isTrue();
+      case ExpectType.isFalse:
+        return _isFalse();
     }
   }
 
@@ -53,7 +59,23 @@ class Expect<T> {
     if (actual is T) {
       return _TestPass();
     } else {
-      return _TestFailure('IsType failed: Expected $actual to be $T');
+      return _TestFailure('IsType failed: Expected $actual to be $T.');
+    }
+  }
+
+  _TestResult _isTrue() {
+    if (actual == true) {
+      return _TestPass();
+    } else {
+      return _TestFailure('IsTrue failed: Expected $actual to be true.');
+    }
+  }
+
+  _TestResult _isFalse() {
+    if (actual == false) {
+      return _TestPass();
+    } else {
+      return _TestFailure('IsFalse failed: Expected $actual to be false.');
     }
   }
 }
@@ -63,4 +85,6 @@ enum ExpectType {
   isNull,
   isNotNull,
   isType,
+  isTrue,
+  isFalse,
 }
