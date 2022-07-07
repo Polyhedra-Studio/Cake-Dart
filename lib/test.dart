@@ -7,7 +7,7 @@ class Test<T> extends _Test<T, Context<T>> {
     T? actual,
     FutureOr<void> Function(Context<T> test)? setup,
     FutureOr<void> Function(Context<T> test)? teardown,
-    FutureOr<void> Function(Context<T> test)? action,
+    FutureOr<dynamic> Function(Context<T> test)? action,
     List<Expect<dynamic>> Function(Context<T> test)? assertions,
   }) : super(
           title,
@@ -27,7 +27,7 @@ class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
     T? actual,
     FutureOr<void> Function(C test)? setup,
     FutureOr<void> Function(C test)? teardown,
-    FutureOr<void> Function(C test)? action,
+    FutureOr<dynamic> Function(C test)? action,
     List<Expect> Function(C test)? assertions,
     C Function()? contextBuilder,
   }) : super.context(
@@ -43,8 +43,8 @@ class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
 }
 
 class _Test<T, C extends Context<T>> extends Contextual<T, C> {
-  final FutureOr<void> Function(Context<T> test)? action;
-  final FutureOr<void> Function(C test)? actionWithContext;
+  final FutureOr<dynamic> Function(Context<T> test)? action;
+  final FutureOr<dynamic> Function(C test)? actionWithContext;
   List<Expect<dynamic>> Function(Context<T> test)? assertions;
   List<Expect<dynamic>> Function(C test)? assertionsWithContext;
   final List<_TestFailure> assertFailures = [];
@@ -77,7 +77,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     T? actual,
     FutureOr<void> Function(C test)? setup,
     FutureOr<void> Function(C test)? teardown,
-    FutureOr<void> Function(C test)? action,
+    FutureOr<dynamic> Function(C test)? action,
     List<Expect> Function(C test)? assertions,
     C Function()? contextBuilder,
   })  : actionWithContext = action,
@@ -151,7 +151,10 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
 
     if (action != null) {
       try {
-        await action!(simpleContext!);
+        dynamic value = await action!(simpleContext!);
+        if (value is T) {
+          simpleContext!.actual = await action!(simpleContext!);
+        }
       } catch (err) {
         // We want to try to teardown anything we've set up even if it's all haywire at this point
         _result = _TestFailure.result(_title, 'Failed during action', err: err);
@@ -199,7 +202,10 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
 
     if (actionWithContext != null) {
       try {
-        await actionWithContext!(_context!);
+        dynamic value = await actionWithContext!(_context!);
+        if (value is T) {
+          _context!.actual = value;
+        }
       } catch (err) {
         // We want to try to teardown anything we've set up even if it's all haywire at this point
         _result = _TestFailure.result(_title, 'Failed during action', err: err);
