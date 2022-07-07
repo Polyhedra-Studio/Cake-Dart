@@ -1,42 +1,67 @@
-import 'dart:async';
+part of cake;
 
-import 'package:cake/context.dart';
-import 'package:cake/contextual.dart';
-import 'package:cake/test.dart';
-import 'package:cake/test_failure.dart';
-import 'package:cake/test_neutral.dart';
-import 'package:cake/test_pass.dart';
-import 'package:cake/test_result.dart';
+class Group extends _Group {
+  Group(
+    String title, {
+    FutureOr<void> Function(Context context)? setup,
+    FutureOr<void> Function(Context context)? teardown,
+    List<Contextual>? children,
+  }) : super(
+          title,
+          setup: setup,
+          teardown: teardown,
+          children: children,
+        );
+}
 
-class Group extends Contextual {
+class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
+  GroupWithContext(
+    String title, {
+    FutureOr<void> Function(C context)? setup,
+    FutureOr<void> Function(C context)? teardown,
+    required C Function() contextBuilder,
+    List<Contextual>? children,
+  }) : super.context(
+          title,
+          setup: setup,
+          teardown: teardown,
+          children: children,
+          contextBuilder: contextBuilder,
+        );
+}
+
+class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   final List<Contextual>? children;
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
 
-  Group(
+  _Group(
     String title, {
-    FutureOr<void> Function(Context context)? setup,
-    FutureOr<void> Function(Context context)? teardown,
+    FutureOr<void> Function(Context<T> context)? setup,
+    FutureOr<void> Function(Context<T> context)? teardown,
     this.children,
   }) : super(
           title,
           setup: setup,
           teardown: teardown,
+          simpleContext: Context(),
         ) {
     _assignChildren();
   }
 
-  Group.single(
+  _Group.context(
     String title, {
-    FutureOr<void> Function(Context context)? setup,
-    FutureOr<void> Function(Context context)? teardown,
+    FutureOr<void> Function(C context)? setup,
+    FutureOr<void> Function(C context)? teardown,
+    required C Function() contextBuilder,
     this.children,
-  }) : super(
+  }) : super.context(
           title,
-          setup: setup,
-          teardown: teardown,
-          standalone: true,
+          setupWithContext: setup,
+          teardownWithContext: teardown,
+          contextBuilder: contextBuilder,
+          context: contextBuilder(),
         ) {
     _assignChildren();
   }
@@ -44,24 +69,24 @@ class Group extends Contextual {
   void _assignChildren() {
     if (children == null) return;
     for (Contextual child in children!) {
-      child.assignParent();
+      child._assignParent();
     }
   }
 
   @override
-  void assignParent() {
-    super.assignParent();
+  void _assignParent() {
+    super._assignParent();
     _assignChildren();
   }
 
   @override
-  Future<TestResult> getResult(Context testContext) async {
+  Future<_TestResult> _getResult(Context<T> testContext) async {
     // This is just a stub if there's no children - do nothing.
     if (children == null || children!.isEmpty) {
-      return TestNeutral.result(title, message: 'Empty - no tests');
+      return _TestNeutral.result(title, message: 'Empty - no tests');
     }
 
-    TestResult? setupFailure = await runSetup(testContext);
+    _TestResult? setupFailure = await _runSetup(testContext);
     if (setupFailure != null) {
       return setupFailure;
     }
@@ -71,38 +96,82 @@ class Group extends Contextual {
     int childFailCount = 0;
     for (Contextual child in children!) {
       // Create a new context so siblings don't affect each other
-
-      Context childContext = child.translateContext(testContext);
-      TestResult result = await child.run(childContext);
-      child.result = result;
-      if (result is TestPass) childSuccessCount++;
-      if (result is TestFailure) childFailCount++;
+      var childContext = child._translateContextSimple(testContext);
+      _TestResult result = await child._run(childContext);
+      child._result = result;
+      if (result is _TestPass) childSuccessCount++;
+      if (result is _TestFailure) childFailCount++;
       if (child is Test) {
-        if (result is TestPass) testSuccessCount++;
-        if (result is TestFailure) testFailCount++;
-        if (result is TestNeutral) testNeutralCount++;
+        if (result is _TestPass) testSuccessCount++;
+        if (result is _TestFailure) testFailCount++;
+        if (result is _TestNeutral) testNeutralCount++;
       }
     }
 
-    TestResult? teardownFailure = await runTeardown(testContext);
+    _TestResult? teardownFailure = await _runTeardown(testContext);
     if (teardownFailure != null) {
       return teardownFailure;
     }
 
     if (childFailCount > 0) {
-      return TestFailure.result(title, 'Some tests failed.');
+      return _TestFailure.result(title, 'Some tests failed.');
     }
 
     if (childSuccessCount < 1) {
-      return TestNeutral.result(title);
+      return _TestNeutral.result(title);
     }
 
-    return TestPass.result(title);
+    return _TestPass.result(title);
+  }
+
+  @override
+  Future<_TestResult> _getResultWithContext(C testContext) async {
+    // This is just a stub if there's no children - do nothing.
+    if (children == null || children!.isEmpty) {
+      return _TestNeutral.result(title, message: 'Empty - no tests');
+    }
+
+    _TestResult? setupFailure = await _runSetupWithContext(context!);
+    if (setupFailure != null) {
+      return setupFailure;
+    }
+
+    // Continue with children
+    int childSuccessCount = 0;
+    int childFailCount = 0;
+    for (Contextual child in children!) {
+      // Create a new context so siblings don't affect each other
+      var childContext = child._translateContext(testContext);
+      _TestResult result = await child._run(childContext);
+      child._result = result;
+      if (result is _TestPass) childSuccessCount++;
+      if (result is _TestFailure) childFailCount++;
+      if (child is Test) {
+        if (result is _TestPass) testSuccessCount++;
+        if (result is _TestFailure) testFailCount++;
+        if (result is _TestNeutral) testNeutralCount++;
+      }
+    }
+
+    _TestResult? teardownFailure = await _runTeardownWithContext(testContext);
+    if (teardownFailure != null) {
+      return teardownFailure;
+    }
+
+    if (childFailCount > 0) {
+      return _TestFailure.result(title, 'Some tests failed.');
+    }
+
+    if (childSuccessCount < 1) {
+      return _TestNeutral.result(title);
+    }
+
+    return _TestPass.result(title);
   }
 
   @override
   void report() {
-    result!.report(spacerCount: parentCount);
+    _result!.report(spacerCount: parentCount);
     if (children != null && children!.isNotEmpty) {
       for (Contextual child in children!) {
         child.report();

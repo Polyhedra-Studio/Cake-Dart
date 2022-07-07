@@ -1,6 +1,4 @@
-import 'package:cake/group.dart';
-import 'package:cake/test.dart';
-import 'package:cake/test_runner.dart';
+import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
   TestRunner('Test Runner Cake Test', [

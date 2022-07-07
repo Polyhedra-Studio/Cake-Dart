@@ -1,6 +1,4 @@
-import 'test_failure.dart';
-import 'test_pass.dart';
-import 'test_result.dart';
+part of cake;
 
 class Expect<T> {
   T? expected;
@@ -14,7 +12,7 @@ class Expect<T> {
   Expect.isNotNull({required this.actual}) : type = ExpectType.isNotNull;
   Expect.isType({required this.actual}) : type = ExpectType.isType;
 
-  TestResult run() {
+  _TestResult _run() {
     switch (type) {
       case ExpectType.equals:
         return _equals();
@@ -27,35 +25,35 @@ class Expect<T> {
     }
   }
 
-  TestResult _equals() {
+  _TestResult _equals() {
     if (expected == actual) {
-      return TestPass();
+      return _TestPass();
     } else {
-      return TestFailure('Equality failed: Expected $expected, got $actual');
+      return _TestFailure('Equality failed: Expected $expected, got $actual');
     }
   }
 
-  TestResult _isNull() {
+  _TestResult _isNull() {
     if (actual == null) {
-      return TestPass();
+      return _TestPass();
     } else {
-      return TestFailure('IsNull failed: Expected $actual to be null.');
+      return _TestFailure('IsNull failed: Expected $actual to be null.');
     }
   }
 
-  TestResult _isNotNull() {
+  _TestResult _isNotNull() {
     if (actual != null) {
-      return TestPass();
+      return _TestPass();
     } else {
-      return TestFailure('IsNotNull failed: actual is null.');
+      return _TestFailure('IsNotNull failed: actual is null.');
     }
   }
 
-  TestResult _isType() {
+  _TestResult _isType() {
     if (actual is T) {
-      return TestPass();
+      return _TestPass();
     } else {
-      return TestFailure('IsType failed: Expected $actual to be $T');
+      return _TestFailure('IsType failed: Expected $actual to be $T');
     }
   }
 }

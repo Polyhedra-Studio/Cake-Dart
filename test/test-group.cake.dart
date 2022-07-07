@@ -1,10 +1,8 @@
-import 'package:cake/expect.dart';
-import 'package:cake/group.dart';
-import 'package:cake/test.dart';
+import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
-  [
-    Group.single('Should run all children tests', children: [
+  TestRunner('Test Groups', [
+    Group('Should run all children tests', children: [
       // Generic Constructor
       Test<bool>('True is true - shorthand', expected: true, actual: true),
       Test<bool>('True is true - assertion',
@@ -50,7 +48,7 @@ void main(List<String> arguments) async {
           actual: true,
           assertions: (context) => [Expect.isType(actual: context.actual)]),
     ]),
-    Group.single(
+    Group(
       'Nested Group - Parent',
       children: [
         Group(
@@ -60,6 +58,6 @@ void main(List<String> arguments) async {
           ],
         ),
       ],
-    ),
-  ];
+    )
+  ]);
 }

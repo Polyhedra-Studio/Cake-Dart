@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cake/test_message.dart';
+import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
   // Search for all files in this directory that end with _cake or .cake in them

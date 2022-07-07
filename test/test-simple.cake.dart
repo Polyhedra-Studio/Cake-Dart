@@ -1,22 +1,21 @@
-import 'package:cake/expect.dart';
-import 'package:cake/test.dart';
+import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
-  [
+  TestRunner('Simple Test with no groups', [
     // Generic Constructor
-    Test<bool>.single('True is true - shorthand', expected: true, actual: true),
-    Test<bool>.single('True is true - assertion',
+    Test<bool>('True is true - shorthand', expected: true, actual: true),
+    Test<bool>('True is true - assertion',
         assertions: ((context) => [
               Expect(ExpectType.equals, expected: true, actual: true),
             ])),
-    Test<bool>.single(
+    Test<bool>(
       'True is true, set in setup',
       setup: (context) {
         context.expected = true;
         context.actual = true;
       },
     ),
-    Test<bool>.single(
+    Test<bool>(
       'True is true, set in action',
       action: (context) {
         context.expected = true;
@@ -25,7 +24,7 @@ void main(List<String> arguments) async {
     ),
 
     // Equals expect
-    Test<bool>.single('Equals, true is true',
+    Test<bool>('Equals, true is true',
         expected: true,
         actual: true,
         assertions: (context) => [
@@ -33,18 +32,18 @@ void main(List<String> arguments) async {
             ]),
 
     // isNull expect
-    Test<bool>.single('IsNull, null is null',
+    Test<bool>('IsNull, null is null',
         actual: null,
         assertions: (context) => [Expect.isNull(actual: context.actual)]),
 
     // isNotNull expect
-    Test<bool>.single('IsNotNull, true is not null',
+    Test<bool>('IsNotNull, true is not null',
         actual: true,
         assertions: (context) => [Expect.isNotNull(actual: context.actual)]),
 
     // isType expect
-    Test<bool>.single('IsType, true is bool',
+    Test<bool>('IsType, true is bool',
         actual: true,
         assertions: (context) => [Expect.isType(actual: context.actual)]),
-  ];
+  ]);
 }

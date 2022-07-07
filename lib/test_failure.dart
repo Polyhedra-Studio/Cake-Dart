@@ -1,13 +1,11 @@
-import 'package:cake/helper/printer.dart';
+part of cake;
 
-import 'test_result.dart';
-
-class TestFailure extends TestResult {
+class _TestFailure extends _TestResult {
   String message;
   Object? err;
-  TestFailure.result(String testTitle, this.message, {this.err})
+  _TestFailure.result(String testTitle, this.message, {this.err})
       : super(testTitle);
-  TestFailure(this.message, {this.err}) : super('');
+  _TestFailure(this.message) : super('');
 
   @override
   void report({int spacerCount = 0}) {

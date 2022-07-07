@@ -1,7 +1,6 @@
-import 'package:cake/helper/printer.dart';
-import 'package:cake/test_result.dart';
+part of cake;
 
-class TestMessage extends TestResult {
+class TestMessage extends _TestResult {
   String? message;
 
   TestMessage(String testTitle, {this.message}) : super(testTitle);

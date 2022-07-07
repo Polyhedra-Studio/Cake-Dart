@@ -1,8 +1,10 @@
-abstract class TestResult {
+part of cake;
+
+abstract class _TestResult {
   String testTitle;
   String spacer = '';
 
-  TestResult(this.testTitle);
+  _TestResult(this.testTitle);
   void report({int spacerCount = 0}) {
     for (int i = 0; i < spacerCount; i++) {
       if (i < spacerCount - 1) {

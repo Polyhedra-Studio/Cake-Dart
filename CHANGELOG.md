@@ -1,3 +1,10 @@
+## 3.0.0
+- [BREAKING] All code refactored into a library. Pros - less imports. Cons - Breaks all current imports. Good thing this isn't public.
+- [ADD] Added Context! Er, more context. You can now call `xWithContext<Type, ContextType>` to shape the context and gets passed around the life cycle of the test.
+    - The whole point behind this is to be able to extend the Context object to have the parameters you want instead of setting and calling everything on strings. (what is this, js?)
+    - Also this was a pain and a half to wrestle with dart and generic types. Tacking on "WithContext" isn't entirely ideal, but it was either that or doubling the size of the library to entirely remake a separate version of dart. That didn't allow for interchanging WithContent and not for children. Just no.
+- [MOD] Minor QoL -> when writing a test or group, the previous default "context" parameter is now labeled "test" this is to avoid a very confusing test.test
+
 ## 2.0.0
 Features:
 - Teardown step
