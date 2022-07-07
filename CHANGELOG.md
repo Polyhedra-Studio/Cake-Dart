@@ -1,5 +1,11 @@
+## 3.1.0
+- [ADD] You can now return a value on the `action` setup to assign that value to "test.actual"
+- [MOD] When creating an Expect, by default the "actual" value will appear before the "expected". This is to mirror other popular testing frameworks.
+- [BREAKING] Minor change, Expect.Null, Expect.IsNotNull, Expect.Type no longer needs a named parameter. Expect.isNotNull(actual: test.actual) => Expect.isNotNull(test.actual)
+
 ## 3.0.0
 - [BREAKING] All code refactored into a library. Pros - less imports. Cons - Breaks all current imports. Good thing this isn't public.
+- [BREAKING] context.context['value'] has been moved to context['value']
 - [ADD] Added Context! Er, more context. You can now call `xWithContext<Type, ContextType>` to shape the context and gets passed around the life cycle of the test.
     - The whole point behind this is to be able to extend the Context object to have the parameters you want instead of setting and calling everything on strings. (what is this, js?)
     - Also this was a pain and a half to wrestle with dart and generic types. Tacking on "WithContext" isn't entirely ideal, but it was either that or doubling the size of the library to entirely remake a separate version of dart. That didn't allow for interchanging WithContent and not for children. Just no.

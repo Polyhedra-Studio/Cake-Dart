@@ -41,7 +41,7 @@ void main() async {
               action: (test) => test.value = 'action',
               assertions: (test) => [
                 Expect.equals(expected: test.expected, actual: test.actual),
-                Expect<String>.isType(actual: test.value),
+                Expect<String>.isType(test.value),
                 Expect.equals(expected: test.value, actual: 'action')
               ],
               teardown: (test) => test.value = 'teardown',

@@ -5,12 +5,12 @@ class Expect<T> {
   T? actual;
   ExpectType type;
 
-  Expect(this.type, {required this.expected, required this.actual});
-  Expect.equals({required this.expected, required this.actual})
+  Expect(this.type, {required this.actual, required this.expected});
+  Expect.equals({required this.actual, required this.expected})
       : type = ExpectType.equals;
-  Expect.isNull({required this.actual}) : type = ExpectType.isNull;
-  Expect.isNotNull({required this.actual}) : type = ExpectType.isNotNull;
-  Expect.isType({required this.actual}) : type = ExpectType.isType;
+  Expect.isNull(this.actual) : type = ExpectType.isNull;
+  Expect.isNotNull(this.actual) : type = ExpectType.isNotNull;
+  Expect.isType(this.actual) : type = ExpectType.isType;
 
   _TestResult _run() {
     switch (type) {

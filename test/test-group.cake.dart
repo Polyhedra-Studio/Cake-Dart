@@ -36,17 +36,17 @@ void main(List<String> arguments) async {
       // isNull expect
       Test<bool>('IsNull, null is null',
           actual: null,
-          assertions: (context) => [Expect.isNull(actual: context.actual)]),
+          assertions: (context) => [Expect.isNull(context.actual)]),
 
       // isNotNull expect
       Test<bool>('IsNotNull, true is not null',
           actual: true,
-          assertions: (context) => [Expect.isNotNull(actual: context.actual)]),
+          assertions: (context) => [Expect.isNotNull(context.actual)]),
 
       // isType expect
       Test<bool>('IsType, true is bool',
           actual: true,
-          assertions: (context) => [Expect.isType(actual: context.actual)]),
+          assertions: (context) => [Expect<bool>.isType(context.actual)]),
     ]),
     Group(
       'Nested Group - Parent',
