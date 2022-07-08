@@ -2,45 +2,45 @@ part of cake;
 
 class Group extends _Group {
   Group(
-    String title, {
+    String title,
+    List<Contextual> children, {
     FutureOr<void> Function(Context context)? setup,
     FutureOr<void> Function(Context context)? teardown,
-    List<Contextual>? children,
   }) : super(
           title,
+          children,
           setup: setup,
           teardown: teardown,
-          children: children,
         );
 }
 
 class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
   GroupWithContext(
-    String title, {
+    String title,
+    List<Contextual<T, C>> children, {
     FutureOr<void> Function(C context)? setup,
     FutureOr<void> Function(C context)? teardown,
     C Function()? contextBuilder,
-    List<Contextual<T, C>>? children,
   }) : super.context(
           title,
+          children,
           setup: setup,
           teardown: teardown,
-          children: children,
           contextBuilder: contextBuilder,
         );
 }
 
 class _Group<T, C extends Context<T>> extends Contextual<T, C> {
-  final List<Contextual<T, C>>? children;
+  final List<Contextual<T, C>> children;
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
 
   _Group(
-    String title, {
+    String title,
+    this.children, {
     FutureOr<void> Function(Context<T> context)? setup,
     FutureOr<void> Function(Context<T> context)? teardown,
-    this.children,
   }) : super(
           title,
           setup: setup,
@@ -51,11 +51,11 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   _Group.context(
-    String title, {
+    String title,
+    this.children, {
     FutureOr<void> Function(C context)? setup,
     FutureOr<void> Function(C context)? teardown,
     required C Function()? contextBuilder,
-    this.children,
   }) : super.context(
           title,
           setupWithContext: setup,
@@ -67,8 +67,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   void _assignChildren() {
-    if (children == null) return;
-    for (Contextual child in children!) {
+    for (Contextual child in children) {
       child._assignParent(_contextBuilder);
     }
   }
@@ -89,7 +88,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   @override
   Future<_TestResult> _getResult(Context<T> testContext) async {
     // This is just a stub if there's no children - do nothing.
-    if (children == null || children!.isEmpty) {
+    if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
@@ -101,7 +100,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     // Continue with children
     int childSuccessCount = 0;
     int childFailCount = 0;
-    for (Contextual child in children!) {
+    for (Contextual child in children) {
       // Create a new context so siblings don't affect each other
       _TestResult result;
       if (child._hasCustomContext) {
@@ -140,7 +139,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   @override
   Future<_TestResult> _getResultWithContext(C testContext) async {
     // This is just a stub if there's no children - do nothing.
-    if (children == null || children!.isEmpty) {
+    if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
@@ -152,7 +151,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     // Continue with children
     int childSuccessCount = 0;
     int childFailCount = 0;
-    for (Contextual child in children!) {
+    for (Contextual child in children) {
       // Create a new context so siblings don't affect each other
       var childContext = child._translateContext(testContext);
       _TestResult result = await child._runWithContext(childContext);
@@ -185,8 +184,8 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   @override
   void report() {
     _result!.report(spacerCount: _parentCount);
-    if (children != null && children!.isNotEmpty) {
-      for (Contextual child in children!) {
+    if (children.isNotEmpty) {
+      for (Contextual child in children) {
         child.report();
       }
     }
@@ -195,7 +194,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get successes {
     int currentSuccessCount = testSuccessCount;
     children
-        ?.whereType<Group>()
+        .whereType<Group>()
         .forEach((element) => currentSuccessCount += element.successes);
     return currentSuccessCount;
   }
@@ -203,7 +202,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get failures {
     int currentFailureCount = testFailCount;
     children
-        ?.whereType<Group>()
+        .whereType<Group>()
         .forEach((element) => currentFailureCount += element.failures);
     return currentFailureCount;
   }
@@ -211,15 +210,15 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get neutrals {
     int currentNeutralCount = testNeutralCount;
     children
-        ?.whereType<Group>()
+        .whereType<Group>()
         .forEach((element) => currentNeutralCount += element.neutrals);
     return currentNeutralCount;
   }
 
   int get total {
-    int testCount = children?.whereType<Test>().length ?? 0;
+    int testCount = children.whereType<Test>().length;
     children
-        ?.whereType<Group>()
+        .whereType<Group>()
         .forEach((element) => testCount += element.total);
     return testCount;
   }

@@ -8,16 +8,16 @@ void main() async {
       'Test Runner - with custom context', [],
       contextBuilder: _Extended.new);
   TestRunner('Test Runner - Parent Test Runner', [
-    Group('Group Without Context'),
-    GroupWithContext('Group With Context', contextBuilder: Context.new),
-    GroupWithContext<String, _Extended<String>>('Group with custom context',
+    Group('Group Without Context', []),
+    GroupWithContext('Group With Context', [], contextBuilder: Context.new),
+    GroupWithContext<String, _Extended<String>>('Group with custom context', [],
         contextBuilder: _Extended.new),
-    Group('Parent Group', children: [
-      Group('Nested Group'),
-      GroupWithContext('Nested Group with context',
+    Group('Parent Group', [
+      Group('Nested Group', []),
+      GroupWithContext('Nested Group with context', [],
           contextBuilder: Context.new),
       GroupWithContext<String, _Extended<String>>(
-          'Nested Group with custom context',
+          'Nested Group with custom context', [],
           contextBuilder: _Extended.new),
       Test('Nested Test without context'),
       TestWithContext('Nested Test with context', contextBuilder: Context.new),
@@ -32,7 +32,7 @@ void main() async {
       [
         GroupWithContext(
           'Group with same context passes context to children',
-          children: [
+          [
             TestWithContext(
               'Child has parent context',
               expected: 'yes',
@@ -53,20 +53,21 @@ void main() async {
           ],
         ),
         GroupWithContext<String, _SuperExtended<String>>(
-            'Group with context passes context to children',
-            contextBuilder: _SuperExtended.new,
-            children: [
-              TestWithContext<String, _SuperExtended<String>>(
-                'Test inherits parent context at all steps',
+          'Group with context passes context to children',
+          [
+            TestWithContext<String, _SuperExtended<String>>(
+              'Test inherits parent context at all steps',
+              expected: 'yes',
+              actual: 'yes',
+              setup: (test) => test.value = 'setup',
+            ),
+            TestWithContext('Test automatically inherits parent context',
                 expected: 'yes',
                 actual: 'yes',
-                setup: (test) => test.value = 'setup',
-              ),
-              TestWithContext('Test automatically inherits parent context',
-                  expected: 'yes',
-                  actual: 'yes',
-                  setup: (test) => test.value = 'setup'),
-            ]),
+                setup: (test) => test.value = 'setup'),
+          ],
+          contextBuilder: _SuperExtended.new,
+        ),
       ],
       contextBuilder: _Extended.new);
 }
