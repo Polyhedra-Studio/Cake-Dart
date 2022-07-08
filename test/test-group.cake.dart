@@ -2,7 +2,7 @@ import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
   TestRunner('Test Groups', [
-    Group('Should run all children tests', children: [
+    Group('Should run all children tests', [
       // Generic Constructor
       Test<bool>('True is true - shorthand', expected: true, actual: true),
       Test<bool>('True is true - assertion',
@@ -48,16 +48,10 @@ void main(List<String> arguments) async {
           actual: true,
           assertions: (context) => [Expect<bool>.isType(context.actual)]),
     ]),
-    Group(
-      'Nested Group - Parent',
-      children: [
-        Group(
-          'Nested Group - Child',
-          children: [
-            Test<bool>('Nested test should pass', expected: true, actual: true),
-          ],
-        ),
-      ],
-    )
+    Group('Nested Group - Parent', [
+      Group('Nested Group - Child', [
+        Test<bool>('Nested test should pass', expected: true, actual: true),
+      ]),
+    ])
   ]);
 }

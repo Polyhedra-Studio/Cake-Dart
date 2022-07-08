@@ -13,7 +13,7 @@ class TestRunnerWithContext<T, C extends Context<T>> extends _TestRunner<T, C> {
 class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   final List<Contextual<T, C>> tests;
 
-  _TestRunner(String title, this.tests) : super(title, children: tests) {
+  _TestRunner(String title, this.tests) : super(title, tests) {
     _runAll();
   }
 
@@ -21,7 +21,7 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
     String title,
     this.tests, {
     required C Function() contextBuilder,
-  }) : super.context(title, children: tests, contextBuilder: contextBuilder) {
+  }) : super.context(title, tests, contextBuilder: contextBuilder) {
     _runAllWithContext();
   }
 

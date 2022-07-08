@@ -1,3 +1,6 @@
+## 3.2.0
+- [BREAKING] On groups, children are no longer a named or optional parameter
+
 ## 3.1.0
 - [ADD] You can now return a value on the `action` setup to assign that value to "test.actual"
 - [MOD] When creating an Expect, by default the "actual" value will appear before the "expected". This is to mirror other popular testing frameworks.
