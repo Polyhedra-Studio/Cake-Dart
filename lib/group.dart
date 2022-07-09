@@ -104,8 +104,12 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
       // Create a new context so siblings don't affect each other
       _TestResult result;
       if (child._hasCustomContext) {
-        var childContext = child._translateContext(testContext);
-        result = await child._runWithContext(childContext);
+        try {
+          var childContext = child._translateContext(testContext);
+          result = await child._runWithContext(childContext);
+        } catch (err) {
+          result = _TestFailure(err as String);
+        }
       } else {
         var childContext = child._translateContextSimple(testContext);
         result = await child._run(childContext);
@@ -153,8 +157,14 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     int childFailCount = 0;
     for (Contextual child in children) {
       // Create a new context so siblings don't affect each other
-      var childContext = child._translateContext(testContext);
-      _TestResult result = await child._runWithContext(childContext);
+      _TestResult result;
+      try {
+        var childContext = child._translateContext(testContext);
+        result = await child._runWithContext(childContext);
+      } catch (err) {
+        result = _TestFailure(err as String);
+      }
+
       child._result = result;
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;
@@ -221,5 +231,25 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
         .whereType<Group>()
         .forEach((element) => testCount += element.total);
     return testCount;
+  }
+
+  @override
+  void _criticalFailure(String errorMessage) {
+    _result = _TestFailure.result(_title, errorMessage);
+    for (var element in children) {
+      element._criticalInconclusive();
+      if (element is Test) {
+        testNeutralCount++;
+      } else {}
+    }
+  }
+
+  @override
+  void _criticalInconclusive() {
+    super._criticalInconclusive();
+    for (var element in children) {
+      element._criticalInconclusive();
+      testNeutralCount++;
+    }
   }
 }

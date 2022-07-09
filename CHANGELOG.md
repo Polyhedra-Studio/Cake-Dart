@@ -1,5 +1,7 @@
 ## 3.2.0
 - [BREAKING] On groups, children are no longer a named or optional parameter
+- [QoL] If a test or group does not have a contextBuilder, it will throw an error and fail the test/group instead of throwing an unhelpful error.
+- [FIX] Neutral results now print out the title name along with message
 
 ## 3.1.0
 - [ADD] You can now return a value on the `action` setup to assign that value to "test.actual"

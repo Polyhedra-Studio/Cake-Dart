@@ -11,7 +11,7 @@ class _TestNeutral extends _TestResult {
     super.report(spacerCount: spacerCount);
 
     if (message != null) {
-      Printer.neutral('$spacer    ${message!}');
+      Printer.neutral('$spacer    $testTitle: ${message!}');
     } else {
       Printer.neutral('$spacer(-) $testTitle');
     }
