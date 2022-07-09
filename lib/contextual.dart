@@ -128,6 +128,27 @@ abstract class Contextual<T, C extends Context<T>> {
   }
 
   C _translateContext(Context oldContext) {
+    if (_contextBuilder == null) {
+      String errorMessage =
+          "No context found for '$_title'! Did you remember to include a context builder for this or in one of it's parents?";
+      _criticalFailure(errorMessage);
+      throw errorMessage;
+    }
     return _contextBuilder!()..copy(oldContext);
+  }
+
+  /*
+   * Used for reporting critical test-stopping issues
+   */
+  void _criticalFailure(String errorMessage) {
+    _result = _TestFailure.result(_title, errorMessage);
+  }
+
+  /*
+   * Used for reporting when this test cannot run due to a parent having a critical issue.
+   */
+  void _criticalInconclusive() {
+    _result =
+        _TestNeutral.result(_title, message: 'Issue with parent - Did not run');
   }
 }

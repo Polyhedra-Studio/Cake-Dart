@@ -70,6 +70,12 @@ void main() async {
         ),
       ],
       contextBuilder: _Extended.new);
+
+  // TestRunner('This should fail', [
+  //   GroupWithContext('Group with forgotten context', [
+  //     TestWithContext('This should fail without a declared context anywhere'),
+  //   ]),
+  // ]);
 }
 
 class _Extended<T> extends Context<T> {
