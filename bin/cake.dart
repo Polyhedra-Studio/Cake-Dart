@@ -2,12 +2,20 @@ import 'dart:io';
 
 import 'package:cake/cake.dart';
 
+import 'settings.dart';
+
 void main(List<String> arguments) async {
+  CakeSettings settings = CakeSettings(arguments);
+
   // Search for all files in this directory that end with _cake or .cake in them
   Stream<FileSystemEntity> streamList = Directory.current.list(recursive: true);
   Stream<FileSystemEntity> cakeStreamList = streamList.where((event) {
     String filename = event.path.split('/').last;
-    return filename.endsWith('.cake.dart');
+    bool cakeFile = filename.endsWith('.cake.dart');
+    if (cakeFile && settings.fileFilter != null) {
+      return filename.contains(settings.fileFilter!);
+    }
+    return cakeFile;
   });
 
   List<FileSystemEntity> cakeList = await cakeStreamList.toList();
