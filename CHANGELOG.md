@@ -2,6 +2,7 @@
 - [ADD] You can filter files via the '-f' flag when running dart
 - [FIX] Having more than 10 tests no longer misaligned the summary text box.
 - [ADD] Added a -v flag to show all data, otherwise output will show a summary of all the tests found.
+- [ADD] Added ability to filter tests when running dart via the '-t' flag
 
 ## 3.2.0
 - [BREAKING] On groups, children are no longer a named or optional parameter

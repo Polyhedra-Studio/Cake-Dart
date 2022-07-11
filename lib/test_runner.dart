@@ -12,6 +12,7 @@ class TestRunnerWithContext<T, C extends Context<T>> extends _TestRunner<T, C> {
 
 class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   final List<Contextual<T, C>> tests;
+  final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
   _TestRunner(String title, this.tests) : super(title, tests) {
     _runAll();
@@ -25,13 +26,40 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
     _runAllWithContext();
   }
 
+  @override
+  bool _shouldRunWithFilter(FilterSettings filterSettings) {
+    if (filterSettings.hasTestRunnerSearchFor) {
+      return filterSettings.testRunnerSearchFor == _title;
+    }
+    if (filterSettings.hasTestRunnerFilterTerm) {
+      return _title.contains(filterSettings.testFilterTerm!);
+    }
+    if (filterSettings.isNotEmpty) {
+      // Check if the general search term applies here
+      if (filterSettings.hasGeneralSearchTerm &&
+          _title.contains(filterSettings.generalSearchTerm!)) {
+        return true;
+      }
+
+      // Check if children should run, if so this should run
+      _filterAppliesToChildren = true;
+      return children
+          .any((child) => child._shouldRunWithFilter(filterSettings));
+    }
+
+    // No filter - this should run
+    return true;
+  }
+
   Future<void> _runAll() async {
-    await _run(simpleContext!);
+    if (!_shouldRunWithFilter(filterSettings)) return;
+    await _run(simpleContext!, filterSettings);
     report();
   }
 
   Future<void> _runAllWithContext() async {
-    await _runWithContext(_context!);
+    if (!_shouldRunWithFilter(filterSettings)) return;
+    await _runWithContext(_context!, filterSettings);
     report();
   }
 

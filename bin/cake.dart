@@ -32,7 +32,11 @@ void main(List<String> arguments) async {
   // Run all the runners
   Iterable<Future<void>> processes =
       cakeList.map<Future<void>>((cakeTest) async {
-    return Process.run('dart', [cakeTest.path]).then((ProcessResult result) {
+    // If we're filtering by a keyword, this needs to be passed via define
+    List<String> processArgs = settings.testFilter.toProperties();
+    processArgs.add(cakeTest.path);
+
+    return Process.run('dart', processArgs).then((ProcessResult result) {
       if (result.stderr is String && result.stderr.isNotEmpty) {
         print(result.stderr);
       }

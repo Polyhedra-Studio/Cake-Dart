@@ -42,16 +42,22 @@ abstract class Contextual<T, C extends Context<T>> {
         simpleContext = null;
 
   void report();
-  Future<_TestResult> _getResult(Context<T> testContext);
-  Future<_TestResult> _getResultWithContext(C testContext);
+  bool _shouldRunWithFilter(FilterSettings filterSettings) => false;
 
-  Future<_TestResult> _run(Context<T> testContext) async {
-    _result = await _getResult(testContext);
+  Future<_TestResult> _getResult(
+      Context<T> testContext, FilterSettings filterSettings);
+  Future<_TestResult> _getResultWithContext(
+      C testContext, FilterSettings filterSettings);
+
+  Future<_TestResult> _run(
+      Context<T> testContext, FilterSettings filterSettings) async {
+    _result = await _getResult(testContext, filterSettings);
     return _result!;
   }
 
-  Future<_TestResult> _runWithContext(C testContext) async {
-    _result = await _getResultWithContext(testContext);
+  Future<_TestResult> _runWithContext(
+      C testContext, FilterSettings filterSettings) async {
+    _result = await _getResultWithContext(testContext, filterSettings);
     return _result!;
   }
 

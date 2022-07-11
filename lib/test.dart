@@ -103,6 +103,30 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
         );
 
   @override
+  bool _shouldRunWithFilter(FilterSettings filterSettings) {
+    if (filterSettings.hasTestSearchFor) {
+      return filterSettings.testSearchFor == _title;
+    }
+    if (filterSettings.hasTestFilterTerm) {
+      return _title.contains(filterSettings.testFilterTerm!);
+    }
+    if (filterSettings.hasGeneralSearchTerm) {
+      return _title.contains(filterSettings.generalSearchTerm!);
+    }
+
+    // No applicable filter - this should run
+    return true;
+  }
+
+  @override
+  void report() {
+    _result!.report(spacerCount: _parentCount);
+    for (_TestFailure element in assertFailures) {
+      element.report(spacerCount: _parentCount);
+    }
+  }
+
+  @override
   void _assignParent(dynamic parentContextBuilder) {
     super._assignParent(parentContextBuilder);
     if (_contextBuilder != null) {
@@ -114,14 +138,6 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
       } catch (err) {
         throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
       }
-    }
-  }
-
-  @override
-  void report() {
-    _result!.report(spacerCount: _parentCount);
-    for (_TestFailure element in assertFailures) {
-      element.report(spacerCount: _parentCount);
     }
   }
 
@@ -140,7 +156,8 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  Future<_TestResult> _getResult(Context testContext) async {
+  Future<_TestResult> _getResult(
+      Context testContext, FilterSettings filterSettings) async {
     // Assign parent context on top of current
     simpleContext!.applyParentContext(testContext);
 
@@ -191,7 +208,8 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  Future<_TestResult> _getResultWithContext(C testContext) async {
+  Future<_TestResult> _getResultWithContext(
+      C testContext, FilterSettings filterSettings) async {
     // Assign parent context on top of current
     _context!.applyParentContext(testContext);
 

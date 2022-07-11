@@ -5,10 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Cake launch runner",
+            "name": "Cake launch runner with args",
             "program": "bin/cake.dart",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--tte", "Test should be true"]
+        },
+        {
+            "name": "Run test basic - with args",
+            "program": "test/test-basic.cake.dart",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": ["--define=testSearchFor=True should be true"]
         }
     ]
 }
