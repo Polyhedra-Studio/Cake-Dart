@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cake/cake.dart';
 
+import 'collector.dart';
 import 'settings.dart';
 
 void main(List<String> arguments) async {
@@ -26,13 +27,29 @@ void main(List<String> arguments) async {
         .report();
   }
 
+  Collector collector = Collector();
+
   // Run all the runners
-  for (FileSystemEntity cakeTest in cakeList) {
-    Process.run('dart', [cakeTest.path]).then((ProcessResult result) {
+  Iterable<Future<void>> processes =
+      cakeList.map<Future<void>>((cakeTest) async {
+    return Process.run('dart', [cakeTest.path]).then((ProcessResult result) {
       if (result.stderr is String && result.stderr.isNotEmpty) {
         print(result.stderr);
       }
-      print(result.stdout);
+      List<TestRunnerCollector> testRunnerCollectors =
+          testRunnerOutputParser(result.stdout);
+      for (TestRunnerCollector element in testRunnerCollectors) {
+        collector.addCollector(element);
+      }
+
+      if (settings.verbose) {
+        print('${collector.total} tests found...');
+      }
     });
-  }
+  });
+
+  await Future.wait(processes);
+
+  // Print results
+  collector.printMessage(settings.verbose);
 }

@@ -1,3 +1,8 @@
+## 3.3.0
+- [ADD] You can filter files via the '-f' flag when running dart
+- [FIX] Having more than 10 tests no longer misaligned the summary text box.
+- [ADD] Added a -v flag to show all data, otherwise output will show a summary of all the tests found.
+
 ## 3.2.0
 - [BREAKING] On groups, children are no longer a named or optional parameter
 - [QoL] If a test or group does not have a contextBuilder, it will throw an error and fail the test/group instead of throwing an unhelpful error.
