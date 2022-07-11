@@ -40,16 +40,12 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
     super.report();
 
     // Get count of successes, failures, and neutrals
-    String message = '''
-
--- Summary: -------------------
-|                             |
-|  $total tests ran.               |
-|  - $successes passed.                |
-|  - $failures failed.                |
-|  - $neutrals skipped/inconclusive.  |
--------------------------------
-''';
+    String message = Printer.summary(
+      total: total,
+      successes: successes,
+      failures: failures,
+      neutrals: neutrals,
+    );
     if (_result is _TestPass) {
       Printer.pass(message);
     }
