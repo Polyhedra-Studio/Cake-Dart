@@ -54,18 +54,18 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   Future<void> _runAll() async {
     if (!_shouldRunWithFilter(filterSettings)) return;
     await _run(simpleContext!, filterSettings);
-    report();
+    report(filterSettings);
   }
 
   Future<void> _runAllWithContext() async {
     if (!_shouldRunWithFilter(filterSettings)) return;
     await _runWithContext(_context!, filterSettings);
-    report();
+    report(filterSettings);
   }
 
   @override
-  void report() {
-    super.report();
+  void report(FilterSettings filterSettings) {
+    super.report(filterSettings);
 
     // Get count of successes, failures, and neutrals
     String message = Printer.summary(

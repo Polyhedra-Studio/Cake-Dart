@@ -1,3 +1,6 @@
+## 3.3.1
+- [FIX] Filtering tests with tests that were skipped no longer throws error
+
 ## 3.3.0
 - [ADD] You can filter files via the '-f' flag when running dart
 - [FIX] Having more than 10 tests no longer misaligned the summary text box.

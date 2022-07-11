@@ -13,10 +13,10 @@
         },
         {
             "name": "Run test basic - with args",
-            "program": "test/test-basic.cake.dart",
+            "program": "test/test-simple.cake.dart",
             "request": "launch",
             "type": "dart",
-            "toolArgs": ["--define=testSearchFor=True should be true"]
+            "toolArgs": ["--define=testSearchFor=True is true - shorthand"]
         }
     ]
 }

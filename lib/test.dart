@@ -119,7 +119,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  void report() {
+  void report(FilterSettings filterSettings) {
     _result!.report(spacerCount: _parentCount);
     for (_TestFailure element in assertFailures) {
       element.report(spacerCount: _parentCount);
