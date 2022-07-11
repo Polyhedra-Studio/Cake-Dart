@@ -41,7 +41,7 @@ abstract class Contextual<T, C extends Context<T>> {
         teardown = null,
         simpleContext = null;
 
-  void report();
+  void report(FilterSettings filterSettings);
   bool _shouldRunWithFilter(FilterSettings filterSettings) => false;
 
   Future<_TestResult> _getResult(
