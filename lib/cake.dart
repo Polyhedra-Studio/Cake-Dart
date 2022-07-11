@@ -1,6 +1,7 @@
 library cake;
 
 import 'dart:async';
+import 'package:cake/helper/filter_settings.dart';
 import 'package:cake/helper/printer.dart';
 
 part 'context.dart';

@@ -1,17 +1,27 @@
+import 'package:cake/helper/filter_settings.dart';
+
 class CakeSettings {
   final String? fileFilter;
   final bool verbose;
-  final String? testFilter;
   final bool isVsCode;
+  final FilterSettings testFilter;
 
   CakeSettings(List<String> args)
       : verbose = args.contains('-v') || args.contains('--verbose'),
         fileFilter = _getFromArgs(args, '-f'),
-        testFilter = _getFromArgs(args, '-t'),
-        isVsCode = args.contains('--vs-code');
+        isVsCode = args.contains('--vs-code'),
+        testFilter = FilterSettings(
+          generalSearchTerm: _getFromArgs(args, '-t'),
+          testFilterTerm: _getFromArgs(args, '--tt'),
+          testSearchFor: _getFromArgs(args, '--tte'),
+          groupFilterTerm: _getFromArgs(args, '--tg'),
+          groupSearchFor: _getFromArgs(args, '--tge'),
+          testRunnerFilterTerm: _getFromArgs(args, '--tr'),
+          testRunnerSearchFor: _getFromArgs(args, '--tre'),
+        );
 
   static String? _getFromArgs(List<String> args, String flag) {
-    int fileFilterFlagIndex = args.indexOf('-f');
+    int fileFilterFlagIndex = args.indexOf(flag);
     if (fileFilterFlagIndex != -1 && fileFilterFlagIndex != args.length - 1) {
       return args[fileFilterFlagIndex + 1];
     }

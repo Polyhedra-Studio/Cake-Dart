@@ -35,6 +35,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
+  bool _filterAppliesToChildren = false;
 
   _Group(
     String title,
@@ -86,7 +87,38 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  Future<_TestResult> _getResult(Context<T> testContext) async {
+  bool _shouldRunWithFilter(FilterSettings filterSettings) {
+    // This should run fairly close to TestRunner's version
+    if (filterSettings.hasGroupSearchFor) {
+      return filterSettings.groupSearchFor == _title;
+    }
+    if (filterSettings.hasGroupFilterTerm) {
+      return _title.contains(filterSettings.groupFilterTerm!);
+    }
+    // filterSettings.isNotEmpty also includes test runner filters,
+    // which should already be checked at this point
+    if (filterSettings.hasGeneralSearchTerm ||
+        filterSettings.hasTestFilterTerm ||
+        filterSettings.hasTestSearchFor) {
+      // Check if the general search term applies here
+      if (filterSettings.hasGeneralSearchTerm &&
+          _title.contains(filterSettings.generalSearchTerm!)) {
+        return true;
+      }
+
+      // Check if children should run, if so this should run
+      _filterAppliesToChildren = true;
+      return children
+          .any((child) => child._shouldRunWithFilter(filterSettings));
+    }
+
+    // No applicable filter - this should run
+    return true;
+  }
+
+  @override
+  Future<_TestResult> _getResult(
+      Context<T> testContext, FilterSettings filterSettings) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
@@ -101,18 +133,24 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     int childSuccessCount = 0;
     int childFailCount = 0;
     for (Contextual child in children) {
+      // Don't run at all if the filter does not apply to child
+      if (_filterAppliesToChildren &&
+          !child._shouldRunWithFilter(filterSettings)) {
+        continue;
+      }
+
       // Create a new context so siblings don't affect each other
       _TestResult result;
       if (child._hasCustomContext) {
         try {
           var childContext = child._translateContext(testContext);
-          result = await child._runWithContext(childContext);
+          result = await child._runWithContext(childContext, filterSettings);
         } catch (err) {
           result = _TestFailure(err as String);
         }
       } else {
         var childContext = child._translateContextSimple(testContext);
-        result = await child._run(childContext);
+        result = await child._run(childContext, filterSettings);
       }
       child._result = result;
       if (result is _TestPass) childSuccessCount++;
@@ -141,7 +179,8 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   }
 
   @override
-  Future<_TestResult> _getResultWithContext(C testContext) async {
+  Future<_TestResult> _getResultWithContext(
+      C testContext, FilterSettings filterSettings) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
@@ -160,7 +199,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
       _TestResult result;
       try {
         var childContext = child._translateContext(testContext);
-        result = await child._runWithContext(childContext);
+        result = await child._runWithContext(childContext, filterSettings);
       } catch (err) {
         result = _TestFailure(err as String);
       }
