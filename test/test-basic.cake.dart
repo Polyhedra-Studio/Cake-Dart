@@ -5,7 +5,7 @@ void main() {
     Group('Group - Basic', [
       Test(
         'True should be true',
-        assertions: (test) => [Expect.isTrue(true)],
+        assertions: (test) => [Expect.isTrue(false)],
       ),
     ]),
   ]);

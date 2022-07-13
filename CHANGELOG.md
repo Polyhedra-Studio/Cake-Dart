@@ -1,3 +1,6 @@
+## 3.3.2
+- [FIX] On error, a test runner or group with errors will display their errors.
+
 ## 3.3.1
 - [FIX] Filtering tests with tests that were skipped no longer throws error
 

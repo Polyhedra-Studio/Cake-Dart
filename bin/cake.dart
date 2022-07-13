@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cake/cake.dart';
+import 'package:cake/helper/printer.dart';
 
 import 'collector.dart';
 import 'settings.dart';
@@ -56,4 +57,5 @@ void main(List<String> arguments) async {
 
   // Print results
   collector.printMessage(settings.verbose);
+  Printer.neutral(''); // This makes sure to clear out any color changes
 }

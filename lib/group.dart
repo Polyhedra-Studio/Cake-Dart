@@ -235,8 +235,11 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
     _result!.report(spacerCount: _parentCount);
     if (children.isNotEmpty) {
       for (Contextual child in children) {
-        if (_filterAppliesToChildren &&
-            child._shouldRunWithFilter(filterSettings)) {
+        if (_filterAppliesToChildren) {
+          if (child._shouldRunWithFilter(filterSettings)) {
+            child.report(filterSettings);
+          }
+        } else {
           child.report(filterSettings);
         }
       }
