@@ -24,6 +24,9 @@ class Collector {
 
     if (failures > 0) {
       Printer.fail(summary);
+      for (var element in collectors) {
+        element.printErrors();
+      }
     } else if (successes == 0) {
       Printer.neutral(summary);
     } else {
@@ -61,6 +64,12 @@ class TestRunnerCollector {
     // This already has formatting from the printer, just pass through the original message
     for (String element in testOutput) {
       print(element);
+    }
+  }
+
+  void printErrors() {
+    if (failures > 0) {
+      printMessage();
     }
   }
 }
