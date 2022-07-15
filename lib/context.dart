@@ -25,7 +25,7 @@ class Context<T> implements Map<String, dynamic> {
 
   @override
   operator [](Object? key) {
-    _context[key];
+    return _context[key];
   }
 
   @override

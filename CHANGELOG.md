@@ -1,3 +1,7 @@
+## 3.3.3
+- [FIX] Fixed grabbing mapped items off of Context
+- [FIX] System errors that happen during assertions (like grabbing something out of range) will now report the error like any other failed result instead of throwing an internal error.
+
 ## 3.3.2
 - [FIX] On error, a test runner or group with errors will display their errors.
 

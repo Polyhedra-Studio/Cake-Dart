@@ -201,7 +201,11 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
         var childContext = child._translateContext(testContext);
         result = await child._runWithContext(childContext, filterSettings);
       } catch (err) {
-        result = _TestFailure(err as String);
+        if (err is String) {
+          result = _TestFailure.result(child._title, err);
+        } else {
+          result = _TestFailure.result(child._title, err.toString());
+        }
       }
 
       child._result = result;
