@@ -6,21 +6,25 @@ class Context<T> implements Map<String, dynamic> {
   T? actual;
 
   Context.deepCopy(Context siblingContext) {
-    addAll(siblingContext);
-    expected = siblingContext.expected;
-    actual = siblingContext.actual;
+    copy(siblingContext);
   }
   Context();
   Context.test({this.expected, this.actual});
 
-  void copy(Context siblingContext) {
+  void copy<C extends Context>(C siblingContext) {
     addAll(siblingContext);
     expected = siblingContext.expected;
     actual = siblingContext.actual;
+    copyExtraParams<C>(siblingContext);
   }
 
   void applyParentContext(Context parentContext) {
     addAll(parentContext);
+    copyExtraParams(parentContext);
+  }
+
+  void copyExtraParams<C extends Context>(C contextToCopy) {
+    return;
   }
 
   @override

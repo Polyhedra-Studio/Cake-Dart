@@ -1,3 +1,8 @@
+## 3.3.4
+- [FIX] Added a needed hook to copy over properties from one context to the next. Use the 'copyExtraParams' function to extend out this functionality to make sure parent contexts are passed to children.
+- [FIX] Errors that happen during setup/action/teardown print again.
+- [ADD] Errors that have a stacktrace will now output the stacktrace.
+
 ## 3.3.3
 - [FIX] Fixed grabbing mapped items off of Context
 - [FIX] System errors that happen during assertions (like grabbing something out of range) will now report the error like any other failed result instead of throwing an internal error.

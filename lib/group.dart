@@ -146,7 +146,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
           var childContext = child._translateContext(testContext);
           result = await child._runWithContext(childContext, filterSettings);
         } catch (err) {
-          result = _TestFailure(err as String);
+          result = _TestFailure.result(child._title, err.toString());
         }
       } else {
         var childContext = child._translateContextSimple(testContext);
@@ -186,7 +186,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
-    _TestResult? setupFailure = await _runSetupWithContext(_context!);
+    _TestResult? setupFailure = await _runSetupWithContext(testContext);
     if (setupFailure != null) {
       return setupFailure;
     }
@@ -201,11 +201,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
         var childContext = child._translateContext(testContext);
         result = await child._runWithContext(childContext, filterSettings);
       } catch (err) {
-        if (err is String) {
-          result = _TestFailure.result(child._title, err);
-        } else {
-          result = _TestFailure.result(child._title, err.toString());
-        }
+        result = _TestFailure.result(child._title, err.toString());
       }
 
       child._result = result;
