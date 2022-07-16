@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:cake/helper/filter_settings.dart';
+import 'package:cake/helper/printer.dart';
 
 import 'collector.dart';
 import 'settings.dart';
@@ -24,7 +24,7 @@ class Runner {
     return cakeStreamList.toList();
   }
 
-  Future<Collector> run(CakeSettings settings) async {
+  Future<void> run(CakeSettings settings) async {
     Collector collector = Collector();
     List<FileSystemEntity> fileList = await cakeFileList;
 
@@ -54,6 +54,8 @@ class Runner {
     });
 
     await Future.wait(processes);
-    return collector;
+    collector.printMessage(settings.verbose);
+    Printer.neutral(''); // This makes sure to clear out any color changes
+    return;
   }
 }
