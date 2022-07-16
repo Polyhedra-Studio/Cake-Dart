@@ -1,6 +1,6 @@
 name: cake
 description: The tiniest little unit tester
-version: 3.4.0
+version: 3.4.1
 repository: http://butterfree.lan:30120/#/dart/cake
 publish_to: http://butterfree.lan:30117
 
