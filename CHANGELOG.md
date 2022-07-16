@@ -1,3 +1,6 @@
+## 3.4.0
+- [ADD] Added interactive mode! You can now enter -i to continuously run tests.
+
 ## 3.3.4
 - [FIX] Added a needed hook to copy over properties from one context to the next. Use the 'copyExtraParams' function to extend out this functionality to make sure parent contexts are passed to children.
 - [FIX] Errors that happen during setup/action/teardown print again.

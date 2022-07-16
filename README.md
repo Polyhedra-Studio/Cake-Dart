@@ -74,3 +74,7 @@ enum ExpectType {
     - `--tge` **Group search, exact:** `dart run cake --tge "API Endpoints" - Runs all groups _exactly_ matching the phrase "API Endpoints"
     - `--tr` **Test Runner search:** `dart run cake --tr "Models" - Runs all test runners with "Models" in the title
     - `--tre` **Test Runner search, exact:** `dart run cake --tre "Models - User"` - Runs test runners that _exactly_ match the phrase "Models - User" 
+
+### Interactive mode
+- `-i`
+  - Allows for repeatedly running tests. You can also use the test filters similar to non-interactive mode's syntax.
