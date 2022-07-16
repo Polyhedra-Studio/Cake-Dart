@@ -54,8 +54,10 @@ class Runner {
     });
 
     await Future.wait(processes);
-    collector.printMessage(settings.verbose);
-    Printer.neutral(''); // This makes sure to clear out any color changes
+    collector.printMessage(settings.verbose | settings.isVsCode);
+    if (!settings.isVsCode) {
+      Printer.neutral(''); // This makes sure to clear out any color changes
+    }
     return;
   }
 }

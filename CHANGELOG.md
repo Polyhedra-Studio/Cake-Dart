@@ -1,3 +1,6 @@
+## 3.4.3
+- [FIX] Made sure that vs-code would print out all responses
+
 ## 3.4.2
 - [FIX] Fixed vs-code flag not working for specific test filters
 
