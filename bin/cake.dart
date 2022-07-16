@@ -26,17 +26,25 @@ void main(List<String> arguments) async {
   String promptMessage =
       'Cake Tester is in interactive mode. Type "e" or "exit" to exit, "h" or "help" for more options.';
   String testsCompleteMessage = '---Tests Complete---';
-  print(promptMessage);
+  if (!settings.isVsCode) {
+    print(promptMessage);
+  }
 
   while (shouldContinue) {
     String? input = stdin.readLineSync();
 
     if (input == null || input.isEmpty) {
-      print('Running all tests...');
+      if (!settings.isVsCode) {
+        print('Running all tests...');
+      }
+
       await runner.run(CakeSettings([]));
-      print(testsCompleteMessage);
-      print('');
-      print(promptMessage);
+
+      if (!settings.isVsCode) {
+        print(testsCompleteMessage);
+        print('');
+        print(promptMessage);
+      }
       continue;
     }
 

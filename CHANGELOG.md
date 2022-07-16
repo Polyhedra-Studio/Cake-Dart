@@ -1,3 +1,6 @@
+## 3.4.1
+- [QoL] Implemented vs-code flag with interactive mode for easier compatibility with testing extensions.
+
 ## 3.4.0
 - [ADD] Added interactive mode! You can now enter -i to continuously run tests.
 
