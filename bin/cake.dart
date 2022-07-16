@@ -78,9 +78,11 @@ To run specific tests, interactive mode supports similar flags to non-interactiv
         if (flag != null && input != null) {
           CakeSettings inputSettings = CakeSettings([flag, input]);
           await runner.run(inputSettings);
-          print(testsCompleteMessage);
-          print('');
-          print(promptMessage);
+          if (!settings.isVsCode) {
+            print(testsCompleteMessage);
+            print('');
+            print(promptMessage);
+          }
           continue;
         }
       }
