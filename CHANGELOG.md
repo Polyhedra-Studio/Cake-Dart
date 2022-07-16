@@ -1,3 +1,6 @@
+## 3.4.2
+- [FIX] Fixed vs-code flag not working for specific test filters
+
 ## 3.4.1
 - [QoL] Implemented vs-code flag with interactive mode for easier compatibility with testing extensions.
 
