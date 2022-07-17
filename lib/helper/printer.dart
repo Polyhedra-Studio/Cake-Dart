@@ -30,7 +30,7 @@ class Printer {
     ].fold<int>(1, (previousValue, element) => max(previousValue, element));
 
     const int baseTopDashSpacer = 18;
-    const int baseBlankSpacer = 29;
+    const int baseBlankSpacer = 28;
     const int baseTotalSpacer = 14;
     const int baseSuccessSpacer = 15;
     const int baseFailureSpacer = 15;
