@@ -1,6 +1,7 @@
 ## 3.4.4
 - [QoL] Errors that happen during the context assignment phase will have a more accurate message and stack trace.
 - [FIX] Fixed summary not reporting correct numbers with xWithContext tests and groups.
+- [FIX] Non-relevant tests no longer show up in summary when running a test filter.
 
 ## 3.4.3
 - [FIX] Made sure that vs-code would print out all responses
