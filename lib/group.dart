@@ -119,12 +119,43 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   @override
   Future<_TestResult> _getResult(
       Context<T> testContext, FilterSettings filterSettings) async {
+    return _getResultShared(
+      setupFn: () => _runSetup(testContext),
+      teardownFn: () => _runTeardown(testContext),
+      filterSettings: filterSettings,
+      translateContextFn: (child) => child._translateContext(testContext),
+      translateContextSimpleFn: (child) =>
+          child._translateContextSimple(testContext),
+    );
+  }
+
+  @override
+  Future<_TestResult> _getResultWithContext(
+      C testContext, FilterSettings filterSettings) async {
+    return _getResultShared(
+      setupFn: () => _runSetupWithContext(testContext),
+      teardownFn: () => _runTeardownWithContext(testContext),
+      translateContextFn: (child) => child._translateContext(testContext),
+      translateContextSimpleFn: (child) =>
+          child._translateContextSimple(testContext),
+      filterSettings: filterSettings,
+    );
+  }
+
+  Future<_TestResult> _getResultShared({
+    required Future<_TestResult?> Function() setupFn,
+    required Future<_TestResult?> Function() teardownFn,
+    required Function(Contextual child) translateContextFn,
+    required Function(Contextual child) translateContextSimpleFn,
+    required FilterSettings filterSettings,
+  }) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
-    _TestResult? setupFailure = await _runSetup(testContext);
+    // _TestResult? setupFailure = await _runSetupWithContext(testContext);
+    _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
       return setupFailure;
     }
@@ -141,81 +172,36 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
 
       // Create a new context so siblings don't affect each other
       _TestResult result;
+      dynamic childContext;
       if (child._hasCustomContext) {
         try {
-          var childContext = child._translateContext(testContext);
-          result = await child._runWithContext(childContext, filterSettings);
+          childContext = translateContextFn(child);
         } catch (err) {
-          result =
-              _TestFailure.result(child._title, 'Critical Error', err: err);
+          result = _TestFailure.result(
+              child._title, 'Critical Error while copying context',
+              err: err);
         }
       } else {
-        var childContext = child._translateContextSimple(testContext);
+        childContext = translateContextSimpleFn(child);
+      }
+
+      // Get result from context
+      if (child._hasCustomContext) {
+        result = await child._runWithContext(childContext, filterSettings);
+      } else {
         result = await child._run(childContext, filterSettings);
       }
-      child._result = result;
+
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;
-      if (child is Test) {
+      if (child is _Test) {
         if (result is _TestPass) testSuccessCount++;
         if (result is _TestFailure) testFailCount++;
         if (result is _TestNeutral) testNeutralCount++;
       }
     }
 
-    _TestResult? teardownFailure = await _runTeardown(testContext);
-    if (teardownFailure != null) {
-      return teardownFailure;
-    }
-
-    if (childFailCount > 0) {
-      return _TestFailure.result(_title, 'Some tests failed.');
-    }
-
-    if (childSuccessCount < 1) {
-      return _TestNeutral.result(_title);
-    }
-
-    return _TestPass.result(_title);
-  }
-
-  @override
-  Future<_TestResult> _getResultWithContext(
-      C testContext, FilterSettings filterSettings) async {
-    // This is just a stub if there's no children - do nothing.
-    if (children.isEmpty) {
-      return _TestNeutral.result(_title, message: 'Empty - no tests');
-    }
-
-    _TestResult? setupFailure = await _runSetupWithContext(testContext);
-    if (setupFailure != null) {
-      return setupFailure;
-    }
-
-    // Continue with children
-    int childSuccessCount = 0;
-    int childFailCount = 0;
-    for (Contextual child in children) {
-      // Create a new context so siblings don't affect each other
-      _TestResult result;
-      try {
-        var childContext = child._translateContext(testContext);
-        result = await child._runWithContext(childContext, filterSettings);
-      } catch (err) {
-        result = _TestFailure.result(child._title, 'Critical Error', err: err);
-      }
-
-      child._result = result;
-      if (result is _TestPass) childSuccessCount++;
-      if (result is _TestFailure) childFailCount++;
-      if (child is Test) {
-        if (result is _TestPass) testSuccessCount++;
-        if (result is _TestFailure) testFailCount++;
-        if (result is _TestNeutral) testNeutralCount++;
-      }
-    }
-
-    _TestResult? teardownFailure = await _runTeardownWithContext(testContext);
+    _TestResult? teardownFailure = await teardownFn();
     if (teardownFailure != null) {
       return teardownFailure;
     }
@@ -250,7 +236,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get successes {
     int currentSuccessCount = testSuccessCount;
     children
-        .whereType<Group>()
+        .whereType<_Group>()
         .forEach((element) => currentSuccessCount += element.successes);
     return currentSuccessCount;
   }
@@ -258,7 +244,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get failures {
     int currentFailureCount = testFailCount;
     children
-        .whereType<Group>()
+        .whereType<_Group>()
         .forEach((element) => currentFailureCount += element.failures);
     return currentFailureCount;
   }
@@ -266,15 +252,18 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   int get neutrals {
     int currentNeutralCount = testNeutralCount;
     children
-        .whereType<Group>()
+        .whereType<_Group>()
         .forEach((element) => currentNeutralCount += element.neutrals);
     return currentNeutralCount;
   }
 
   int get total {
-    int testCount = children.whereType<Test>().length;
+    int testCount = children
+        .whereType<_Test>()
+        .where((element) => element.ranSuccessfully != null)
+        .length;
     children
-        .whereType<Group>()
+        .whereType<_Group>()
         .forEach((element) => testCount += element.total);
     return testCount;
   }

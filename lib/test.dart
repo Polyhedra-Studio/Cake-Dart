@@ -50,6 +50,19 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   final List<_TestFailure> assertFailures = [];
   final T? _actual;
   final T? _expected;
+  bool? _ranSuccessfully;
+
+  bool? get ranSuccessfully {
+    return _ranSuccessfully;
+  }
+
+  set ranSuccessfully(bool? value) {
+    // Once this has failed, don't allow it to recover
+    if (_ranSuccessfully == false) {
+      return;
+    }
+    _ranSuccessfully = value;
+  }
 
   _Test(
     String title, {
@@ -158,85 +171,82 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
   @override
   Future<_TestResult> _getResult(
       Context testContext, FilterSettings filterSettings) async {
-    // Assign parent context on top of current
-    simpleContext!.applyParentContext(testContext);
-
-    _TestResult? setupFailure = await _runSetup(simpleContext!);
-    if (setupFailure != null) {
-      return setupFailure;
-    }
-
-    if (action != null) {
-      try {
-        dynamic value = await action!(simpleContext!);
-        if (value is T) {
-          simpleContext!.actual = await action!(simpleContext!);
-        }
-      } catch (err) {
-        // We want to try to teardown anything we've set up even if it's all haywire at this point
-        _result = _TestFailure.result(_title, 'Failed during action', err: err);
-      }
-    }
-
-    // Don't bother running assertions if we've already come up if this is pass or fail
-    if (_result == null) {
-      assertions ??= _defaultAssertion;
-      List<Expect> asserts = assertions!(simpleContext!);
-
-      for (Expect expect in asserts) {
-        _TestResult assertResult = expect._run();
-        if (assertResult is _TestFailure) {
-          assertFailures.add(assertResult);
-        }
-      }
-
-      if (assertFailures.isEmpty) {
-        _result = _TestPass.result(_title);
-      } else {
-        _result = _TestFailure.result(_title, 'Assert failed');
-      }
-    }
-
-    _TestResult? teardownFailure = await _runTeardown(simpleContext!);
-    if (teardownFailure != null) {
-      return teardownFailure;
-    }
-    _result ??= _TestNeutral.result(_title,
-        message:
-            'Expected result by now! Is this there something running asynchronously?');
-    return _result!;
+    assertions ??= _defaultAssertion;
+    return _getResultShared(
+      assignContextFn: () => simpleContext!.applyParentContext(testContext),
+      setupFn: () => _runSetup(simpleContext!),
+      actionFn: () => action!(simpleContext!),
+      teardownFn: () => _runSetup(simpleContext!),
+      assertionsFn: () => assertions!(simpleContext!),
+      shouldRunAction: action != null,
+    );
   }
 
   @override
   Future<_TestResult> _getResultWithContext(
       C testContext, FilterSettings filterSettings) async {
-    // Assign parent context on top of current
-    _context!.applyParentContext(testContext);
+    assertionsWithContext ??= _defaultAssertionWithContext;
+    return _getResultShared(
+        assignContextFn: () => _context!.applyParentContext(testContext),
+        setupFn: () => _runSetupWithContext(_context!),
+        actionFn: () => actionWithContext!(_context!),
+        teardownFn: () => _runTeardownWithContext(_context!),
+        assertionsFn: () => assertionsWithContext!(_context!),
+        shouldRunAction: actionWithContext != null);
+  }
 
-    _TestResult? setupFailure = await _runSetupWithContext(_context!);
+  Future<_TestResult> _getResultShared({
+    required void Function() assignContextFn,
+    required Future<_TestResult?> Function() setupFn,
+    required FutureOr<dynamic> Function() actionFn,
+    required Future<_TestResult?> Function() teardownFn,
+    required List<Expect> Function() assertionsFn,
+    required bool shouldRunAction,
+  }) async {
+    // Assign parent context on top of current
+    try {
+      assignContextFn();
+    } catch (err) {
+      _ranSuccessfully = false;
+      _result = _TestFailure.result(_title, 'Failed trying to assign context',
+          err: err);
+      return _result!;
+    }
+
+    _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
+      ranSuccessfully = false;
       return setupFailure;
     }
 
-    if (actionWithContext != null) {
+    if (shouldRunAction) {
       try {
-        dynamic value = await actionWithContext!(_context!);
+        dynamic value = await actionFn();
         if (value is T) {
           _context!.actual = value;
         }
       } catch (err) {
-        // We want to try to teardown anything we've set up even if it's all haywire at this point
+        // We want to continue and try to teardown anything we've set up even if it's all haywire at this point
         _result = _TestFailure.result(_title, 'Failed during action', err: err);
+        ranSuccessfully = false;
       }
     }
 
     // Don't bother running assertions if we've already come up if this is pass or fail
     if (_result == null) {
-      assertionsWithContext ??= _defaultAssertionWithContext;
-      List<Expect> asserts = assertionsWithContext!(_context!);
+      List<Expect> asserts = assertionsFn();
 
       for (Expect expect in asserts) {
-        _TestResult assertResult = expect._run();
+        _TestResult assertResult;
+
+        try {
+          assertResult = expect._run();
+        } catch (err) {
+          assertResult = _TestFailure.result(
+              _title, 'Failed while running assertions',
+              err: err);
+        }
+
         if (assertResult is _TestFailure) {
           assertFailures.add(assertResult);
         }
@@ -249,13 +259,21 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
       }
     }
 
-    _TestResult? teardownFailure = await _runTeardownWithContext(_context!);
+    _TestResult? teardownFailure = await teardownFn();
     if (teardownFailure != null) {
+      ranSuccessfully = false;
       return teardownFailure;
     }
-    _result ??= _TestNeutral.result(_title,
-        message:
-            'Expected result by now! Is this there something running asynchronously?');
+
+    if (_result == null) {
+      ranSuccessfully = false;
+      _result = _TestNeutral.result(_title,
+          message:
+              'Expected result by now! Is this something running asynchronously?');
+    }
+
+    // At this point if this hasn't failed, this has ran successfully
+    _ranSuccessfully ??= true;
     return _result!;
   }
 }
