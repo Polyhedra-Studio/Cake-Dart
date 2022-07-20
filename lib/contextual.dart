@@ -112,7 +112,7 @@ abstract class Contextual<T, C extends Context<T>> {
   }
 
   Future<_TestResult?> _runTeardownWithContext(C testContext) async {
-    if (teardown != null) {
+    if (teardownWithContext != null) {
       try {
         await teardownWithContext!(testContext);
       } catch (err) {

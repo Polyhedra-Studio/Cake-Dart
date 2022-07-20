@@ -1,3 +1,6 @@
+## 3.4.6
+- [FIX] Fixed teardown not running when using XWithContext tests and groups 
+
 ## 3.4.5
 - [FIX] Fixed a context error when using non XWithContext tests
 
