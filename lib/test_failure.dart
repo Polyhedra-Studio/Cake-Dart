@@ -3,6 +3,7 @@ part of cake;
 class _TestFailure extends _TestResult {
   String message;
   Object? err;
+  int? errorIndex;
   _TestFailure.result(String testTitle, this.message, {this.err})
       : super(testTitle);
   _TestFailure(this.message) : super('');
@@ -27,6 +28,8 @@ class _TestFailure extends _TestResult {
   String _formatMessage() {
     if (testTitle.isNotEmpty) {
       return '[X] $testTitle: $message';
+    } else if (errorIndex != null) {
+      return '    [#$errorIndex] $message';
     } else {
       return '    $message';
     }

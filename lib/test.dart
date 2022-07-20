@@ -240,7 +240,8 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     if (_result == null) {
       List<Expect> asserts = assertionsFn();
 
-      for (Expect expect in asserts) {
+      for (int i = 0; i < asserts.length; i++) {
+        Expect expect = asserts[i];
         _TestResult assertResult;
 
         try {
@@ -252,6 +253,9 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
         }
 
         if (assertResult is _TestFailure) {
+          if (asserts.length > 1) {
+            assertResult.errorIndex = i;
+          }
           assertFailures.add(assertResult);
         }
       }
