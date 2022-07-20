@@ -223,7 +223,11 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
       try {
         dynamic value = await actionFn();
         if (value is T) {
-          _context!.actual = value;
+          if (_hasCustomContext) {
+            _context!.actual = value;
+          } else {
+            simpleContext!.actual = value;
+          }
         }
       } catch (err) {
         // We want to continue and try to teardown anything we've set up even if it's all haywire at this point
