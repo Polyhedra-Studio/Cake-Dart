@@ -1,3 +1,6 @@
+## 3.4.7
+- [ADD] Expects will report which exact expect failed if there are multiple expects in a test
+
 ## 3.4.6
 - [FIX] Fixed teardown not running when using XWithContext tests and groups 
 
