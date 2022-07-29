@@ -1,3 +1,6 @@
+## 3.4.8
+- [FIX] Expect<T>.isType should ignore any test or group typing for test.actual. As in, if actual is meant to be class Foo, and you want to check if it's class Bar, it should be valid to check Expect<Bar>(test.actual). This is a valid case in inherited classes that dart would normally throw an error for.
+
 ## 3.4.7
 - [ADD] Expects will report which exact expect failed if there are multiple expects in a test
 

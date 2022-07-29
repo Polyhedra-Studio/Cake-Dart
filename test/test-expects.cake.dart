@@ -44,6 +44,23 @@ void main(List<String> arguments) async {
     Test<bool>('IsType, true is bool',
         actual: true,
         assertions: (context) => [Expect<bool>.isType(context.actual)]),
+
+    GroupWithContext<_CustomIsTypeFoo, Context<_CustomIsTypeFoo>>(
+      'Group With Context',
+      [
+        TestWithContext(
+            'Inherited Type, is the same, CustomTypeFoo should be CustomTypeFoo',
+            actual: _CustomIsTypeFoo(),
+            assertions: (test) =>
+                [Expect<_CustomIsTypeFoo>.isType(test.actual)]),
+        TestWithContext(
+            'Inherited Type, CustomTypeBar is a valid child of CustomTypeFoo',
+            actual: _CustomIsTypeBar(),
+            assertions: (test) =>
+                [Expect<_CustomIsTypeBar>.isType(test.actual)]),
+      ],
+      contextBuilder: Context<_CustomIsTypeFoo>.new,
+    ),
     // isTrue expect
     Test<bool>('IsTrue, true is true',
         actual: true, assertions: (test) => [Expect.isTrue(test.actual)]),
@@ -56,4 +73,12 @@ void main(List<String> arguments) async {
         assertions: (test) =>
             [Expect.equals(actual: test.actual, expected: true)]),
   ]);
+}
+
+class _CustomIsTypeFoo<T> {
+  String foo = 'foo';
+}
+
+class _CustomIsTypeBar extends _CustomIsTypeFoo {
+  String bar = 'bar';
 }
