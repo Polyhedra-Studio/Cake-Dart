@@ -1,18 +1,37 @@
 part of cake;
 
 class Expect<T> {
-  T? expected;
-  T? actual;
-  ExpectType type;
+  final T? _expected;
+  final T? _actual;
+  final ExpectType type;
 
-  Expect(this.type, {required this.actual, required this.expected});
-  Expect.equals({required this.actual, required this.expected})
-      : type = ExpectType.equals;
-  Expect.isNull(this.actual) : type = ExpectType.isNull;
-  Expect.isNotNull(this.actual) : type = ExpectType.isNotNull;
-  Expect.isType(this.actual) : type = ExpectType.isType;
-  Expect.isTrue(this.actual) : type = ExpectType.isTrue;
-  Expect.isFalse(this.actual) : type = ExpectType.isFalse;
+  Expect(this.type, {required T? actual, required T? expected})
+      : _actual = actual,
+        _expected = expected;
+  Expect.equals({required T? actual, required T? expected})
+      : type = ExpectType.equals,
+        _actual = actual,
+        _expected = expected;
+  Expect.isNull(T? actual)
+      : type = ExpectType.isNull,
+        _actual = actual,
+        _expected = null;
+  Expect.isNotNull(T? actual)
+      : type = ExpectType.isNotNull,
+        _actual = actual,
+        _expected = null;
+  Expect.isType(dynamic actual)
+      : type = ExpectType.isType,
+        _actual = actual,
+        _expected = null;
+  Expect.isTrue(T? actual)
+      : type = ExpectType.isTrue,
+        _actual = actual,
+        _expected = null;
+  Expect.isFalse(T? actual)
+      : type = ExpectType.isFalse,
+        _actual = actual,
+        _expected = null;
 
   _TestResult _run() {
     switch (type) {
@@ -32,50 +51,50 @@ class Expect<T> {
   }
 
   _TestResult _equals() {
-    if (expected == actual) {
+    if (_expected == _actual) {
       return _TestPass();
     } else {
-      return _TestFailure('Equality failed: Expected $expected, got $actual');
+      return _TestFailure('Equality failed: Expected $_expected, got $_actual');
     }
   }
 
   _TestResult _isNull() {
-    if (actual == null) {
+    if (_actual == null) {
       return _TestPass();
     } else {
-      return _TestFailure('IsNull failed: Expected $actual to be null.');
+      return _TestFailure('IsNull failed: Expected $_actual to be null.');
     }
   }
 
   _TestResult _isNotNull() {
-    if (actual != null) {
+    if (_actual != null) {
       return _TestPass();
     } else {
-      return _TestFailure('IsNotNull failed: actual is null.');
+      return _TestFailure('IsNotNull failed: _actual is null.');
     }
   }
 
   _TestResult _isType() {
-    if (actual is T) {
+    if (_actual is T) {
       return _TestPass();
     } else {
-      return _TestFailure('IsType failed: Expected $actual to be $T.');
+      return _TestFailure('IsType failed: Expected $_actual to be $T.');
     }
   }
 
   _TestResult _isTrue() {
-    if (actual == true) {
+    if (_actual == true) {
       return _TestPass();
     } else {
-      return _TestFailure('IsTrue failed: Expected $actual to be true.');
+      return _TestFailure('IsTrue failed: Expected $_actual to be true.');
     }
   }
 
   _TestResult _isFalse() {
-    if (actual == false) {
+    if (_actual == false) {
       return _TestPass();
     } else {
-      return _TestFailure('IsFalse failed: Expected $actual to be false.');
+      return _TestFailure('IsFalse failed: Expected $_actual to be false.');
     }
   }
 }

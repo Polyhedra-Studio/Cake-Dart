@@ -16,3 +16,6 @@
 
     - ExpectTypes
         - More?
+    
+    - Bugs
+        [X] Expect<T>.isType should ignore any parent typing for test.actual (as in, if actual is meant to be class Foo, and you want to check if it's class Bar, it should be valid to check Expect<Bar>(test.actual). This is a valid case in inherited classes that dart would normally throw an error for)
