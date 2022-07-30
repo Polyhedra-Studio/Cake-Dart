@@ -31,6 +31,13 @@ void main(List<String> arguments) async {
               Expect.equals(expected: context.expected, actual: context.actual)
             ]),
 
+    // isNotEqual expect
+    Test<bool>(
+      'IsNotEqual, true is not false',
+      assertions: (test) =>
+          [Expect.isNotEqual(actual: true, notExpected: false)],
+    ),
+
     // isNull expect
     Test<bool>('IsNull, null is null',
         actual: null, assertions: (context) => [Expect.isNull(context.actual)]),

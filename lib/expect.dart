@@ -12,6 +12,10 @@ class Expect<T> {
       : type = ExpectType.equals,
         _actual = actual,
         _expected = expected;
+  Expect.isNotEqual({required T? actual, required T? notExpected})
+      : type = ExpectType.isNotEqual,
+        _actual = actual,
+        _expected = notExpected;
   Expect.isNull(T? actual)
       : type = ExpectType.isNull,
         _actual = actual,
@@ -37,6 +41,8 @@ class Expect<T> {
     switch (type) {
       case ExpectType.equals:
         return _equals();
+      case ExpectType.isNotEqual:
+        return _isNotEqual();
       case ExpectType.isNull:
         return _isNull();
       case ExpectType.isNotNull:
@@ -55,6 +61,17 @@ class Expect<T> {
       return _TestPass();
     } else {
       return _TestFailure('Equality failed: Expected $_expected, got $_actual');
+    }
+  }
+
+  _TestResult _isNotEqual() {
+    // For the sake of verbosity, _expected should really be called _notExpected
+    // but there's no need to create a new variable just for that.
+    if (_expected != _actual) {
+      return _TestPass();
+    } else {
+      return _TestFailure(
+          'Inequality failed: Expected $_actual to not equal $_expected');
     }
   }
 
@@ -101,6 +118,7 @@ class Expect<T> {
 
 enum ExpectType {
   equals,
+  isNotEqual,
   isNull,
   isNotNull,
   isType,
