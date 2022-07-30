@@ -36,6 +36,7 @@ void main(List<String> arguments) async {
 # Expect Matches
 enum ExpectType {
   equals,
+  isNotEqual,
   isNull,
   isNotNull,
   isType, **
