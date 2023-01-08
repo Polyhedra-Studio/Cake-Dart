@@ -1,14 +1,14 @@
 part of cake;
 
-class Test<T> extends _Test<T, Context<T>> {
+class Test<ExpectedType> extends _Test<ExpectedType, Context<ExpectedType>> {
   Test(
     String title, {
-    T? expected,
-    T? actual,
-    FutureOr<void> Function(Context<T> test)? setup,
-    FutureOr<void> Function(Context<T> test)? teardown,
-    FutureOr<dynamic> Function(Context<T> test)? action,
-    List<Expect<dynamic>> Function(Context<T> test)? assertions,
+    ExpectedType? expected,
+    ExpectedType? actual,
+    FutureOr<void> Function(Context<ExpectedType> test)? setup,
+    FutureOr<void> Function(Context<ExpectedType> test)? teardown,
+    FutureOr<dynamic> Function(Context<ExpectedType> test)? action,
+    List<Expect<dynamic>> Function(Context<ExpectedType> test)? assertions,
   }) : super(
           title,
           expected: expected,
@@ -20,16 +20,17 @@ class Test<T> extends _Test<T, Context<T>> {
         );
 }
 
-class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
+class TestWithContext<ExpectedType, TestContext extends Context<ExpectedType>>
+    extends _Test<ExpectedType, TestContext> {
   TestWithContext(
     String title, {
-    T? expected,
-    T? actual,
-    FutureOr<void> Function(C test)? setup,
-    FutureOr<void> Function(C test)? teardown,
-    FutureOr<dynamic> Function(C test)? action,
-    List<Expect> Function(C test)? assertions,
-    C Function()? contextBuilder,
+    ExpectedType? expected,
+    ExpectedType? actual,
+    FutureOr<void> Function(TestContext test)? setup,
+    FutureOr<void> Function(TestContext test)? teardown,
+    FutureOr<dynamic> Function(TestContext test)? action,
+    List<Expect> Function(TestContext test)? assertions,
+    TestContext Function()? contextBuilder,
   }) : super.context(
           title,
           expected: expected,
@@ -42,14 +43,15 @@ class TestWithContext<T, C extends Context<T>> extends _Test<T, C> {
         );
 }
 
-class _Test<T, C extends Context<T>> extends Contextual<T, C> {
-  final FutureOr<dynamic> Function(Context<T> test)? action;
-  final FutureOr<dynamic> Function(C test)? actionWithContext;
-  List<Expect<dynamic>> Function(Context<T> test)? assertions;
-  List<Expect<dynamic>> Function(C test)? assertionsWithContext;
+class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
+    extends Contextual<ExpectedType, TestContext> {
+  final FutureOr<dynamic> Function(Context<ExpectedType> test)? action;
+  final FutureOr<dynamic> Function(TestContext test)? actionWithContext;
+  List<Expect<dynamic>> Function(Context<ExpectedType> test)? assertions;
+  List<Expect<dynamic>> Function(TestContext test)? assertionsWithContext;
   final List<_TestFailure> assertFailures = [];
-  final T? _actual;
-  final T? _expected;
+  final ExpectedType? _actual;
+  final ExpectedType? _expected;
   bool? _ranSuccessfully;
 
   bool? get ranSuccessfully {
@@ -66,10 +68,10 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
 
   _Test(
     String title, {
-    T? expected,
-    T? actual,
-    FutureOr<void> Function(Context<T> test)? setup,
-    FutureOr<void> Function(Context<T> test)? teardown,
+    ExpectedType? expected,
+    ExpectedType? actual,
+    FutureOr<void> Function(Context<ExpectedType> test)? setup,
+    FutureOr<void> Function(Context<ExpectedType> test)? teardown,
     this.action,
     this.assertions,
   })  : actionWithContext = null,
@@ -86,13 +88,13 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
 
   _Test.context(
     String title, {
-    T? expected,
-    T? actual,
-    FutureOr<void> Function(C test)? setup,
-    FutureOr<void> Function(C test)? teardown,
-    FutureOr<dynamic> Function(C test)? action,
-    List<Expect> Function(C test)? assertions,
-    C Function()? contextBuilder,
+    ExpectedType? expected,
+    ExpectedType? actual,
+    FutureOr<void> Function(TestContext test)? setup,
+    FutureOr<void> Function(TestContext test)? teardown,
+    FutureOr<dynamic> Function(TestContext test)? action,
+    List<Expect> Function(TestContext test)? assertions,
+    TestContext Function()? contextBuilder,
   })  : actionWithContext = action,
         assertionsWithContext = assertions,
         action = null,
@@ -106,7 +108,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
           contextBuilder: contextBuilder,
           context: () {
             if (contextBuilder != null) {
-              C context = contextBuilder();
+              TestContext context = contextBuilder();
               context.actual = actual;
               context.expected = expected;
               return context;
@@ -144,7 +146,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     super._assignParent(parentContextBuilder);
     if (_contextBuilder != null) {
       try {
-        C newContext = _contextBuilder!();
+        TestContext newContext = _contextBuilder!();
         newContext.actual = _actual;
         newContext.expected = _expected;
         _context = newContext;
@@ -154,16 +156,16 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     }
   }
 
-  List<Expect<T>> _defaultAssertion(Context<T> context) {
+  List<Expect<ExpectedType>> _defaultAssertion(Context<ExpectedType> context) {
     return [
-      Expect<T>(ExpectType.equals,
+      Expect<ExpectedType>(ExpectType.equals,
           expected: context.expected, actual: context.actual)
     ];
   }
 
-  List<Expect<T>> _defaultAssertionWithContext(C context) {
+  List<Expect<ExpectedType>> _defaultAssertionWithContext(TestContext context) {
     return [
-      Expect<T>(ExpectType.equals,
+      Expect<ExpectedType>(ExpectType.equals,
           expected: context.expected, actual: context.actual)
     ];
   }
@@ -184,7 +186,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
 
   @override
   Future<_TestResult> _getResultWithContext(
-      C testContext, FilterSettings filterSettings) async {
+      TestContext testContext, FilterSettings filterSettings) async {
     assertionsWithContext ??= _defaultAssertionWithContext;
     return _getResultShared(
         assignContextFn: () => _context!.applyParentContext(testContext),
@@ -222,7 +224,7 @@ class _Test<T, C extends Context<T>> extends Contextual<T, C> {
     if (shouldRunAction) {
       try {
         dynamic value = await actionFn();
-        if (value is T) {
+        if (value is ExpectedType) {
           if (_hasCustomContext) {
             _context!.actual = value;
           } else {

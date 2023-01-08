@@ -13,6 +13,7 @@
         [ ] Add skip constructor
         [X] Allow for extending the context item
         [ ] Show the test runner summary for every time _cake_ is run, not every time a test runner finishes.
+        [ ] Should fail test on first expect failure (by default, allow bypass as an option)
 
     - ExpectTypes
         - More?

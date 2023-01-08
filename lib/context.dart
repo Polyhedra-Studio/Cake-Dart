@@ -1,9 +1,9 @@
 part of cake;
 
-class Context<T> implements Map<String, dynamic> {
+class Context<ExpectedType> implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
-  T? expected;
-  T? actual;
+  ExpectedType? expected;
+  ExpectedType? actual;
 
   Context.deepCopy(Context siblingContext) {
     copy(siblingContext);
