@@ -10,6 +10,26 @@ void main() {
         Expect.isFalse(true),
         Expect.isTrue(false),
       ],
+      options: TestOptions(failOnFirstExpect: false),
+    ),
+    Test(
+      'Should report only one failure by default',
+      assertions: (test) => [
+        Expect.equals(actual: true, expected: false),
+        Expect.isTrue(true), // This one is meant to pass
+        Expect.isFalse(true), // This is a failure, but shouldn't be run
+        Expect.isTrue(false), // This is also a failure, but shouldn't be run
+      ],
+    ),
+    Test(
+      'Should report only one failure when failOnFirstExpect is true',
+      assertions: (test) => [
+        Expect.equals(actual: true, expected: false),
+        Expect.isTrue(true), // This one is meant to pass
+        Expect.isFalse(true), // This is a failure, but shouldn't be run
+        Expect.isTrue(false), // This is also a failure, but shouldn't be run
+      ],
+      options: TestOptions(failOnFirstExpect: true),
     )
   ]);
 }

@@ -4,7 +4,6 @@ void main(List<String> arguments) async {
   TestRunner('Test Groups', [
     Group('Should run all children tests', [
       // Generic Constructor
-      Test<bool>('True is true - shorthand', expected: true, actual: true),
       Test<bool>('True is true - assertion',
           assertions: ((context) => [
                 Expect(ExpectType.equals, expected: true, actual: true),
@@ -26,8 +25,12 @@ void main(List<String> arguments) async {
 
       // Equals expect
       Test<bool>('Equals, true is true',
-          expected: true,
-          actual: true,
+          setup: (test) {
+            test.expected = true;
+          },
+          action: (test) {
+            test.actual = true;
+          },
           assertions: (context) => [
                 Expect.equals(
                     expected: context.expected, actual: context.actual)
@@ -35,22 +38,34 @@ void main(List<String> arguments) async {
 
       // isNull expect
       Test<bool>('IsNull, null is null',
-          actual: null,
+          action: (test) {
+            test.actual = null;
+          },
           assertions: (context) => [Expect.isNull(context.actual)]),
 
       // isNotNull expect
       Test<bool>('IsNotNull, true is not null',
-          actual: true,
+          action: (test) {
+            test.actual = true;
+          },
           assertions: (context) => [Expect.isNotNull(context.actual)]),
 
       // isType expect
       Test<bool>('IsType, true is bool',
-          actual: true,
+          action: (test) {
+            test.actual = true;
+          },
           assertions: (context) => [Expect<bool>.isType(context.actual)]),
     ]),
     Group('Nested Group - Parent', [
       Group('Nested Group - Child', [
-        Test<bool>('Nested test should pass', expected: true, actual: true),
+        Test<bool>(
+          'Nested test should pass',
+          action: (test) {
+            test.expected = true;
+            test.actual = true;
+          },
+        ),
       ]),
     ])
   ]);

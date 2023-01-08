@@ -3,44 +3,48 @@ part of cake;
 class Test<ExpectedType> extends _Test<ExpectedType, Context<ExpectedType>> {
   Test(
     String title, {
-    ExpectedType? expected,
-    ExpectedType? actual,
     FutureOr<void> Function(Context<ExpectedType> test)? setup,
     FutureOr<void> Function(Context<ExpectedType> test)? teardown,
     FutureOr<dynamic> Function(Context<ExpectedType> test)? action,
-    List<Expect<dynamic>> Function(Context<ExpectedType> test)? assertions,
+    required List<Expect<dynamic>> Function(Context<ExpectedType> test)
+        assertions,
+    TestOptions? options,
   }) : super(
           title,
-          expected: expected,
-          actual: actual,
           setup: setup,
           teardown: teardown,
           action: action,
           assertions: assertions,
+          options: options,
         );
+
+  Test.stub(String title) : super(title, assertions: (test) => []);
 }
 
 class TestWithContext<ExpectedType, TestContext extends Context<ExpectedType>>
     extends _Test<ExpectedType, TestContext> {
   TestWithContext(
     String title, {
-    ExpectedType? expected,
-    ExpectedType? actual,
     FutureOr<void> Function(TestContext test)? setup,
     FutureOr<void> Function(TestContext test)? teardown,
     FutureOr<dynamic> Function(TestContext test)? action,
-    List<Expect> Function(TestContext test)? assertions,
+    required List<Expect> Function(TestContext test) assertions,
     TestContext Function()? contextBuilder,
+    TestOptions? options,
   }) : super.context(
           title,
-          expected: expected,
-          actual: actual,
           setup: setup,
           teardown: teardown,
           action: action,
           assertions: assertions,
           contextBuilder: contextBuilder,
+          options: options,
         );
+
+  TestWithContext.stub(
+    String title, {
+    TestContext Function()? contextBuilder,
+  }) : super.context(title, assertions: (test) => []);
 }
 
 class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
@@ -49,14 +53,12 @@ class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
   final FutureOr<dynamic> Function(TestContext test)? actionWithContext;
   List<Expect<dynamic>> Function(Context<ExpectedType> test)? assertions;
   List<Expect<dynamic>> Function(TestContext test)? assertionsWithContext;
-  final List<_TestFailure> assertFailures = [];
-  final ExpectedType? _actual;
-  final ExpectedType? _expected;
-  bool? _ranSuccessfully;
+  final List<_TestResult> assertFailures = [];
 
-  bool? get ranSuccessfully {
-    return _ranSuccessfully;
-  }
+  TestOptions get options => _options ?? const TestOptions();
+
+  bool? _ranSuccessfully;
+  bool? get ranSuccessfully => _ranSuccessfully;
 
   set ranSuccessfully(bool? value) {
     // Once this has failed, don't allow it to recover
@@ -68,39 +70,33 @@ class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
 
   _Test(
     String title, {
-    ExpectedType? expected,
-    ExpectedType? actual,
     FutureOr<void> Function(Context<ExpectedType> test)? setup,
     FutureOr<void> Function(Context<ExpectedType> test)? teardown,
     this.action,
-    this.assertions,
+    required this.assertions,
+    TestOptions? options,
   })  : actionWithContext = null,
         assertionsWithContext = null,
-        _actual = actual,
-        _expected = expected,
-        super(title,
-            setup: setup,
-            teardown: teardown,
-            simpleContext: Context.test(
-              expected: expected,
-              actual: actual,
-            ));
+        super(
+          title,
+          setup: setup,
+          teardown: teardown,
+          options: options,
+          simpleContext: Context<ExpectedType>(),
+        );
 
   _Test.context(
     String title, {
-    ExpectedType? expected,
-    ExpectedType? actual,
     FutureOr<void> Function(TestContext test)? setup,
     FutureOr<void> Function(TestContext test)? teardown,
     FutureOr<dynamic> Function(TestContext test)? action,
-    List<Expect> Function(TestContext test)? assertions,
+    required List<Expect> Function(TestContext test) assertions,
     TestContext Function()? contextBuilder,
+    TestOptions? options,
   })  : actionWithContext = action,
         assertionsWithContext = assertions,
         action = null,
         assertions = null,
-        _actual = actual,
-        _expected = expected,
         super.context(
           title,
           setupWithContext: setup,
@@ -108,13 +104,11 @@ class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
           contextBuilder: contextBuilder,
           context: () {
             if (contextBuilder != null) {
-              TestContext context = contextBuilder();
-              context.actual = actual;
-              context.expected = expected;
-              return context;
+              return contextBuilder();
             }
             return null;
           }(),
+          options: options,
         );
 
   @override
@@ -136,20 +130,17 @@ class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
   @override
   void report(FilterSettings filterSettings) {
     _result!.report(spacerCount: _parentCount);
-    for (_TestFailure element in assertFailures) {
+    for (_TestResult element in assertFailures) {
       element.report(spacerCount: _parentCount);
     }
   }
 
   @override
-  void _assignParent(dynamic parentContextBuilder) {
-    super._assignParent(parentContextBuilder);
+  void _assignParent(dynamic parentContextBuilder, TestOptions? parentOptions) {
+    super._assignParent(parentContextBuilder, parentOptions);
     if (_contextBuilder != null) {
       try {
-        TestContext newContext = _contextBuilder!();
-        newContext.actual = _actual;
-        newContext.expected = _expected;
-        _context = newContext;
+        _context = _contextBuilder!();
       } catch (err) {
         throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
       }
@@ -241,24 +232,35 @@ class _Test<ExpectedType, TestContext extends Context<ExpectedType>>
     // Don't bother running assertions if we've already come up if this is pass or fail
     if (_result == null) {
       List<Expect> asserts = assertionsFn();
+      bool hasFailedATest = false;
 
       for (int i = 0; i < asserts.length; i++) {
         Expect expect = asserts[i];
         _TestResult assertResult;
-
-        try {
-          assertResult = expect._run();
-        } catch (err) {
-          assertResult = _TestFailure.result(
-              _title, 'Failed while running assertions',
-              err: err);
-        }
-
-        if (assertResult is _TestFailure) {
-          if (asserts.length > 1) {
-            assertResult.errorIndex = i;
-          }
+        // Skip rest of assertions if an assert has failed already,
+        // allowing a bypass with an option flag.
+        if (hasFailedATest && options.failOnFirstAssert) {
+          assertResult = _TestNeutral.result(
+            '[#$i] Skipped',
+            message: 'Previous assert failed.',
+          );
           assertFailures.add(assertResult);
+        } else {
+          try {
+            assertResult = expect._run();
+          } catch (err) {
+            assertResult = _TestFailure.result(
+                _title, 'Failed while running assertions',
+                err: err);
+          }
+
+          if (assertResult is _TestFailure) {
+            if (asserts.length > 1) {
+              assertResult.errorIndex = i;
+            }
+            assertFailures.add(assertResult);
+            hasFailedATest = true;
+          }
         }
       }
 

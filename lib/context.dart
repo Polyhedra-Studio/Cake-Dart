@@ -9,7 +9,6 @@ class Context<ExpectedType> implements Map<String, dynamic> {
     copy(siblingContext);
   }
   Context();
-  Context.test({this.expected, this.actual});
 
   void copy<C extends Context>(C siblingContext) {
     addAll(siblingContext);
