@@ -2,8 +2,10 @@
 - [BREAKING] Removed Expected type from TestRunner and Groups. This wasn't being used a whole lot and felt really redundant when TestRunnerWithContext is used pretty extensively.
 - [BREAKING] Removed the default expected and actual from being set in groups. Again, wasn't used a whole lot and often breaks because of context issues.
 - [BREAKING] By default, tests will fail on the first expect failure rather than try to run through all. This can be turned off with the options object.
+- [BREAKING] Assertion steps in tests are REQUIRED in non-stubbed tests. This is to encourage good behavior and smaller surface area of tests to maintain what with default assertions and all.
 - [MOD] Renamed T to ExpectedType and C to {Object}Context to clarify which class is being declared
 - [ADD] Added options parameter to TestRunners, Groups, and Tests to with the option to declare when a test should fail on first expect failure or run through all.
+- [ADD] Added stub constructor to tests that allows for not inserting an assertions.
 
 ## 3.5.0
 - [ADD] Added Expect.isNotEqual

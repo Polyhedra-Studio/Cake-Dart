@@ -18,16 +18,19 @@ abstract class Contextual<ExpectedType,
   _TestResult? _result;
   final List<_TestResult> _messages = [];
   bool _hasCustomContext = false;
+  TestOptions? _options;
 
   Contextual(
     this._title, {
     this.setup,
     this.teardown,
     this.simpleContext,
+    TestOptions? options,
   })  : _context = null,
         setupWithContext = null,
         teardownWithContext = null,
-        _contextBuilder = null;
+        _contextBuilder = null,
+        _options = options;
 
   Contextual.context(
     this._title, {
@@ -35,12 +38,14 @@ abstract class Contextual<ExpectedType,
     required this.teardownWithContext,
     ContextualContext Function()? contextBuilder,
     required ContextualContext? context,
+    TestOptions? options,
   })  : _hasCustomContext = true,
         _context = context,
         _contextBuilder = contextBuilder,
         setup = null,
         teardown = null,
-        simpleContext = null;
+        simpleContext = null,
+        _options = options;
 
   void report(FilterSettings filterSettings);
   bool _shouldRunWithFilter(FilterSettings filterSettings) => false;
@@ -62,12 +67,17 @@ abstract class Contextual<ExpectedType,
     return _result!;
   }
 
-  void _assignParent(dynamic parentContextBuilder) {
+  void _assignParent(dynamic parentContextBuilder, TestOptions? parentOptions) {
     _parentCount++;
     // Assign and inherit the parent contextBuilder
     if (parentContextBuilder != null && _contextBuilder == null) {
       _contextBuilder = parentContextBuilder;
       _hasCustomContext = true;
+    }
+
+    // Assign and inherit the parent options, if any
+    if (parentOptions != null) {
+      _options = _options?.mapParent(parentOptions) ?? parentOptions;
     }
   }
 

@@ -6,11 +6,13 @@ class Group extends _Group {
     List<Contextual> children, {
     FutureOr<void> Function(Context context)? setup,
     FutureOr<void> Function(Context context)? teardown,
+    TestOptions? options,
   }) : super(
           title,
           children,
           setup: setup,
           teardown: teardown,
+          options: options,
         );
 }
 
@@ -22,12 +24,14 @@ class GroupWithContext<GroupContext extends Context>
     FutureOr<void> Function(GroupContext context)? setup,
     FutureOr<void> Function(GroupContext context)? teardown,
     GroupContext Function()? contextBuilder,
+    TestOptions? options,
   }) : super.context(
           title,
           children,
           setup: setup,
           teardown: teardown,
           contextBuilder: contextBuilder,
+          options: options,
         );
 }
 
@@ -44,11 +48,13 @@ class _Group<GroupContext extends Context>
     this.children, {
     FutureOr<void> Function(Context context)? setup,
     FutureOr<void> Function(Context context)? teardown,
+    TestOptions? options,
   }) : super(
           title,
           setup: setup,
           teardown: teardown,
           simpleContext: Context(),
+          options: options,
         ) {
     _assignChildren();
   }
@@ -59,25 +65,30 @@ class _Group<GroupContext extends Context>
     FutureOr<void> Function(GroupContext context)? setup,
     FutureOr<void> Function(GroupContext context)? teardown,
     required GroupContext Function()? contextBuilder,
+    TestOptions? options,
   }) : super.context(
           title,
           setupWithContext: setup,
           teardownWithContext: teardown,
           contextBuilder: contextBuilder,
           context: contextBuilder != null ? contextBuilder() : null,
+          options: options,
         ) {
     _assignChildren();
   }
 
   void _assignChildren() {
     for (Contextual child in children) {
-      child._assignParent(_contextBuilder);
+      child._assignParent(_contextBuilder, _options);
     }
   }
 
   @override
-  void _assignParent(dynamic parentContextBuilder) {
-    super._assignParent(parentContextBuilder);
+  void _assignParent(
+    dynamic parentContextBuilder,
+    TestOptions? parentOptions,
+  ) {
+    super._assignParent(parentContextBuilder, parentOptions);
     if (_contextBuilder != null) {
       try {
         _context = _contextBuilder!();

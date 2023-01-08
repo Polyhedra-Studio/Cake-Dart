@@ -1,15 +1,30 @@
 part of cake;
 
 class TestRunner extends _TestRunner {
-  TestRunner(String title, List<Contextual> tests) : super(title, tests);
+  TestRunner(
+    String title,
+    List<Contextual> tests, {
+    TestOptions? options,
+  }) : super(
+          title,
+          tests,
+          options: options,
+        );
 }
 
 class TestRunnerWithContext<TestRunnerContext extends Context>
     extends _TestRunner<TestRunnerContext> {
   TestRunnerWithContext(
-      String title, List<Contextual<dynamic, TestRunnerContext>> tests,
-      {required TestRunnerContext Function() contextBuilder})
-      : super.context(title, tests, contextBuilder: contextBuilder);
+    String title,
+    List<Contextual<dynamic, TestRunnerContext>> tests, {
+    required TestRunnerContext Function() contextBuilder,
+    TestOptions? options,
+  }) : super.context(
+          title,
+          tests,
+          contextBuilder: contextBuilder,
+          options: options,
+        );
 }
 
 class _TestRunner<TestRunnerContext extends Context>
@@ -17,7 +32,15 @@ class _TestRunner<TestRunnerContext extends Context>
   final List<Contextual<dynamic, TestRunnerContext>> tests;
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
-  _TestRunner(String title, this.tests) : super(title, tests) {
+  _TestRunner(
+    String title,
+    this.tests, {
+    TestOptions? options,
+  }) : super(
+          title,
+          tests,
+          options: options,
+        ) {
     _runAll();
   }
 
@@ -25,7 +48,13 @@ class _TestRunner<TestRunnerContext extends Context>
     String title,
     this.tests, {
     required TestRunnerContext Function() contextBuilder,
-  }) : super.context(title, tests, contextBuilder: contextBuilder) {
+    TestOptions? options,
+  }) : super.context(
+          title,
+          tests,
+          contextBuilder: contextBuilder,
+          options: options,
+        ) {
     _runAllWithContext();
   }
 
