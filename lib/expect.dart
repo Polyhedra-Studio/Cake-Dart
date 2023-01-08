@@ -1,26 +1,29 @@
 part of cake;
 
-class Expect<T> {
-  final T? _expected;
-  final T? _actual;
+class Expect<ExpectedType> {
+  final ExpectedType? _expected;
+  final ExpectedType? _actual;
   final ExpectType type;
 
-  Expect(this.type, {required T? actual, required T? expected})
+  Expect(this.type,
+      {required ExpectedType? actual, required ExpectedType? expected})
       : _actual = actual,
         _expected = expected;
-  Expect.equals({required T? actual, required T? expected})
+  Expect.equals(
+      {required ExpectedType? actual, required ExpectedType? expected})
       : type = ExpectType.equals,
         _actual = actual,
         _expected = expected;
-  Expect.isNotEqual({required T? actual, required T? notExpected})
+  Expect.isNotEqual(
+      {required ExpectedType? actual, required ExpectedType? notExpected})
       : type = ExpectType.isNotEqual,
         _actual = actual,
         _expected = notExpected;
-  Expect.isNull(T? actual)
+  Expect.isNull(ExpectedType? actual)
       : type = ExpectType.isNull,
         _actual = actual,
         _expected = null;
-  Expect.isNotNull(T? actual)
+  Expect.isNotNull(ExpectedType? actual)
       : type = ExpectType.isNotNull,
         _actual = actual,
         _expected = null;
@@ -28,11 +31,11 @@ class Expect<T> {
       : type = ExpectType.isType,
         _actual = actual,
         _expected = null;
-  Expect.isTrue(T? actual)
+  Expect.isTrue(ExpectedType? actual)
       : type = ExpectType.isTrue,
         _actual = actual,
         _expected = null;
-  Expect.isFalse(T? actual)
+  Expect.isFalse(ExpectedType? actual)
       : type = ExpectType.isFalse,
         _actual = actual,
         _expected = null;
@@ -92,10 +95,11 @@ class Expect<T> {
   }
 
   _TestResult _isType() {
-    if (_actual is T) {
+    if (_actual is ExpectedType) {
       return _TestPass();
     } else {
-      return _TestFailure('IsType failed: Expected $_actual to be $T.');
+      return _TestFailure(
+          'IsType failed: Expected $_actual to be $ExpectedType.');
     }
   }
 

@@ -52,7 +52,7 @@ void main(List<String> arguments) async {
         actual: true,
         assertions: (context) => [Expect<bool>.isType(context.actual)]),
 
-    GroupWithContext<_CustomIsTypeFoo, Context<_CustomIsTypeFoo>>(
+    GroupWithContext<Context<_CustomIsTypeFoo>>(
       'Group With Context',
       [
         TestWithContext(

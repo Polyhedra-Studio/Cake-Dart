@@ -14,13 +14,14 @@ class Group extends _Group {
         );
 }
 
-class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
+class GroupWithContext<GroupContext extends Context>
+    extends _Group<GroupContext> {
   GroupWithContext(
     String title,
-    List<Contextual<T, C>> children, {
-    FutureOr<void> Function(C context)? setup,
-    FutureOr<void> Function(C context)? teardown,
-    C Function()? contextBuilder,
+    List<Contextual<dynamic, GroupContext>> children, {
+    FutureOr<void> Function(GroupContext context)? setup,
+    FutureOr<void> Function(GroupContext context)? teardown,
+    GroupContext Function()? contextBuilder,
   }) : super.context(
           title,
           children,
@@ -30,8 +31,9 @@ class GroupWithContext<T, C extends Context<T>> extends _Group<T, C> {
         );
 }
 
-class _Group<T, C extends Context<T>> extends Contextual<T, C> {
-  final List<Contextual<T, C>> children;
+class _Group<GroupContext extends Context>
+    extends Contextual<dynamic, GroupContext> {
+  final List<Contextual<dynamic, GroupContext>> children;
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
@@ -40,8 +42,8 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   _Group(
     String title,
     this.children, {
-    FutureOr<void> Function(Context<T> context)? setup,
-    FutureOr<void> Function(Context<T> context)? teardown,
+    FutureOr<void> Function(Context context)? setup,
+    FutureOr<void> Function(Context context)? teardown,
   }) : super(
           title,
           setup: setup,
@@ -54,9 +56,9 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
   _Group.context(
     String title,
     this.children, {
-    FutureOr<void> Function(C context)? setup,
-    FutureOr<void> Function(C context)? teardown,
-    required C Function()? contextBuilder,
+    FutureOr<void> Function(GroupContext context)? setup,
+    FutureOr<void> Function(GroupContext context)? teardown,
+    required GroupContext Function()? contextBuilder,
   }) : super.context(
           title,
           setupWithContext: setup,
@@ -118,7 +120,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
 
   @override
   Future<_TestResult> _getResult(
-      Context<T> testContext, FilterSettings filterSettings) async {
+      Context testContext, FilterSettings filterSettings) async {
     return _getResultShared(
       setupFn: () => _runSetup(testContext),
       teardownFn: () => _runTeardown(testContext),
@@ -131,7 +133,7 @@ class _Group<T, C extends Context<T>> extends Contextual<T, C> {
 
   @override
   Future<_TestResult> _getResultWithContext(
-      C testContext, FilterSettings filterSettings) async {
+      GroupContext testContext, FilterSettings filterSettings) async {
     return _getResultShared(
       setupFn: () => _runSetupWithContext(testContext),
       teardownFn: () => _runTeardownWithContext(testContext),

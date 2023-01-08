@@ -4,14 +4,17 @@ class TestRunner extends _TestRunner {
   TestRunner(String title, List<Contextual> tests) : super(title, tests);
 }
 
-class TestRunnerWithContext<T, C extends Context<T>> extends _TestRunner<T, C> {
-  TestRunnerWithContext(String title, List<Contextual<T, C>> tests,
-      {required C Function() contextBuilder})
+class TestRunnerWithContext<TestRunnerContext extends Context>
+    extends _TestRunner<TestRunnerContext> {
+  TestRunnerWithContext(
+      String title, List<Contextual<dynamic, TestRunnerContext>> tests,
+      {required TestRunnerContext Function() contextBuilder})
       : super.context(title, tests, contextBuilder: contextBuilder);
 }
 
-class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
-  final List<Contextual<T, C>> tests;
+class _TestRunner<TestRunnerContext extends Context>
+    extends _Group<TestRunnerContext> {
+  final List<Contextual<dynamic, TestRunnerContext>> tests;
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
   _TestRunner(String title, this.tests) : super(title, tests) {
@@ -21,7 +24,7 @@ class _TestRunner<T, C extends Context<T>> extends _Group<T, C> {
   _TestRunner.context(
     String title,
     this.tests, {
-    required C Function() contextBuilder,
+    required TestRunnerContext Function() contextBuilder,
   }) : super.context(title, tests, contextBuilder: contextBuilder) {
     _runAllWithContext();
   }
