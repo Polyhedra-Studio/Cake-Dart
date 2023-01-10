@@ -1,31 +1,14 @@
 part of cake;
 
-class Group extends _Group {
+class Group<GroupContext extends Context> extends _Group<GroupContext> {
   Group(
     String title,
-    List<Contextual> children, {
-    FutureOr<void> Function(Context context)? setup,
-    FutureOr<void> Function(Context context)? teardown,
-    TestOptions? options,
-  }) : super(
-          title,
-          children,
-          setup: setup,
-          teardown: teardown,
-          options: options,
-        );
-}
-
-class GroupWithContext<GroupContext extends Context>
-    extends _Group<GroupContext> {
-  GroupWithContext(
-    String title,
-    List<Contextual<dynamic, GroupContext>> children, {
+    List<Contextual<GroupContext>> children, {
     FutureOr<void> Function(GroupContext context)? setup,
     FutureOr<void> Function(GroupContext context)? teardown,
     GroupContext Function()? contextBuilder,
     TestOptions? options,
-  }) : super.context(
+  }) : super(
           title,
           children,
           setup: setup,
@@ -35,9 +18,10 @@ class GroupWithContext<GroupContext extends Context>
         );
 }
 
-class _Group<GroupContext extends Context>
-    extends Contextual<dynamic, GroupContext> {
-  final List<Contextual<dynamic, GroupContext>> children;
+typedef GroupDefault = Group<Context>;
+
+class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
+  final List<Contextual<GroupContext>> children;
   int testSuccessCount = 0;
   int testFailCount = 0;
   int testNeutralCount = 0;
@@ -46,39 +30,22 @@ class _Group<GroupContext extends Context>
   _Group(
     String title,
     this.children, {
-    FutureOr<void> Function(Context context)? setup,
-    FutureOr<void> Function(Context context)? teardown,
+    FutureOr<void> Function(GroupContext context)? setup,
+    FutureOr<void> Function(GroupContext context)? teardown,
+    required GroupContext Function()? contextBuilder,
     TestOptions? options,
   }) : super(
           title,
           setup: setup,
           teardown: teardown,
-          simpleContext: Context(),
-          options: options,
-        ) {
-    _assignChildren();
-  }
-
-  _Group.context(
-    String title,
-    this.children, {
-    FutureOr<void> Function(GroupContext context)? setup,
-    FutureOr<void> Function(GroupContext context)? teardown,
-    required GroupContext Function()? contextBuilder,
-    TestOptions? options,
-  }) : super.context(
-          title,
-          setupWithContext: setup,
-          teardownWithContext: teardown,
           contextBuilder: contextBuilder,
-          context: contextBuilder != null ? contextBuilder() : null,
           options: options,
         ) {
     _assignChildren();
   }
 
   void _assignChildren() {
-    for (Contextual child in children) {
+    for (Contextual<GroupContext> child in children) {
       child._assignParent(_contextBuilder, _options);
     }
   }
@@ -131,26 +98,11 @@ class _Group<GroupContext extends Context>
 
   @override
   Future<_TestResult> _getResult(
-      Context testContext, FilterSettings filterSettings) async {
+      GroupContext testContext, FilterSettings filterSettings) async {
     return _getResultShared(
       setupFn: () => _runSetup(testContext),
       teardownFn: () => _runTeardown(testContext),
-      filterSettings: filterSettings,
       translateContextFn: (child) => child._translateContext(testContext),
-      translateContextSimpleFn: (child) =>
-          child._translateContextSimple(testContext),
-    );
-  }
-
-  @override
-  Future<_TestResult> _getResultWithContext(
-      GroupContext testContext, FilterSettings filterSettings) async {
-    return _getResultShared(
-      setupFn: () => _runSetupWithContext(testContext),
-      teardownFn: () => _runTeardownWithContext(testContext),
-      translateContextFn: (child) => child._translateContext(testContext),
-      translateContextSimpleFn: (child) =>
-          child._translateContextSimple(testContext),
       filterSettings: filterSettings,
     );
   }
@@ -158,8 +110,8 @@ class _Group<GroupContext extends Context>
   Future<_TestResult> _getResultShared({
     required Future<_TestResult?> Function() setupFn,
     required Future<_TestResult?> Function() teardownFn,
-    required Function(Contextual child) translateContextFn,
-    required Function(Contextual child) translateContextSimpleFn,
+    required GroupContext Function(Contextual<GroupContext> child)
+        translateContextFn,
     required FilterSettings filterSettings,
   }) async {
     // This is just a stub if there's no children - do nothing.
@@ -167,7 +119,6 @@ class _Group<GroupContext extends Context>
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
-    // _TestResult? setupFailure = await _runSetupWithContext(testContext);
     _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
       return setupFailure;
@@ -176,7 +127,7 @@ class _Group<GroupContext extends Context>
     // Continue with children
     int childSuccessCount = 0;
     int childFailCount = 0;
-    for (Contextual child in children) {
+    for (Contextual<GroupContext> child in children) {
       // Don't run at all if the filter does not apply to child
       if (_filterAppliesToChildren &&
           !child._shouldRunWithFilter(filterSettings)) {
@@ -184,26 +135,8 @@ class _Group<GroupContext extends Context>
       }
 
       // Create a new context so siblings don't affect each other
-      _TestResult result;
-      dynamic childContext;
-      if (child._hasCustomContext) {
-        try {
-          childContext = translateContextFn(child);
-        } catch (err) {
-          result = _TestFailure.result(
-              child._title, 'Critical Error while copying context',
-              err: err);
-        }
-      } else {
-        childContext = translateContextSimpleFn(child);
-      }
-
-      // Get result from context
-      if (child._hasCustomContext) {
-        result = await child._runWithContext(childContext, filterSettings);
-      } else {
-        result = await child._run(childContext, filterSettings);
-      }
+      GroupContext childContext = translateContextFn(child);
+      _TestResult result = await child._run(childContext, filterSettings);
 
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;

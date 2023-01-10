@@ -1,7 +1,7 @@
 import 'package:cake/cake.dart';
 
 void main() {
-  TestRunner('Test Runner - Basic', [
+  TestRunnerDefault('Test Runner - Basic', [
     Group('Group - Basic', [
       Test(
         'True should be true',

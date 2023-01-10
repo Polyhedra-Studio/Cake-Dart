@@ -1,7 +1,7 @@
 import 'package:cake/cake.dart';
 
 void main() {
-  TestRunner('All of these should fail in various ways', [
+  TestRunnerDefault('All of these should fail in various ways', [
     Test(
       'Should report multiple failures',
       assertions: (test) => [

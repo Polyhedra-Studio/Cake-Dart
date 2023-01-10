@@ -1,30 +1,32 @@
 import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
-  TestRunner('Test Groups', [
+  TestRunnerDefault('Test Groups', [
     Group('Should run all children tests', [
       // Generic Constructor
-      Test<bool>('True is true - assertion',
+      Test('True is true - assertion',
           assertions: ((context) => [
                 Expect(ExpectType.equals, expected: true, actual: true),
               ])),
-      Test<bool>(
-        'True is true, set in setup',
-        setup: (context) {
-          context.expected = true;
-          context.actual = true;
-        },
-      ),
-      Test<bool>(
-        'True is true, set in action',
-        action: (context) {
-          context.expected = true;
-          context.actual = true;
-        },
-      ),
+      Test('True is true, set in setup',
+          setup: (context) {
+            context.expected = true;
+            context.actual = true;
+          },
+          assertions: (test) => [
+                Expect.equals(actual: test.expected, expected: test.actual),
+              ]),
+      Test('True is true, set in action',
+          action: (context) {
+            context.expected = true;
+            context.actual = true;
+          },
+          assertions: (test) => [
+                Expect.equals(actual: test.expected, expected: test.actual),
+              ]),
 
       // Equals expect
-      Test<bool>('Equals, true is true',
+      Test('Equals, true is true',
           setup: (test) {
             test.expected = true;
           },
@@ -37,35 +39,36 @@ void main(List<String> arguments) async {
               ]),
 
       // isNull expect
-      Test<bool>('IsNull, null is null',
+      Test('IsNull, null is null',
           action: (test) {
             test.actual = null;
           },
           assertions: (context) => [Expect.isNull(context.actual)]),
 
       // isNotNull expect
-      Test<bool>('IsNotNull, true is not null',
+      Test('IsNotNull, true is not null',
           action: (test) {
             test.actual = true;
           },
           assertions: (context) => [Expect.isNotNull(context.actual)]),
 
       // isType expect
-      Test<bool>('IsType, true is bool',
+      Test('IsType, true is bool',
           action: (test) {
             test.actual = true;
           },
-          assertions: (context) => [Expect<bool>.isType(context.actual)]),
+          assertions: (context) => [Expect.isType(context.actual)]),
     ]),
     Group('Nested Group - Parent', [
       Group('Nested Group - Child', [
-        Test<bool>(
-          'Nested test should pass',
-          action: (test) {
-            test.expected = true;
-            test.actual = true;
-          },
-        ),
+        Test('Nested test should pass',
+            action: (test) {
+              test.expected = true;
+              test.actual = true;
+            },
+            assertions: (test) => [
+                  Expect.equals(actual: test.actual, expected: test.expected),
+                ]),
       ]),
     ])
   ]);

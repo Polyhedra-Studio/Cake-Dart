@@ -1,7 +1,7 @@
 import 'package:cake/cake.dart';
 
 void main(List<String> arguments) async {
-  TestRunner('Test Runner Cake Test', [
+  TestRunnerDefault('Test Runner Cake Test', [
     Group('Runs a group', [
       Test('Test in a group runs',
           action: (test) => true,
