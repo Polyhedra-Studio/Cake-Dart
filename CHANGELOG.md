@@ -1,5 +1,6 @@
 ## 4.0.0
 - [BREAKING] Removed Expected type from TestRunner and Groups. This wasn't being used a whole lot and felt really redundant when TestRunnerWithContext is used pretty extensively.
+- [BREAKING] Removed {Object}WithContext in favor of just using `{Object}Default` when a context is not used and `{Object}<Context>` when it is. More often than not, a custom context is used with tests, an in the case there isn't, a context object is setup by default, which will hopefully make it easier to follow. Hopefully this will also make tests less wordy.
 - [BREAKING] Removed the default expected and actual from being set in groups. Again, wasn't used a whole lot and often breaks because of context issues.
 - [BREAKING] By default, tests will fail on the first expect failure rather than try to run through all. This can be turned off with the options object.
 - [BREAKING] Assertion steps in tests are REQUIRED in non-stubbed tests. This is to encourage good behavior and smaller surface area of tests to maintain what with default assertions and all.

@@ -9,29 +9,52 @@ import 'package:cake/expect.dart';
 import 'package:cake/test.dart';
 
 void main(List<String> arguments) async {
-  [
-    Test<bool>('True is true - shorthand', expected: true, actual: true),
-    Test<bool>('True is true - assertion',
-        assertions: ((context) => [
+  TestRunnerDefault('Simple Test Suite', [
+    Test('True is true - shorthand', expected: true, actual: true),
+    Test('True is true - assertion',
+        assertions: (test) => [
               Expect(ExpectType.equals, expected: true, actual: true),
-            ])),
-    Test<bool>(
+            ]),
+    Test(
       'True is true, set in setup',
       setup: (context) {
         context.expected = true;
         context.actual = true;
       },
     ),
-    Test<bool>(
+    Test(
       'True is true, set in action',
       action: (context) {
         context.expected = true;
         context.actual = true;
       },
     ),
-  ];
+  ]);
 }
 ```
+
+You can also define a context that can pass variables from parents and test stages.
+
+```dart
+  TestRunner<ExtraContext>('Test Suite with Extra Context', [
+    Group('Can detect Foo', 
+      [
+        Test('Foo is True', assertions: (test) => [
+          Expect.isTrue(test.foo),
+        ]),
+      ],
+      setup: (test) {
+        test.foo = true;
+      },
+    ),
+  ]);
+
+  // ....
+  class ExtraContext extends Context {
+    bool foo = false;
+  }
+```
+
 
 # Expect Matches
 enum ExpectType {

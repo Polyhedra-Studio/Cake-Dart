@@ -1,6 +1,6 @@
 part of cake;
 
-class Context<ExpectedType> implements Map<String, dynamic> {
+class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
   ExpectedType? expected;
   ExpectedType? actual;
@@ -10,11 +10,11 @@ class Context<ExpectedType> implements Map<String, dynamic> {
   }
   Context();
 
-  void copy<C extends Context>(C siblingContext) {
+  void copy(Context siblingContext) {
     addAll(siblingContext);
     expected = siblingContext.expected;
     actual = siblingContext.actual;
-    copyExtraParams<C>(siblingContext);
+    copyExtraParams(siblingContext);
   }
 
   void applyParentContext(Context parentContext) {
@@ -22,7 +22,7 @@ class Context<ExpectedType> implements Map<String, dynamic> {
     copyExtraParams(parentContext);
   }
 
-  void copyExtraParams<C extends Context>(C contextToCopy) {
+  void copyExtraParams(Context contextToCopy) {
     return;
   }
 

@@ -1,38 +1,39 @@
 import 'package:cake/cake.dart';
 
 void main() async {
-  TestRunner('Test Runner -  Without Context', []);
-  TestRunnerWithContext<Context>('Test Runner - With Context', [],
+  TestRunnerDefault('Test Runner -  Default Context', []);
+  TestRunner<Context>('Test Runner - With Context', [],
       contextBuilder: Context.new);
-  TestRunnerWithContext<_Extended<String>>(
-      'Test Runner - with custom context', [],
+  TestRunner<_Extended>('Test Runner - with custom context', [],
       contextBuilder: _Extended.new);
-  TestRunner('Test Runner - Parent Test Runner', [
-    Group('Group Without Context', []),
-    GroupWithContext('Group With Context', [], contextBuilder: Context.new),
-    GroupWithContext<_Extended<String>>('Group with custom context', [],
+  TestRunnerDefault('Test Runner - Parent Test Runner', [
+    GroupDefault('Group Without Context', []),
+    GroupDefault('Group With Context', [], contextBuilder: Context.new),
+    Group<_Extended>('Group with custom context', [],
         contextBuilder: _Extended.new),
-    Group('Parent Group', [
+    GroupDefault('Parent Group', [
       Group('Nested Group', []),
-      GroupWithContext('Nested Group with context', [],
-          contextBuilder: Context.new),
-      GroupWithContext<_Extended<String>>(
-          'Nested Group with custom context', [],
+      Group('Nested Group with context', [], contextBuilder: Context.new),
+      Group<_Extended>('Nested Group with custom context', [],
           contextBuilder: _Extended.new),
+      Test('Nested test without context',
+          assertions: (test) => [
+                Expect.isTrue(true),
+              ]),
       Test.stub('Nested Test without context'),
-      TestWithContext<String, _Extended<String>>.stub(
-          'Nested test with custom context',
+      Test<String, _Extended>.stub('Nested test with custom context',
           contextBuilder: _Extended.new),
     ]),
+    Test.stub('Test under parent test runner')
   ]);
 
-  TestRunnerWithContext<_Extended<String>>(
+  TestRunner<_Extended>(
       'Test Runner with context passes context to children',
       [
-        GroupWithContext(
+        Group(
           'Group with same context passes context to children',
           [
-            TestWithContext(
+            Test(
               'Child has parent context',
               setup: (test) {
                 test.value = 'setup';
@@ -48,18 +49,17 @@ void main() async {
             ),
           ],
         ),
-        GroupWithContext<_SuperExtended<String>>(
+        Group<_SuperExtended>(
           'Group with context passes context to children',
           [
-            TestWithContext<String, _SuperExtended<String>>(
-                'Test inherits parent context at all steps',
+            Test('Test inherits parent context at all steps',
                 action: (test) => 'setup',
                 assertions: (test) => [
                       Expect<String>.isType(test.actual),
                     ]),
-            TestWithContext(
+            Test(
               'Test automatically inherits parent context',
-              action: (test) => test.value = 'setup',
+              action: (test) => test.superValue = 'setup',
               assertions: (test) => [
                 Expect<String>.isType(test.actual),
               ],
@@ -69,18 +69,12 @@ void main() async {
         ),
       ],
       contextBuilder: _Extended.new);
-
-  // TestRunner('This should fail', [
-  //   GroupWithContext('Group with forgotten context', [
-  //     TestWithContext('This should fail without a declared context anywhere'),
-  //   ]),
-  // ]);
 }
 
-class _Extended<T> extends Context<T> {
+class _Extended extends Context {
   String value = '';
 }
 
-class _SuperExtended<T> extends _Extended<T> {
+class _SuperExtended extends _Extended {
   String superValue = '';
 }

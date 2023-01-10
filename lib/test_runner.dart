@@ -1,25 +1,13 @@
 part of cake;
 
-class TestRunner extends _TestRunner {
+class TestRunner<TestRunnerContext extends Context>
+    extends _TestRunner<TestRunnerContext> {
   TestRunner(
     String title,
-    List<Contextual> tests, {
-    TestOptions? options,
-  }) : super(
-          title,
-          tests,
-          options: options,
-        );
-}
-
-class TestRunnerWithContext<TestRunnerContext extends Context>
-    extends _TestRunner<TestRunnerContext> {
-  TestRunnerWithContext(
-    String title,
-    List<Contextual<dynamic, TestRunnerContext>> tests, {
+    List<Contextual<TestRunnerContext>> tests, {
     required TestRunnerContext Function() contextBuilder,
     TestOptions? options,
-  }) : super.context(
+  }) : super(
           title,
           tests,
           contextBuilder: contextBuilder,
@@ -27,35 +15,33 @@ class TestRunnerWithContext<TestRunnerContext extends Context>
         );
 }
 
+class TestRunnerDefault extends TestRunner<Context> {
+  TestRunnerDefault(
+    String title,
+    List<Contextual<Context>> tests, {
+    TestOptions? options,
+  }) : super(title, tests, contextBuilder: Context.new, options: options);
+}
+
 class _TestRunner<TestRunnerContext extends Context>
     extends _Group<TestRunnerContext> {
-  final List<Contextual<dynamic, TestRunnerContext>> tests;
+  final List<Contextual<TestRunnerContext>> tests;
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
   _TestRunner(
     String title,
     this.tests, {
-    TestOptions? options,
-  }) : super(
-          title,
-          tests,
-          options: options,
-        ) {
-    _runAll();
-  }
-
-  _TestRunner.context(
-    String title,
-    this.tests, {
     required TestRunnerContext Function() contextBuilder,
     TestOptions? options,
-  }) : super.context(
+  }) : super(
           title,
           tests,
           contextBuilder: contextBuilder,
           options: options,
         ) {
-    _runAllWithContext();
+    // Since this is the root that kicks off the rest of the tests, build that context
+    _context = contextBuilder();
+    _runAll();
   }
 
   @override
@@ -85,13 +71,7 @@ class _TestRunner<TestRunnerContext extends Context>
 
   Future<void> _runAll() async {
     if (!_shouldRunWithFilter(filterSettings)) return;
-    await _run(simpleContext!, filterSettings);
-    report(filterSettings);
-  }
-
-  Future<void> _runAllWithContext() async {
-    if (!_shouldRunWithFilter(filterSettings)) return;
-    await _runWithContext(_context!, filterSettings);
+    await _run(_context, filterSettings);
     report(filterSettings);
   }
 
