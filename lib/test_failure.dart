@@ -16,7 +16,7 @@ class _TestFailure extends _TestResult {
       Printer.fail('$spacer    $err');
 
       if (err is Error) {
-        String stack = (err as Error).stackTrace.toString();
+        final String stack = (err as Error).stackTrace.toString();
         // Do not format this. This does not need formatting as
         // some terminals recognize this as a stack trace.
         print(stack);

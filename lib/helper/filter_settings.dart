@@ -29,9 +29,11 @@ class FilterSettings {
         groupSearchFor =
             const String.fromEnvironment(_FilterSettingProps.groupSearchFor),
         testRunnerFilterTerm = const String.fromEnvironment(
-            _FilterSettingProps.testRunnerFilterTerm),
+          _FilterSettingProps.testRunnerFilterTerm,
+        ),
         testRunnerSearchFor = const String.fromEnvironment(
-            _FilterSettingProps.testRunnerSearchFor);
+          _FilterSettingProps.testRunnerSearchFor,
+        );
 
   bool get isNotEmpty {
     return hasGeneralSearchTerm ||
@@ -72,14 +74,19 @@ class FilterSettings {
   }
 
   List<String> toProperties() {
-    List<String> props = [];
+    final List<String> props = [];
     if (hasGeneralSearchTerm) {
-      props.add(_buildDefine(
-          _FilterSettingProps.generalSearchTerm, generalSearchTerm!));
+      props.add(
+        _buildDefine(
+          _FilterSettingProps.generalSearchTerm,
+          generalSearchTerm!,
+        ),
+      );
     }
     if (hasTestFilterTerm) {
       props.add(
-          _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!));
+        _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!),
+      );
     }
     if (hasTestSearchFor) {
       props
@@ -87,19 +94,26 @@ class FilterSettings {
     }
     if (hasGroupFilterTerm) {
       props.add(
-          _buildDefine(_FilterSettingProps.groupFilterTerm, groupFilterTerm!));
+        _buildDefine(_FilterSettingProps.groupFilterTerm, groupFilterTerm!),
+      );
     }
     if (hasGroupSearchFor) {
       props.add(
-          _buildDefine(_FilterSettingProps.groupSearchFor, groupSearchFor!));
+        _buildDefine(_FilterSettingProps.groupSearchFor, groupSearchFor!),
+      );
     }
     if (hasTestFilterTerm) {
       props.add(
-          _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!));
+        _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!),
+      );
     }
     if (hasTestRunnerSearchFor) {
-      props.add(_buildDefine(
-          _FilterSettingProps.testRunnerSearchFor, testRunnerSearchFor!));
+      props.add(
+        _buildDefine(
+          _FilterSettingProps.testRunnerSearchFor,
+          testRunnerSearchFor!,
+        ),
+      );
     }
     return props;
   }

@@ -5,18 +5,22 @@ class Expect<ExpectedType> {
   final ExpectedType? _actual;
   final ExpectType type;
 
-  Expect(this.type,
-      {required ExpectedType? actual, required ExpectedType? expected})
-      : _actual = actual,
+  Expect(
+    this.type, {
+    required ExpectedType? actual,
+    required ExpectedType? expected,
+  })  : _actual = actual,
         _expected = expected;
-  Expect.equals(
-      {required ExpectedType? actual, required ExpectedType? expected})
-      : type = ExpectType.equals,
+  Expect.equals({
+    required ExpectedType? actual,
+    required ExpectedType? expected,
+  })  : type = ExpectType.equals,
         _actual = actual,
         _expected = expected;
-  Expect.isNotEqual(
-      {required ExpectedType? actual, required ExpectedType? notExpected})
-      : type = ExpectType.isNotEqual,
+  Expect.isNotEqual({
+    required ExpectedType? actual,
+    required ExpectedType? notExpected,
+  })  : type = ExpectType.isNotEqual,
         _actual = actual,
         _expected = notExpected;
   Expect.isNull(ExpectedType? actual)
@@ -74,7 +78,8 @@ class Expect<ExpectedType> {
       return _TestPass();
     } else {
       return _TestFailure(
-          'Inequality failed: Expected $_actual to not equal $_expected');
+        'Inequality failed: Expected $_actual to not equal $_expected',
+      );
     }
   }
 
@@ -90,7 +95,7 @@ class Expect<ExpectedType> {
     if (_actual != null) {
       return _TestPass();
     } else {
-      return _TestFailure('IsNotNull failed: _actual is null.');
+      return _TestFailure('IsNotNull failed: $_actual is null.');
     }
   }
 
@@ -99,7 +104,8 @@ class Expect<ExpectedType> {
       return _TestPass();
     } else {
       return _TestFailure(
-          'IsType failed: Expected $_actual to be $ExpectedType.');
+        'IsType failed: Expected $_actual to be $ExpectedType.',
+      );
     }
   }
 
