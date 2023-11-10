@@ -130,5 +130,3 @@ class ContextCreator<C extends Context> {
     return creator();
   }
 }
-
-final myClass = ContextCreator<Context>(Context.new);
