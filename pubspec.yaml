@@ -5,7 +5,7 @@ repository: http://butterfree.lan:30120/dart/cake
 publish_to: http://butterfree.lan:30117
 
 environment:
-  sdk: '>=2.16.2 <3.0.0'
+  sdk: '>=2.17.0 <4.0.0'
 
 dev_dependencies:
   lints: ^2.0.0

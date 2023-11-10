@@ -3,7 +3,7 @@ part of cake;
 class TestMessage extends _TestResult {
   String? message;
 
-  TestMessage(String testTitle, {this.message}) : super(testTitle);
+  TestMessage(super.testTitle, {this.message});
 
   @override
   void report({int spacerCount = 0}) {

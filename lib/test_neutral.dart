@@ -4,7 +4,10 @@ class _TestNeutral extends _TestResult {
   String? message;
 
   _TestNeutral() : super('');
-  _TestNeutral.result(String testTitle, {this.message}) : super(testTitle);
+  _TestNeutral.result(
+    super.testTitle, {
+    this.message,
+  });
 
   @override
   void report({int spacerCount = 0}) {

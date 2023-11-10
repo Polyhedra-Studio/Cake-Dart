@@ -4,6 +4,7 @@ abstract class Contextual<ContextualContext extends Context> {
   final String _title;
   final FutureOr<void> Function(ContextualContext test)? setup;
   final FutureOr<void> Function(ContextualContext test)? teardown;
+  final bool skip;
 
   // For some reason dart's not picking up that this is getting changed in a extended class
   // ignore: prefer_final_fields
@@ -21,6 +22,7 @@ abstract class Contextual<ContextualContext extends Context> {
     required this.teardown,
     ContextualContext Function()? contextBuilder,
     TestOptions? options,
+    this.skip = false,
   })  : _contextBuilder = contextBuilder,
         _options = options;
 
@@ -35,7 +37,12 @@ abstract class Contextual<ContextualContext extends Context> {
     ContextualContext testContext,
     FilterSettings filterSettings,
   ) async {
-    _result = await _getResult(testContext, filterSettings);
+    if (skip) {
+      _result = _TestNeutral.result(_title, message: 'Skipped');
+    } else {
+      _result = await _getResult(testContext, filterSettings);
+    }
+
     return _result!;
   }
 
@@ -53,6 +60,7 @@ abstract class Contextual<ContextualContext extends Context> {
   }
 
   Future<_TestResult?> _runSetup(ContextualContext context) async {
+    if (skip) return null;
     if (setup != null) {
       try {
         await setup!(context);
@@ -64,6 +72,7 @@ abstract class Contextual<ContextualContext extends Context> {
   }
 
   Future<_TestResult?> _runTeardown(ContextualContext testContext) async {
+    if (skip) return null;
     if (teardown != null) {
       try {
         await teardown!(testContext);

@@ -1,7 +1,7 @@
 part of cake;
 
 class _TestPass extends _TestResult {
-  _TestPass.result(String test) : super(test);
+  _TestPass.result(super.test);
   _TestPass() : super('');
 
   @override

@@ -2,20 +2,22 @@ part of cake;
 
 class Group<GroupContext extends Context> extends _Group<GroupContext> {
   Group(
-    String title,
-    List<Contextual<GroupContext>> children, {
-    FutureOr<void> Function(GroupContext context)? setup,
-    FutureOr<void> Function(GroupContext context)? teardown,
-    GroupContext Function()? contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          children,
-          setup: setup,
-          teardown: teardown,
-          contextBuilder: contextBuilder,
-          options: options,
-        );
+    super.title,
+    super.children, {
+    super.setup,
+    super.teardown,
+    super.contextBuilder,
+    super.options,
+  });
+
+  Group.skip(
+    super.title,
+    super.children, {
+    super.setup,
+    super.teardown,
+    super.contextBuilder,
+    super.options,
+  }) : super(skip: true);
 }
 
 typedef GroupDefault = Group<Context>;
@@ -28,19 +30,14 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   bool _filterAppliesToChildren = false;
 
   _Group(
-    String title,
+    super.title,
     this.children, {
-    FutureOr<void> Function(GroupContext context)? setup,
-    FutureOr<void> Function(GroupContext context)? teardown,
-    required GroupContext Function()? contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          setup: setup,
-          teardown: teardown,
-          contextBuilder: contextBuilder,
-          options: options,
-        ) {
+    super.setup,
+    super.teardown,
+    required super.contextBuilder,
+    super.options,
+    super.skip,
+  }) {
     _assignChildren();
   }
 
@@ -119,6 +116,11 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       return _TestNeutral.result(_title, message: 'Empty - no tests');
     }
 
+    // This has been marked as skipped - do nothing.
+    if (skip) {
+      return _TestNeutral.result(_title, message: 'Skipped');
+    }
+
     _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
       return setupFailure;
@@ -166,7 +168,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   @override
   void report(FilterSettings filterSettings) {
     _result!.report(spacerCount: _parentCount);
-    if (children.isNotEmpty) {
+    if (children.isNotEmpty && skip == false) {
       for (Contextual child in children) {
         if (_filterAppliesToChildren) {
           if (child._shouldRunWithFilter(filterSettings)) {

@@ -4,8 +4,7 @@ class _TestFailure extends _TestResult {
   String message;
   Object? err;
   int? errorIndex;
-  _TestFailure.result(String testTitle, this.message, {this.err})
-      : super(testTitle);
+  _TestFailure.result(super.testTitle, this.message, {this.err});
   _TestFailure(this.message) : super('');
 
   @override

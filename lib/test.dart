@@ -3,31 +3,29 @@ part of cake;
 class Test<ExpectedType, TestContext extends Context>
     extends _Test<ExpectedType, TestContext> {
   Test(
-    String title, {
-    FutureOr<void> Function(TestContext test)? setup,
-    FutureOr<void> Function(TestContext test)? teardown,
-    FutureOr<dynamic> Function(TestContext test)? action,
-    required List<Expect<dynamic>> Function(TestContext test) assertions,
-    TestContext Function()? contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          setup: setup,
-          teardown: teardown,
-          action: action,
-          assertions: assertions,
-          contextBuilder: contextBuilder,
-          options: options,
-        );
+    super.title, {
+    super.setup,
+    super.teardown,
+    super.action,
+    required super.assertions,
+    super.contextBuilder,
+    super.options,
+  });
+
+  Test.skip(
+    super.title, {
+    super.setup,
+    super.teardown,
+    super.action,
+    required super.assertions,
+    super.contextBuilder,
+    super.options,
+  }) : super(skip: true);
 
   Test.stub(
-    String title, {
-    TestContext Function()? contextBuilder,
-  }) : super(
-          title,
-          assertions: (test) => [],
-          contextBuilder: contextBuilder,
-        );
+    super.title, {
+    super.contextBuilder,
+  }) : super(assertions: (test) => []);
 }
 
 class _Test<ExpectedType, TestContext extends Context>
@@ -50,20 +48,15 @@ class _Test<ExpectedType, TestContext extends Context>
   }
 
   _Test(
-    String title, {
-    FutureOr<void> Function(TestContext test)? setup,
-    FutureOr<void> Function(TestContext test)? teardown,
+    super._title, {
+    super.setup,
+    super.teardown,
     this.action,
     required this.assertions,
-    TestContext Function()? contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          setup: setup,
-          teardown: teardown,
-          contextBuilder: contextBuilder,
-          options: options,
-        );
+    super.contextBuilder,
+    super.options,
+    super.skip,
+  });
 
   @override
   bool _shouldRunWithFilter(FilterSettings filterSettings) {
@@ -121,6 +114,12 @@ class _Test<ExpectedType, TestContext extends Context>
     required List<Expect> Function() assertionsFn,
     required bool shouldRunAction,
   }) async {
+    // Don't try anything if this is marked as skipped
+    if (skip) {
+      _result = _TestNeutral.result(_title, message: 'Skipped');
+      return _result!;
+    }
+
     // Assign parent context on top of current
     try {
       assignContextFn();
