@@ -7,7 +7,7 @@ void main(List<String> arguments) async {
           action: (test) => true,
           assertions: (test) => [
                 Expect.isTrue(test.actual),
-              ]),
+              ],),
     ]),
     Group('Runs a nest group, parent', [
       Group('Runs a nested group, child', [

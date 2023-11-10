@@ -17,10 +17,11 @@ class Collector {
 
   void printMessage(bool verbose) {
     final String summary = Printer.summary(
-        total: total,
-        successes: successes,
-        failures: failures,
-        neutrals: neutrals);
+      total: total,
+      successes: successes,
+      failures: failures,
+      neutrals: neutrals,
+    );
 
     if (failures > 0) {
       Printer.fail(summary);
@@ -89,7 +90,9 @@ List<TestRunnerCollector> testRunnerOutputParser(String stdout) {
 }
 
 TestRunnerCollector _testRunnerOutputParser(
-    List<String> lines, int startingIndex) {
+  List<String> lines,
+  int startingIndex,
+) {
   final List<String> testOutput = [];
   final List<String> summary = [];
   int total = 0;
