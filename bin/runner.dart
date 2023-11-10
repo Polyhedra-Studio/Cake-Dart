@@ -31,7 +31,7 @@ class Runner {
     final Iterable<Future<void>> processes = fileList
         .where((file) => settings.fileFilter != null
             ? file.path.contains(settings.fileFilter!)
-            : true)
+            : true,)
         .map<Future<void>>((file) async {
       // If we're filtering by a keyword, this needs to be passed via define
       final List<String> processArgs = settings.testFilter.toProperties();

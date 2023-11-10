@@ -30,6 +30,6 @@ void main() {
         Expect.isTrue(false), // This is also a failure, but shouldn't be run
       ],
       options: const TestOptions(failOnFirstExpect: true),
-    )
+    ),
   ]);
 }

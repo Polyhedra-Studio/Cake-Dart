@@ -10,10 +10,11 @@ void main(List<String> arguments) async {
 
   final List<FileSystemEntity> cakeList = await runner.cakeFileList;
   if (cakeList.isEmpty) {
-    return TestMessage('Cake Test Runner',
-            message:
-                'No tests found in this directory. Cake tests should end with ".cake.dart"')
-        .report();
+    return TestMessage(
+      'Cake Test Runner',
+      message:
+          'No tests found in this directory. Cake tests should end with ".cake.dart"',
+    ).report();
   }
 
   if (!settings.interactive) {

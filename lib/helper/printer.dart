@@ -17,7 +17,7 @@ class Printer {
       {required int total,
       required int successes,
       required int failures,
-      required int neutrals}) {
+      required int neutrals,}) {
     final int totalCharCount = total.toString().length;
     final int successCharCount = successes.toString().length;
     final int failureCharCount = failures.toString().length;
@@ -26,7 +26,7 @@ class Printer {
       totalCharCount,
       successCharCount,
       failureCharCount,
-      neutralCharCount
+      neutralCharCount,
     ].fold<int>(1, (previousValue, element) => max(previousValue, element));
 
     const int baseTopDashSpacer = 18;
