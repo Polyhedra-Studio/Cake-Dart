@@ -23,7 +23,7 @@ class CakeSettings {
         );
 
   static String? _getFromArgs(List<String> args, String flag) {
-    int fileFilterFlagIndex = args.indexOf(flag);
+    final int fileFilterFlagIndex = args.indexOf(flag);
     if (fileFilterFlagIndex != -1 && fileFilterFlagIndex != args.length - 1) {
       return args[fileFilterFlagIndex + 1];
     }

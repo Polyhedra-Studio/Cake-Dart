@@ -16,7 +16,7 @@ class Collector {
   }
 
   void printMessage(bool verbose) {
-    String summary = Printer.summary(
+    final String summary = Printer.summary(
         total: total,
         successes: successes,
         failures: failures,
@@ -75,11 +75,11 @@ class TestRunnerCollector {
 }
 
 List<TestRunnerCollector> testRunnerOutputParser(String stdout) {
-  List<TestRunnerCollector> testRunnerOutputs = [];
-  List<String> lines = stdout.split('\n');
+  final List<TestRunnerCollector> testRunnerOutputs = [];
+  final List<String> lines = stdout.split('\n');
   int index = 0;
   while (index < lines.length - 1) {
-    TestRunnerCollector testRunnerCollector =
+    final TestRunnerCollector testRunnerCollector =
         _testRunnerOutputParser(lines, index);
     testRunnerOutputs.add(testRunnerCollector);
     index = testRunnerCollector.endIndex;
@@ -90,21 +90,21 @@ List<TestRunnerCollector> testRunnerOutputParser(String stdout) {
 
 TestRunnerCollector _testRunnerOutputParser(
     List<String> lines, int startingIndex) {
-  List<String> testOutput = [];
-  List<String> summary = [];
+  final List<String> testOutput = [];
+  final List<String> summary = [];
   int total = 0;
   int successes = 0;
   int failures = 0;
   int neutrals = 0;
   int atSummaryLine = -1;
   const String summaryLine = ' - Summary: ---------------';
-  RegExp totalLine = RegExp(r'(\d*) tests ran\.');
-  RegExp successLine = RegExp(r'(\d*) passed\.');
-  RegExp failedLine = RegExp(r'(\d*) failed\.');
-  RegExp neutralLine = RegExp(r'(\d*) skipped\/inconclusive\.');
+  final RegExp totalLine = RegExp(r'(\d*) tests ran\.');
+  final RegExp successLine = RegExp(r'(\d*) passed\.');
+  final RegExp failedLine = RegExp(r'(\d*) failed\.');
+  final RegExp neutralLine = RegExp(r'(\d*) skipped\/inconclusive\.');
   int i = startingIndex;
   for (i; (i < lines.length - 1 || atSummaryLine == 7); i++) {
-    String line = lines[i];
+    final String line = lines[i];
 
     if (line.contains(summaryLine)) {
       atSummaryLine = 0;
@@ -157,7 +157,7 @@ TestRunnerCollector _testRunnerOutputParser(
 }
 
 int? _getValueFromRegExLine(RegExp regExp, String line) {
-  RegExpMatch? matches = regExp.firstMatch(line);
+  final RegExpMatch? matches = regExp.firstMatch(line);
   if (matches != null && matches.group(1) != null) {
     return int.tryParse(matches.group(1)!);
   }

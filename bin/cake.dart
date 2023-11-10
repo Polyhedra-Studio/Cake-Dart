@@ -5,10 +5,10 @@ import 'runner.dart';
 import 'settings.dart';
 
 void main(List<String> arguments) async {
-  CakeSettings settings = CakeSettings(arguments);
-  Runner runner = Runner();
+  final CakeSettings settings = CakeSettings(arguments);
+  final Runner runner = Runner();
 
-  List<FileSystemEntity> cakeList = await runner.cakeFileList;
+  final List<FileSystemEntity> cakeList = await runner.cakeFileList;
   if (cakeList.isEmpty) {
     return TestMessage('Cake Test Runner',
             message:
@@ -23,15 +23,15 @@ void main(List<String> arguments) async {
 
   // [Interactive mode]
   bool shouldContinue = true;
-  String promptMessage =
+  const String promptMessage =
       'Cake Tester is in interactive mode. Type "e" or "exit" to exit, "h" or "help" for more options.';
-  String testsCompleteMessage = '---Tests Complete---';
+  const String testsCompleteMessage = '---Tests Complete---';
   if (!settings.isVsCode) {
     print(promptMessage);
   }
 
   while (shouldContinue) {
-    String? input = stdin.readLineSync();
+    final String? input = stdin.readLineSync();
 
     if (input == null || input.isEmpty) {
       if (!settings.isVsCode) {
@@ -68,15 +68,15 @@ To run specific tests, interactive mode supports similar flags to non-interactiv
       continue;
     }
 
-    RegExp flagMatch = RegExp(r'^(-t|--t[tgr]e?)\s(.*)');
+    final RegExp flagMatch = RegExp(r'^(-t|--t[tgr]e?)\s(.*)');
     if (flagMatch.hasMatch(input)) {
       final match = flagMatch.firstMatch(input);
       if (match != null) {
-        String? flag = match.group(1);
-        String? input = match.group(2);
+        final String? flag = match.group(1);
+        final String? input = match.group(2);
 
         if (flag != null && input != null) {
-          CakeSettings inputSettings = CakeSettings([flag, input]);
+          final CakeSettings inputSettings = CakeSettings([flag, input]);
           await runner.run(inputSettings);
           if (!settings.isVsCode) {
             print(testsCompleteMessage);
