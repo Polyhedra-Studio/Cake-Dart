@@ -4,7 +4,7 @@
         [X] Make setup and all other functions optionally async
         [X] When all tests ~~pass or one tests fail~~ finish, post a summary message
         [X] Add Four spaces to indent error messages
-        [ ] Add a result for "stubbed" tests
+        [X] Add a result for "stubbed" tests
         [X] Add groups for tests
             [X] Groups should indent children tests
             [X] Groups should have a title and output name
