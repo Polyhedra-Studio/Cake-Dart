@@ -2,7 +2,7 @@ part of cake;
 
 class Group<GroupContext extends Context> extends _Group<GroupContext> {
   Group(
-    super.title,
+    super._title,
     super.children, {
     super.setup,
     super.teardown,
@@ -11,7 +11,7 @@ class Group<GroupContext extends Context> extends _Group<GroupContext> {
   });
 
   Group.skip(
-    super.title,
+    super._title,
     super.children, {
     super.setup,
     super.teardown,
@@ -30,7 +30,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   bool _filterAppliesToChildren = false;
 
   _Group(
-    super.title,
+    super._title,
     this.children, {
     super.setup,
     super.teardown,
@@ -95,7 +95,9 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
 
   @override
   Future<_TestResult> _getResult(
-      GroupContext testContext, FilterSettings filterSettings) async {
+    GroupContext testContext,
+    FilterSettings filterSettings,
+  ) async {
     return _getResultShared(
       setupFn: () => _runSetup(testContext),
       teardownFn: () => _runTeardown(testContext),
@@ -121,7 +123,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       return _TestNeutral.result(_title, message: 'Skipped');
     }
 
-    _TestResult? setupFailure = await setupFn();
+    final _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
       return setupFailure;
     }
@@ -137,8 +139,8 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       }
 
       // Create a new context so siblings don't affect each other
-      GroupContext childContext = translateContextFn(child);
-      _TestResult result = await child._run(childContext, filterSettings);
+      final GroupContext childContext = translateContextFn(child);
+      final _TestResult result = await child._run(childContext, filterSettings);
 
       if (result is _TestPass) childSuccessCount++;
       if (result is _TestFailure) childFailCount++;
@@ -149,7 +151,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       }
     }
 
-    _TestResult? teardownFailure = await teardownFn();
+    final _TestResult? teardownFailure = await teardownFn();
     if (teardownFailure != null) {
       return teardownFailure;
     }

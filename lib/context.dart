@@ -27,7 +27,7 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   }
 
   @override
-  operator [](Object? key) {
+  dynamic operator [](Object? key) {
     return _context[key];
   }
 
@@ -93,12 +93,12 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   }
 
   @override
-  putIfAbsent(String key, Function() ifAbsent) {
+  dynamic putIfAbsent(String key, Function() ifAbsent) {
     return _context.putIfAbsent(key, ifAbsent);
   }
 
   @override
-  remove(Object? key) {
+  dynamic remove(Object? key) {
     return _context.remove(key);
   }
 
@@ -108,7 +108,8 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   }
 
   @override
-  update(String key, Function(dynamic value) update, {Function()? ifAbsent}) {
+  dynamic update(String key, Function(dynamic value) update,
+      {Function()? ifAbsent}) {
     return _context.update(key, update, ifAbsent: ifAbsent);
   }
 

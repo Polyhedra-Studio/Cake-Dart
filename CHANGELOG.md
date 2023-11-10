@@ -2,6 +2,8 @@
 - [BREAKING] Updated minimum Dart version to 2.17.0
 - [ADD] Added the skip constructor to all tests, groups, and TestRunners. When using skip, no code will be run within that object and all it's children - meaning setup/teardown is not called.
 - [MOD] Stubbed tests will also display a skip message (treated the same was as skip).
+- [FIX] Fixed isNotNull error message from not displaying the error'd object.
+- [META] Added new linting rules to bring in line with other projects
 
 ## 4.0.0
 - [BREAKING] Removed Expected type from TestRunner and Groups. This wasn't being used a whole lot and felt really redundant when TestRunnerWithContext is used pretty extensively.

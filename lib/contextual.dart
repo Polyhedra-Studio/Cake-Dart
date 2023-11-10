@@ -94,7 +94,7 @@ abstract class Contextual<ContextualContext extends Context> {
     if (_contextBuilder == null) {
       return Context.deepCopy(oldContext) as ContextualContext;
     }
-    ContextualContext context = _contextBuilder!();
+    final ContextualContext context = _contextBuilder!();
     context.copy(oldContext);
     return context;
   }

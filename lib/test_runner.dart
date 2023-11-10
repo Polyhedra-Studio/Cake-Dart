@@ -3,15 +3,15 @@ part of cake;
 class TestRunner<TestRunnerContext extends Context>
     extends _TestRunner<TestRunnerContext> {
   TestRunner(
-    super.title,
-    super.tests, {
+    super._title,
+    super.children, {
     required super.contextBuilder,
     super.options,
   });
 
   TestRunner.skip(
-    super.title,
-    super.tests, {
+    super._title,
+    super.children, {
     required super.contextBuilder,
     super.options,
   }) : super(skip: true);
@@ -19,14 +19,14 @@ class TestRunner<TestRunnerContext extends Context>
 
 class TestRunnerDefault extends TestRunner<Context> {
   TestRunnerDefault(
-    super.title,
-    super.tests, {
+    super._title,
+    super.children, {
     super.options,
   }) : super(contextBuilder: Context.new);
 
   TestRunnerDefault.skip(
-    super.title,
-    super.tests, {
+    super._title,
+    super.children, {
     super.options,
   }) : super.skip(contextBuilder: Context.new);
 }
@@ -36,8 +36,8 @@ class _TestRunner<TestRunnerContext extends Context>
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
   _TestRunner(
-    super.title,
-    super.tests, {
+    super._title,
+    super.children, {
     required TestRunnerContext Function() contextBuilder,
     super.options,
     super.skip,
@@ -84,7 +84,7 @@ class _TestRunner<TestRunnerContext extends Context>
     super.report(filterSettings);
 
     // Get count of successes, failures, and neutrals
-    String message = Printer.summary(
+    final String message = Printer.summary(
       total: total,
       successes: successes,
       failures: failures,

@@ -3,7 +3,7 @@ part of cake;
 class Test<ExpectedType, TestContext extends Context>
     extends _Test<ExpectedType, TestContext> {
   Test(
-    super.title, {
+    super._title, {
     super.setup,
     super.teardown,
     super.action,
@@ -13,7 +13,7 @@ class Test<ExpectedType, TestContext extends Context>
   });
 
   Test.skip(
-    super.title, {
+    super._title, {
     super.setup,
     super.teardown,
     super.action,
@@ -23,7 +23,7 @@ class Test<ExpectedType, TestContext extends Context>
   }) : super(skip: true);
 
   Test.stub(
-    super.title, {
+    super._title, {
     super.contextBuilder,
   }) : super(
           assertions: (test) => [],

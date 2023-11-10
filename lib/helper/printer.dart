@@ -18,11 +18,11 @@ class Printer {
       required int successes,
       required int failures,
       required int neutrals}) {
-    int totalCharCount = total.toString().length;
-    int successCharCount = successes.toString().length;
-    int failureCharCount = failures.toString().length;
-    int neutralCharCount = neutrals.toString().length;
-    int maxCharCount = [
+    final int totalCharCount = total.toString().length;
+    final int successCharCount = successes.toString().length;
+    final int failureCharCount = failures.toString().length;
+    final int neutralCharCount = neutrals.toString().length;
+    final int maxCharCount = [
       totalCharCount,
       successCharCount,
       failureCharCount,
@@ -37,10 +37,13 @@ class Printer {
     const int baseNeutralSpacer = 1;
     const int boxLength = 29;
 
-    int totalExtraSpace = maxCharCount - totalCharCount + baseTotalSpacer;
-    int successExtraSpace = maxCharCount - successCharCount + baseSuccessSpacer;
-    int failureExtraSpace = maxCharCount - failureCharCount + baseFailureSpacer;
-    int neutralExtraSpace = maxCharCount - neutralCharCount + baseNeutralSpacer;
+    final int totalExtraSpace = maxCharCount - totalCharCount + baseTotalSpacer;
+    final int successExtraSpace =
+        maxCharCount - successCharCount + baseSuccessSpacer;
+    final int failureExtraSpace =
+        maxCharCount - failureCharCount + baseFailureSpacer;
+    final int neutralExtraSpace =
+        maxCharCount - neutralCharCount + baseNeutralSpacer;
 
     // There are only two fields that might realistically overflow the box
     // - total and neutrals. Since total will always be >= passed and failed

@@ -10,7 +10,7 @@ void main() {
         Expect.isFalse(true),
         Expect.isTrue(false),
       ],
-      options: TestOptions(failOnFirstExpect: false),
+      options: const TestOptions(failOnFirstExpect: false),
     ),
     Test(
       'Should report only one failure by default',
@@ -29,7 +29,7 @@ void main() {
         Expect.isFalse(true), // This is a failure, but shouldn't be run
         Expect.isTrue(false), // This is also a failure, but shouldn't be run
       ],
-      options: TestOptions(failOnFirstExpect: true),
+      options: const TestOptions(failOnFirstExpect: true),
     )
   ]);
 }
