@@ -25,7 +25,10 @@ class Test<ExpectedType, TestContext extends Context>
   Test.stub(
     super.title, {
     super.contextBuilder,
-  }) : super(assertions: (test) => []);
+  }) : super(
+          assertions: (test) => [],
+          skip: true,
+        );
 }
 
 class _Test<ExpectedType, TestContext extends Context>
