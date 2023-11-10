@@ -1,30 +1,67 @@
-# This file configures the static analysis results for your project (errors,
-# warnings, and lints).
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
 #
-# This enables the 'recommended' set of lints from `package:lints`.
-# This set helps identify many issues that may lead to problems when running
-# or consuming Dart code, and enforces writing Dart using a single, idiomatic
-# style and format.
-#
-# If you want a smaller set of lints you can change this to specify
-# 'package:lints/core.yaml'. These are just the most critical lints
-# (the recommended set includes the core lints).
-# The core lints are also what is used by pub.dev for scoring packages.
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
 
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
 include: package:lints/recommended.yaml
 
-# Uncomment the following section to specify additional rules.
+linter:
+  # The lint rules applied to this project can be customized in the
+  # section below to disable rules from the `package:flutter_lints/flutter.yaml`
+  # included above or to enable additional rules. A list of all available lints
+  # and their documentation is published at
+  # https://dart-lang.github.io/linter/lints/index.html.
+  #
+  # Instead of disabling a lint rule for the entire project in the
+  # section below, it can also be suppressed for a single line of code
+  # or a specific dart file by using the `// ignore: name_of_lint` and
+  # `// ignore_for_file: name_of_lint` syntax on the line or in the file
+  # producing the lint.
+  rules:
 
-# linter:
-#   rules:
-#     - camel_case_types
+    always_declare_return_types: true
+    avoid_escaping_inner_quotes: true
+    avoid_multiple_declarations_per_line: true
+    avoid_void_async: true
+    avoid_unused_constructor_parameters: true
+    avoid_unnecessary_containers: true
+    conditional_uri_does_not_exist: true
+    directives_ordering: true
+    eol_at_end_of_file: true
+    leading_newlines_in_multiline_strings: true
+    matching_super_parameters: true
+    one_member_abstracts: true
+    require_trailing_commas: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_constructors_over_static_methods: true
+    prefer_final_locals: true
 
-# analyzer:
-#   exclude:
-#     - path/to/excluded/files/**
+    # JS-Sensitive Rules
+    avoid_js_rounded_ints: true
+    avoid_double_and_int_checks: true
 
-# For more information about the core and recommended set of lints, see
-# https://dart.dev/go/core-lints
+    # Turning default rules off
+    prefer_adjacent_string_concatenation: true
+    prefer_function_declarations_over_variables: false
 
-# For additional information about configuring this file, see
+
+# Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+# https://dartcodemetrics.dev/docs/getting-started/introduction
+analyzer:
+  plugins:
+    - dart_code_metrics
+
+dart_code_metrics:
+  rules:
+    - prefer-trailing-comma
+    - prefer-first
+    - prefer-last
+    - prefer-match-file-name

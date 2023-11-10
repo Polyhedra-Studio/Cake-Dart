@@ -1,3 +1,6 @@
+## 5.0.0
+- [ADD] Added the skip constructor to all tests, groups, and TestRunners. When using skip, no code will be run within that object and all it's children - meaning setup/teardown is not called.
+
 ## 4.0.0
 - [BREAKING] Removed Expected type from TestRunner and Groups. This wasn't being used a whole lot and felt really redundant when TestRunnerWithContext is used pretty extensively.
 - [BREAKING] Removed {Object}WithContext in favor of just using `{Object}Default` when a context is not used and `{Object}<Context>` when it is. More often than not, a custom context is used with tests, an in the case there isn't, a context object is setup by default, which will hopefully make it easier to follow. Hopefully this will also make tests less wordy.

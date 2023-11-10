@@ -10,10 +10,11 @@
             [X] Groups should have a title and output name
             [X] Groups should have a setup and teardown step
         [X] Add teardown for individual tests
-        [ ] Add skip constructor
+        [X] Add skip constructor
         [X] Allow for extending the context item
         [ ] Show the test runner summary for every time _cake_ is run, not every time a test runner finishes.
         [X] Should fail test on first expect failure (enable by default, allow bypass as an option)
+        [ ] Be able to run this within anything that utilizes flutter
 
     - ExpectTypes
         - More?

@@ -3,42 +3,45 @@ part of cake;
 class TestRunner<TestRunnerContext extends Context>
     extends _TestRunner<TestRunnerContext> {
   TestRunner(
-    String title,
-    List<Contextual<TestRunnerContext>> tests, {
-    required TestRunnerContext Function() contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          tests,
-          contextBuilder: contextBuilder,
-          options: options,
-        );
+    super.title,
+    super.tests, {
+    required super.contextBuilder,
+    super.options,
+  });
+
+  TestRunner.skip(
+    super.title,
+    super.tests, {
+    required super.contextBuilder,
+    super.options,
+  }) : super(skip: true);
 }
 
 class TestRunnerDefault extends TestRunner<Context> {
   TestRunnerDefault(
-    String title,
-    List<Contextual<Context>> tests, {
-    TestOptions? options,
-  }) : super(title, tests, contextBuilder: Context.new, options: options);
+    super.title,
+    super.tests, {
+    super.options,
+  }) : super(contextBuilder: Context.new);
+
+  TestRunnerDefault.skip(
+    super.title,
+    super.tests, {
+    super.options,
+  }) : super.skip(contextBuilder: Context.new);
 }
 
 class _TestRunner<TestRunnerContext extends Context>
     extends _Group<TestRunnerContext> {
-  final List<Contextual<TestRunnerContext>> tests;
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
 
   _TestRunner(
-    String title,
-    this.tests, {
+    super.title,
+    super.tests, {
     required TestRunnerContext Function() contextBuilder,
-    TestOptions? options,
-  }) : super(
-          title,
-          tests,
-          contextBuilder: contextBuilder,
-          options: options,
-        ) {
+    super.options,
+    super.skip,
+  }) : super(contextBuilder: contextBuilder) {
     // Since this is the root that kicks off the rest of the tests, build that context
     _context = contextBuilder();
     _runAll();
@@ -70,6 +73,7 @@ class _TestRunner<TestRunnerContext extends Context>
   }
 
   Future<void> _runAll() async {
+    if (skip) return;
     if (!_shouldRunWithFilter(filterSettings)) return;
     await _run(_context, filterSettings);
     report(filterSettings);
