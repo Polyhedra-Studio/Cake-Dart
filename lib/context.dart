@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
@@ -88,7 +88,8 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
 
   @override
   Map<K2, V2> map<K2, V2>(
-      MapEntry<K2, V2> Function(String key, dynamic value) convert) {
+    MapEntry<K2, V2> Function(String key, dynamic value) convert,
+  ) {
     return _context.map(convert);
   }
 
@@ -108,8 +109,11 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   }
 
   @override
-  dynamic update(String key, Function(dynamic value) update,
-      {Function()? ifAbsent}) {
+  dynamic update(
+    String key,
+    Function(dynamic value) update, {
+    Function()? ifAbsent,
+  }) {
     return _context.update(key, update, ifAbsent: ifAbsent);
   }
 

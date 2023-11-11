@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class Expect<ExpectedType> {
   final ExpectedType? _expected;

@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 abstract class Contextual<ContextualContext extends Context> {
   final String _title;
@@ -79,11 +79,14 @@ abstract class Contextual<ContextualContext extends Context> {
       } catch (err) {
         if (_result is _TestPass) {
           return _TestFailure.result(
-              _title, 'Tests passed, but failed during teardown.',
-              err: err);
+            _title,
+            'Tests passed, but failed during teardown.',
+            err: err,
+          );
         } else {
           _messages.add(
-              _TestFailure.result(_title, 'Failed during teardown', err: err));
+            _TestFailure.result(_title, 'Failed during teardown', err: err),
+          );
         }
       }
     }

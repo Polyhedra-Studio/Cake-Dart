@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class TestMessage extends _TestResult {
   String? message;

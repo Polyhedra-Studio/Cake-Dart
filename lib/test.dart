@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
   TestOf(
@@ -127,14 +127,17 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
   @override
   Future<_TestResult> _getResult(
-      TestContext testContext, FilterSettings filterSettings) async {
+    TestContext testContext,
+    FilterSettings filterSettings,
+  ) async {
     return _getResultShared(
-        assignContextFn: () => _context.applyParentContext(testContext),
-        setupFn: () => _runSetup(_context),
-        actionFn: action != null ? () => action!(_context) : () => {},
-        teardownFn: () => _runTeardown(_context),
-        assertionsFn: () => assertions(_context),
-        shouldRunAction: action != null);
+      assignContextFn: () => _context.applyParentContext(testContext),
+      setupFn: () => _runSetup(_context),
+      actionFn: action != null ? () => action!(_context) : () => {},
+      teardownFn: () => _runTeardown(_context),
+      assertionsFn: () => assertions(_context),
+      shouldRunAction: action != null,
+    );
   }
 
   Future<_TestResult> _getResultShared({
@@ -156,12 +159,15 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
       assignContextFn();
     } catch (err) {
       _ranSuccessfully = false;
-      _result = _TestFailure.result(_title, 'Failed trying to assign context',
-          err: err);
+      _result = _TestFailure.result(
+        _title,
+        'Failed trying to assign context',
+        err: err,
+      );
       return _result!;
     }
 
-    _TestResult? setupFailure = await setupFn();
+    final _TestResult? setupFailure = await setupFn();
     if (setupFailure != null) {
       ranSuccessfully = false;
       return setupFailure;
@@ -169,7 +175,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
     if (shouldRunAction) {
       try {
-        dynamic value = await actionFn();
+        final dynamic value = await actionFn();
         if (value != null) {
           _context.actual = value;
         }
@@ -182,11 +188,11 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
     // Don't bother running assertions if we've already come up if this is pass or fail
     if (_result == null) {
-      List<Expect> asserts = assertionsFn();
+      final List<Expect> asserts = assertionsFn();
       bool hasFailedATest = false;
 
       for (int i = 0; i < asserts.length; i++) {
-        Expect expect = asserts[i];
+        final Expect expect = asserts[i];
         _TestResult assertResult;
         // Skip rest of assertions if an assert has failed already,
         // allowing a bypass with an option flag.
@@ -201,8 +207,10 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
             assertResult = expect._run();
           } catch (err) {
             assertResult = _TestFailure.result(
-                _title, 'Failed while running assertions',
-                err: err);
+              _title,
+              'Failed while running assertions',
+              err: err,
+            );
           }
 
           if (assertResult is _TestFailure) {
@@ -222,7 +230,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
       }
     }
 
-    _TestResult? teardownFailure = await teardownFn();
+    final _TestResult? teardownFailure = await teardownFn();
     if (teardownFailure != null) {
       ranSuccessfully = false;
       return teardownFailure;
@@ -230,9 +238,11 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
     if (_result == null) {
       ranSuccessfully = false;
-      _result = _TestNeutral.result(_title,
-          message:
-              'Expected result by now! Is this something running asynchronously?');
+      _result = _TestNeutral.result(
+        _title,
+        message:
+            'Expected result by now! Is this something running asynchronously?',
+      );
     }
 
     // At this point if this hasn't failed, this has ran successfully

@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class _TestFailure extends _TestResult {
   String message;

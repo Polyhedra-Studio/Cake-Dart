@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 abstract class _TestResult {
   String testTitle;
