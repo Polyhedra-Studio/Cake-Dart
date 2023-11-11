@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class TestRunner<TestRunnerContext extends Context>
     extends _TestRunner<TestRunnerContext> {

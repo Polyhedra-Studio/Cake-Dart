@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class _TestPass extends _TestResult {
   _TestPass.result(super.testTitle);

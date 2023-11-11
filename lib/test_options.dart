@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class TestOptions {
   final bool? _failOnFirstExpect;

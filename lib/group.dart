@@ -1,4 +1,4 @@
-part of cake;
+part of 'cake.dart';
 
 class GroupOf<ExpectedType> extends _Group<Context<ExpectedType>> {
   GroupOf(
