@@ -1,5 +1,7 @@
+.dart_tool
 .vscode
 test
 
 analysis_options.yaml
+pubspec.lock
 update_package.sh
