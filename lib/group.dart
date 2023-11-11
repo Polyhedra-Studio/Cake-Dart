@@ -1,5 +1,25 @@
 part of cake;
 
+class GroupOf<ExpectedType> extends _Group<Context<ExpectedType>> {
+  GroupOf(
+    super._title,
+    super.children, {
+    super.setup,
+    super.teardown,
+    super.options,
+  }) : super(
+          contextBuilder: Context<ExpectedType>.new,
+        );
+
+  GroupOf.skip(
+    super._title,
+    super.children, {
+    super.setup,
+    super.teardown,
+    super.options,
+  }) : super(contextBuilder: Context<ExpectedType>.new, skip: true);
+}
+
 class Group<GroupContext extends Context> extends _Group<GroupContext> {
   Group(
     super._title,
@@ -19,8 +39,6 @@ class Group<GroupContext extends Context> extends _Group<GroupContext> {
     super.options,
   }) : super(skip: true);
 }
-
-typedef GroupDefault = Group<Context>;
 
 class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   final List<Contextual<GroupContext>> children;

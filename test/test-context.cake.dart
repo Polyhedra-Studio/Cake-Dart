@@ -1,7 +1,7 @@
 import 'package:cake/cake.dart';
 
 void main() async {
-  TestRunnerDefault('Test Runner -  Default Context', []);
+  TestRunnerOf('Test Runner -  Default Context', []);
   TestRunner<Context>(
     'Test Runner - With Context',
     [],
@@ -13,14 +13,14 @@ void main() async {
     contextBuilder: _Extended.new,
   );
   TestRunnerDefault('Test Runner - Parent Test Runner', [
-    GroupDefault('Group Without Context', []),
-    GroupDefault('Group With Context', [], contextBuilder: Context.new),
+    Group('Group Without Context', []),
+    Group('Group With Context', [], contextBuilder: Context.new),
     Group<_Extended>(
       'Group with custom context',
       [],
       contextBuilder: _Extended.new,
     ),
-    GroupDefault('Parent Group', [
+    Group('Parent Group', [
       Group('Nested Group', []),
       Group('Nested Group with context', [], contextBuilder: Context.new),
       Group<_Extended>(
@@ -35,7 +35,7 @@ void main() async {
         ],
       ),
       Test.stub('Nested Test without context'),
-      Test<String, _Extended>.stub(
+      Test<_Extended>.stub(
         'Nested test with custom context',
         contextBuilder: _Extended.new,
       ),
@@ -87,6 +87,48 @@ void main() async {
       ),
     ],
     contextBuilder: _Extended.new,
+  );
+
+  TestRunnerDefault(
+    'Test Runner - TestOf, GroupOf',
+    [
+      TestOf<String>.stub('TestOf'),
+      TestOf<String>.skip('TestOf', assertions: (test) => []),
+      TestOf<String>(
+        'Should test against a string',
+        action: (test) => 'test',
+        assertions: (test) =>
+            [Expect.equals(actual: test.actual, expected: 'test')],
+      ),
+      Group(
+        'Has a TestOf Child',
+        [
+          TestOf<bool>(
+            'Should test against a bool',
+            action: (test) => true,
+            assertions: (test) => [Expect.isTrue(test.actual)],
+          ),
+        ],
+      ),
+      GroupOf<String>(
+        'GroupOf should test against a type',
+        [
+          Test(
+            'Should test against a string',
+            action: (test) => '',
+            assertions: (test) => [Expect.isTrue(test.actual?.isEmpty)],
+          ),
+        ],
+      ),
+      GroupOf.skip('Skipped GroupOf', [
+        Test(
+          'Should test against a string',
+          action: (test) => 'cake',
+          // Intentionally bad assertion
+          assertions: (test) => [Expect.isTrue(test.actual?.isEmpty)],
+        ),
+      ]),
+    ],
   );
 }
 
