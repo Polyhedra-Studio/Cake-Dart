@@ -1,7 +1,36 @@
 part of cake;
 
-class Test<ExpectedType, TestContext extends Context>
-    extends _Test<ExpectedType, TestContext> {
+class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
+  TestOf(
+    super._title, {
+    super.setup,
+    super.teardown,
+    super.action,
+    required super.assertions,
+    super.options,
+  }) : super(contextBuilder: Context<ExpectedType>.new);
+
+  TestOf.skip(
+    super._title, {
+    super.setup,
+    super.teardown,
+    super.action,
+    required super.assertions,
+    super.options,
+  }) : super(
+          contextBuilder: Context<ExpectedType>.new,
+          skip: true,
+        );
+
+  TestOf.stub(super._title)
+      : super(
+          contextBuilder: Context<ExpectedType>.new,
+          assertions: (test) => [],
+          skip: true,
+        );
+}
+
+class Test<TestContext extends Context> extends _Test<TestContext> {
   Test(
     super._title, {
     super.setup,
@@ -31,8 +60,7 @@ class Test<ExpectedType, TestContext extends Context>
         );
 }
 
-class _Test<ExpectedType, TestContext extends Context>
-    extends Contextual<TestContext> {
+class _Test<TestContext extends Context> extends Contextual<TestContext> {
   final FutureOr<dynamic> Function(TestContext test)? action;
   final List<Expect<dynamic>> Function(TestContext test) assertions;
   final List<_TestResult> assertFailures = [];

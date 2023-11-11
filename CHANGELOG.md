@@ -4,6 +4,11 @@
 - [MOD] Stubbed tests will also display a skip message (treated the same was as skip).
 - [FIX] Fixed isNotNull error message from not displaying the error'd object.
 - [META] Added new linting rules to bring in line with other projects
+- [META] Updated License to use MPL-2.0
+- [BREAKING] Removed <ExpectedType, Context<ExpectedType>> on the Test class as it wasn't actually being effective and was quite wordy. This has been replaced with the TestOf<ExpectedType> constructor. This should be a much simpler way to declare a test a simple object.
+- [BREAKING] Removed GroupDefault as of some revisions ago it was no longer useful over just using Group.
+- [ADD] Added GroupOf<ExpectedType> that works similar to TestOf.
+- [ADD] Added TestRunnerOf<ExpectedType> that works similar to TestOf.
 
 ## 4.0.0
 - [BREAKING] Removed Expected type from TestRunner and Groups. This wasn't being used a whole lot and felt really redundant when TestRunnerWithContext is used pretty extensively.

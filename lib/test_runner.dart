@@ -17,7 +17,21 @@ class TestRunner<TestRunnerContext extends Context>
   }) : super(skip: true);
 }
 
-class TestRunnerDefault extends TestRunner<Context> {
+class TestRunnerOf<ExpectedType> extends _TestRunner<Context<ExpectedType>> {
+  TestRunnerOf(
+    super._title,
+    super.children, {
+    super.options,
+  }) : super(contextBuilder: Context<ExpectedType>.new);
+
+  TestRunnerOf.skip(
+    super._title,
+    super.children, {
+    super.options,
+  }) : super(skip: true, contextBuilder: Context<ExpectedType>.new);
+}
+
+class TestRunnerDefault extends _TestRunner<Context> {
   TestRunnerDefault(
     super._title,
     super.children, {
@@ -28,7 +42,7 @@ class TestRunnerDefault extends TestRunner<Context> {
     super._title,
     super.children, {
     super.options,
-  }) : super.skip(contextBuilder: Context.new);
+  }) : super(skip: true, contextBuilder: Context.new);
 }
 
 class _TestRunner<TestRunnerContext extends Context>

@@ -70,7 +70,7 @@ void main() async {
         ],
       ),
     ]),
-    GroupDefault.skip('This GroupDefault should be skipped', [
+    Group.skip('This GroupDefault should be skipped', [
       Test(
         'This test should be skipped',
         assertions: (test) => [
@@ -78,7 +78,7 @@ void main() async {
         ],
       ),
     ]),
-    GroupDefault('This GroupDefault should not be skipped', [
+    GroupOf('This GroupDefault should not be skipped', [
       Test(
         'This test should not be skipped',
         assertions: (test) => [
