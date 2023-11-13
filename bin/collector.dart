@@ -15,7 +15,7 @@ class Collector {
     neutrals += collector.neutrals;
   }
 
-  void printMessage(bool verbose) {
+  void printMessage({required bool verbose}) {
     final String summary = Printer.summary(
       total: total,
       successes: successes,

@@ -21,9 +21,9 @@ packages:
     dependency: "direct dev"
     description:
       name: polyhedra_lint
-      sha256: "77b742e4f6e742f322b927d44eeaa9ca514abd966685a5513bfd3a722c68738c"
-      url: "http://butterfree.lan:30117"
+      sha256: e82998b90683dff9a4eba53009665dac21aa0169814f0b2db8bc250a4abd97b4
+      url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.0.4"
 sdks:
   dart: ">=3.1.0 <4.0.0"

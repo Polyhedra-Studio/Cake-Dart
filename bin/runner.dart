@@ -29,9 +29,11 @@ class Runner {
     final List<FileSystemEntity> fileList = await cakeFileList;
 
     final Iterable<Future<void>> processes = fileList
-        .where((file) => settings.fileFilter != null
-            ? file.path.contains(settings.fileFilter!)
-            : true,)
+        .where(
+      (file) => settings.fileFilter != null
+          ? file.path.contains(settings.fileFilter!)
+          : true,
+    )
         .map<Future<void>>((file) async {
       // If we're filtering by a keyword, this needs to be passed via define
       final List<String> processArgs = settings.testFilter.toProperties();
@@ -54,7 +56,7 @@ class Runner {
     });
 
     await Future.wait(processes);
-    collector.printMessage(settings.verbose | settings.isVsCode);
+    collector.printMessage(verbose: settings.verbose || settings.isVsCode);
     if (!settings.isVsCode) {
       Printer.neutral(''); // This makes sure to clear out any color changes
     }

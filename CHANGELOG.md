@@ -1,3 +1,7 @@
+## 5.0.2
+- [PKG] Moved lint to use shared PH lint library
+- [MOD] Updates styling to match new rules.
+
 ## 5.0.1
 - [FIX] Fixed a bug where tests without a group would still run if groups were filtered.
 
