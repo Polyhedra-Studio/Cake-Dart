@@ -78,8 +78,18 @@ class _TestRunner<TestRunnerContext extends Context>
 
       // Check if children should run, if so this should run
       _filterAppliesToChildren = true;
-      return children
-          .any((child) => child._shouldRunWithFilter(filterSettings));
+
+      if (filterSettings.hasGroupSearchFor ||
+          filterSettings.hasGroupFilterTerm) {
+        // Only check against children that are groups, not tests
+        return children
+            .whereType<_Group>()
+            .any((child) => child._shouldRunWithFilter(filterSettings));
+      } else {
+        _filterAppliesToChildren = true;
+        return children
+            .any((child) => child._shouldRunWithFilter(filterSettings));
+      }
     }
 
     // No filter - this should run
