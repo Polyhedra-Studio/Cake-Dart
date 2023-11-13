@@ -9,14 +9,30 @@
             "program": "bin/cake.dart",
             "request": "launch",
             "type": "dart",
-            "args": ["--tte", "Test should be true"]
+            "args": [
+                "--tte", "True should be true"
+            ],
         },
         {
             "name": "Run test basic - with args",
-            "program": "test/test-simple.cake.dart",
+            "program": "test/test-basic.cake.dart",
             "request": "launch",
             "type": "dart",
-            "toolArgs": ["--define=testSearchFor=True is true - shorthand"]
+            "toolArgs": ["--define=testSearchFor=True should be true"]
+        },
+        {
+            "name": "Run group simple - with args",
+            "program": "test/test-group.cake.dart",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": ["--define=groupSearchFor=Should run all children tests"]
+        },
+        {
+            "name": "Run group complex - with args",
+            "program": "test/test-context.cake.dart",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": ["--define=groupSearchFor=Group with same context passes context to children"]
         }
     ]
 }

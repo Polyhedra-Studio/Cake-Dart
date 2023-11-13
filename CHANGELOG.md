@@ -1,3 +1,6 @@
+## 5.0.1
+- [FIX] Fixed a bug where tests without a group would still run if groups were filtered.
+
 ## 5.0.0
 - [BREAKING] Updated minimum Dart version to 2.17.0
 - [ADD] Added the skip constructor to all tests, groups, and TestRunners. When using skip, no code will be run within that object and all it's children - meaning setup/teardown is not called.
