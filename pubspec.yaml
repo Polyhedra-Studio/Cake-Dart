@@ -1,8 +1,7 @@
 name: cake
-description: The tiniest little unit tester
+description: The lightweight, explicit testing framework for Dart.
 version: 5.0.1
-repository: http://butterfree.lan:30120/dart/cake
-publish_to: http://butterfree.lan:30117
+repository: https://github.com/Polyhedra-Studio/Cake.git
 
 environment:
   sdk: '>=2.17.0 <4.0.0'
