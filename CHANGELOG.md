@@ -1,3 +1,10 @@
+## 5.1.0 (12-19-2023)
+- [ADD][CLI] Added Help flag (`-h` or `--help`) to show help in non-interactive mode
+- [MOD][CLI] Interactive mode can also be turned on with the `--interactive` flag (previously just `-i` before)
+- [FIX] Setup error during Group setup stage no longer throws null error by trying to report children.
+- [MOD] Very minor cleanup of error responses.
+- [META] Readme cleaned up of some old data
+
 ## 5.0.2
 - [PKG] Moved lint to use shared PH lint library
 - [MOD] Updates styling to match new rules.

@@ -18,7 +18,7 @@ void main() {
         Expect.equals(actual: true, expected: false),
         Expect.isTrue(true), // This one is meant to pass
         Expect.isFalse(true), // This is a failure, but shouldn't be run
-        Expect.isTrue(false), // This is also a failure, but shouldn't be run
+        Expect.isTrue(false), // This is also a failure, and shouldn't be run
       ],
     ),
     Test(
@@ -27,9 +27,31 @@ void main() {
         Expect.equals(actual: true, expected: false),
         Expect.isTrue(true), // This one is meant to pass
         Expect.isFalse(true), // This is a failure, but shouldn't be run
-        Expect.isTrue(false), // This is also a failure, but shouldn't be run
+        Expect.isTrue(false), // This is also a failure, and shouldn't be run
       ],
       options: const TestOptions(failOnFirstExpect: true),
+    ),
+    Group('Groups should report as failed when at least one test has failed', [
+      Test(
+        'This test should fail',
+        assertions: (test) => [Expect.isTrue(false)],
+      ),
+      Test(
+        'This test should pass',
+        assertions: (test) => [Expect.isTrue(true)],
+      ),
+    ]),
+    Group(
+      'Critical Failure during group setup should not try to report children',
+      [
+        Test(
+          'This test should fail',
+          assertions: (test) => [Expect.isTrue(true)],
+        ),
+      ],
+      setup: (test) {
+        throw 'Test critical error!';
+      },
     ),
   ]);
 }

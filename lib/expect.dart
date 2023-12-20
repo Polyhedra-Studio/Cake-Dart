@@ -67,7 +67,8 @@ class Expect<ExpectedType> {
     if (_expected == _actual) {
       return _TestPass();
     } else {
-      return _TestFailure('Equality failed: Expected $_expected, got $_actual');
+      return _TestFailure(
+          'Equality failed: Expected $_expected, got $_actual.');
     }
   }
 
@@ -78,7 +79,7 @@ class Expect<ExpectedType> {
       return _TestPass();
     } else {
       return _TestFailure(
-        'Inequality failed: Expected $_actual to not equal $_expected',
+        'Inequality failed: Expected $_actual to not equal $_expected.',
       );
     }
   }

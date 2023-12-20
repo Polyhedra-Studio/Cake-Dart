@@ -13,11 +13,12 @@ class Printer {
     print('\x1B[90m$message\x1B[0m');
   }
 
-  static String summary(
-      {required int total,
-      required int successes,
-      required int failures,
-      required int neutrals,}) {
+  static String summary({
+    required int total,
+    required int successes,
+    required int failures,
+    required int neutrals,
+  }) {
     final int totalCharCount = total.toString().length;
     final int successCharCount = successes.toString().length;
     final int failureCharCount = failures.toString().length;
@@ -96,14 +97,14 @@ class Printer {
     }
     message += '|\n';
 
-    // |  - $failures passed.               |
+    // |  - $failures failed.               |
     message += '|  - $failures failed.';
     for (int i = 1; i < failureExtraSpace + allExtraSpace; i++) {
       message += ' ';
     }
     message += '|\n';
 
-    // |  - $neutrals passed.               |
+    // |  - $neutrals skipped/inconclusive. |
     message += '|  - $neutrals skipped/inconclusive.';
     for (int i = 1; i < neutralExtraSpace + allExtraSpace; i++) {
       message += ' ';

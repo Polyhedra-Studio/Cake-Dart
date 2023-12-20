@@ -2,7 +2,7 @@
 The tiniest unit tester, built for dart
 
 # How to write unit tests
-- Cake will search for anything that has .cake.test for the file name in the directory that it's run in
+- Cake will search for anything that has .cake.dart for the file name in the directory that it's run in
 - Example of how to write unit tests:
 ```dart
 import 'package:cake/expect.dart';
@@ -71,7 +71,7 @@ enum ExpectType {
 
 # How to run the test runner
 - The package will need to run globally. Install via this command:
-`dart pub global activate cake --hosted-url http://butterfree.lan:30117`
+`dart pub global activate cake`
 - After it's installed, you can run it by using `dart run cake` in the directory that you want to run your tests in. It will search any files in the directory or any sub-folders ending with `cake.dart`.
 - You can also add flags to run specific tests or view output from specific tests.
 

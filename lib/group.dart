@@ -125,24 +125,25 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   }
 
   Future<_TestResult> _getResultShared({
-    required Future<_TestResult?> Function() setupFn,
-    required Future<_TestResult?> Function() teardownFn,
+    required Future<_TestFailure?> Function() setupFn,
+    required Future<_TestFailure?> Function() teardownFn,
     required GroupContext Function(Contextual<GroupContext> child)
         translateContextFn,
     required FilterSettings filterSettings,
   }) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
-      return _TestNeutral.result(_title, message: 'Empty - no tests');
+      return _TestNeutral.result(_title, message: 'Empty - no tests.');
     }
 
     // This has been marked as skipped - do nothing.
     if (skip) {
-      return _TestNeutral.result(_title, message: 'Skipped');
+      return _TestNeutral.result(_title, message: 'Skipped.');
     }
 
-    final _TestResult? setupFailure = await setupFn();
+    final _TestFailure? setupFailure = await setupFn();
     if (setupFailure != null) {
+      _criticalFailure(setupFailure.message, setupFailure.err);
       return setupFailure;
     }
 
@@ -237,8 +238,8 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   }
 
   @override
-  void _criticalFailure(String errorMessage) {
-    _result = _TestFailure.result(_title, errorMessage);
+  void _criticalFailure(String errorMessage, Object? err) {
+    super._criticalFailure(errorMessage, err);
     for (var element in children) {
       element._criticalInconclusive();
       if (element is Test) {

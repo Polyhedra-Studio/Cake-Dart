@@ -6,12 +6,14 @@ class CakeSettings {
   final bool isVsCode;
   final FilterSettings testFilter;
   final bool interactive;
+  final bool showHelp;
 
   CakeSettings(List<String> args)
       : verbose = args.contains('-v') || args.contains('--verbose'),
         fileFilter = _getFromArgs(args, '-f'),
         isVsCode = args.contains('--vs-code'),
-        interactive = args.contains('-i'),
+        interactive = args.contains('-i') || args.contains('--interactive'),
+        showHelp = args.contains('-h') || args.contains('--help'),
         testFilter = FilterSettings(
           generalSearchTerm: _getFromArgs(args, '-t'),
           testFilterTerm: _getFromArgs(args, '--tt'),

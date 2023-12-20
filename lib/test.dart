@@ -181,7 +181,8 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
         }
       } catch (err) {
         // We want to continue and try to teardown anything we've set up even if it's all haywire at this point
-        _result = _TestFailure.result(_title, 'Failed during action', err: err);
+        _result =
+            _TestFailure.result(_title, 'Failed during action.', err: err);
         ranSuccessfully = false;
       }
     }
@@ -208,7 +209,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
           } catch (err) {
             assertResult = _TestFailure.result(
               _title,
-              'Failed while running assertions',
+              'Failed while running assertions.',
               err: err,
             );
           }
@@ -226,7 +227,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
       if (assertFailures.isEmpty) {
         _result = _TestPass.result(_title);
       } else {
-        _result = _TestFailure.result(_title, 'Assert failed');
+        _result = _TestFailure.result(_title, 'Assert failed.');
       }
     }
 

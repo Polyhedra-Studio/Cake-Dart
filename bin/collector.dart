@@ -44,7 +44,6 @@ class Collector {
 
 class TestRunnerCollector {
   List<String> testOutput;
-  List<String> summary;
   int total;
   int successes;
   int failures;
@@ -52,8 +51,7 @@ class TestRunnerCollector {
   int endIndex;
 
   TestRunnerCollector(
-    this.testOutput,
-    this.summary, {
+    this.testOutput, {
     required this.total,
     required this.successes,
     required this.failures,
@@ -150,7 +148,6 @@ TestRunnerCollector _testRunnerOutputParser(
 
   return TestRunnerCollector(
     testOutput,
-    summary,
     total: total,
     successes: successes,
     failures: failures,

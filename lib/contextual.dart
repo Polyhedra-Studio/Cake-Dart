@@ -59,7 +59,7 @@ abstract class Contextual<ContextualContext extends Context> {
     }
   }
 
-  Future<_TestResult?> _runSetup(ContextualContext context) async {
+  Future<_TestFailure?> _runSetup(ContextualContext context) async {
     if (skip) return null;
     if (setup != null) {
       try {
@@ -71,7 +71,7 @@ abstract class Contextual<ContextualContext extends Context> {
     return null;
   }
 
-  Future<_TestResult?> _runTeardown(ContextualContext testContext) async {
+  Future<_TestFailure?> _runTeardown(ContextualContext testContext) async {
     if (skip) return null;
     if (teardown != null) {
       try {
@@ -105,15 +105,17 @@ abstract class Contextual<ContextualContext extends Context> {
   /*
    * Used for reporting critical test-stopping issues
    */
-  void _criticalFailure(String errorMessage) {
-    _result = _TestFailure.result(_title, errorMessage);
+  void _criticalFailure(String errorMessage, Object? err) {
+    _result = _TestFailure.result(_title, errorMessage, err: err);
   }
 
   /*
    * Used for reporting when this test cannot run due to a parent having a critical issue.
    */
   void _criticalInconclusive() {
-    _result =
-        _TestNeutral.result(_title, message: 'Issue with parent - Did not run');
+    _result = _TestNeutral.result(
+      _title,
+      message: 'Issue with parent - Skipped.',
+    );
   }
 }
