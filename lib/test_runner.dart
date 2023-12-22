@@ -56,13 +56,40 @@ class _TestRunner<TestRunnerContext extends Context>
     super.options,
     super.skip,
   }) : super(contextBuilder: contextBuilder) {
-    _kickOff();
+    _initialize();
   }
 
-  Future<void> _kickOff() async {
-    // Since this is the root that kicks off the rest of the tests, build that context
-    _context = await _contextBuilder!();
-    _runAll();
+  Future<void> _initialize() async {
+    // Since this is the root that kicks off the rest of the tests, we can begin
+    // the testing lifecycle here
+
+    // Step 0: Preflight checks
+    if (skip) return;
+    if (!_shouldRunWithFilter(filterSettings)) return;
+
+    // Step 1: Setup
+    //  `- 1a: Pass inheritable information down from parent to children
+    //  `- 1b: Build the initial context
+    _assignChildren();
+    TestRunnerContext context;
+    try {
+      context = await _contextBuilder!();
+    } catch (err) {
+      _criticalFailure('Failed during initial context building stage.', err);
+      report(filterSettings);
+      return;
+    }
+
+    // Step 2: Run
+    //  `- 2a: Run setup
+    //  `- 2b: Create a copy of the parent context for each child
+    //  `- 2c: Run action (Tests only)
+    //  `- 2d: Check assertions (Tests only)
+    //  `- 2e: Run teardown
+    await _run(context, filterSettings);
+
+    // Step 3: Report results
+    report(filterSettings);
   }
 
   @override
@@ -98,13 +125,6 @@ class _TestRunner<TestRunnerContext extends Context>
 
     // No filter - this should run
     return true;
-  }
-
-  Future<void> _runAll() async {
-    if (skip) return;
-    if (!_shouldRunWithFilter(filterSettings)) return;
-    await _run(_context, filterSettings);
-    report(filterSettings);
   }
 
   @override

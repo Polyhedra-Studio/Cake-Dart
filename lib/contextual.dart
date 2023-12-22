@@ -6,10 +6,6 @@ abstract class Contextual<ContextualContext extends Context> {
   final FutureOr<void> Function(ContextualContext test)? teardown;
   final bool skip;
 
-  // For some reason dart's not picking up that this is getting changed in a extended class
-  // ignore: prefer_final_fields
-  late ContextualContext _context;
-
   FutureOr<ContextualContext> Function()? _contextBuilder;
   int _parentCount = 0;
   _TestResult? _result;
@@ -96,13 +92,29 @@ abstract class Contextual<ContextualContext extends Context> {
     return null;
   }
 
-  FutureOr<ContextualContext> _translateContext(Context oldContext) async {
-    if (_contextBuilder == null) {
+  /// Creates a copy of a given context
+  Future<ContextualContext> _deepCopyContext(Context oldContext) async {
+    final ContextualContext? context = await _buildContext();
+    if (context == null) {
+      // No context was built, either from error or a builder was not provided
       return Context.deepCopy(oldContext) as ContextualContext;
     }
-    final ContextualContext context = await _contextBuilder!();
     context.copy(oldContext);
     return context;
+  }
+
+  FutureOr<ContextualContext?> _buildContext() async {
+    if (_contextBuilder != null) {
+      try {
+        return await _contextBuilder!();
+      } catch (err) {
+        _criticalFailure(
+          'Failed during context building stage. If you are using a custom context, check that typing between parents and children is valid.',
+          err,
+        );
+      }
+    }
+    return null;
   }
 
   /*

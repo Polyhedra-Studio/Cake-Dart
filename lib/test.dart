@@ -114,71 +114,27 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
   }
 
   @override
-  FutureOr<void> _assignParent(
-      dynamic parentContextBuilder, TestOptions? parentOptions) async {
-    super._assignParent(parentContextBuilder, parentOptions);
-    if (_contextBuilder != null) {
-      try {
-        _context = await _contextBuilder!();
-      } catch (err) {
-        throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
-      }
-    }
-  }
-
-  @override
   Future<_TestResult> _getResult(
     TestContext testContext,
     FilterSettings filterSettings,
   ) async {
-    return _getResultShared(
-      assignContextFn: () => _context.applyParentContext(testContext),
-      setupFn: () => _runSetup(_context),
-      actionFn: action != null ? () => action!(_context) : () => {},
-      teardownFn: () => _runTeardown(_context),
-      assertionsFn: () => assertions(_context),
-      shouldRunAction: action != null,
-    );
-  }
-
-  Future<_TestResult> _getResultShared({
-    required void Function() assignContextFn,
-    required Future<_TestResult?> Function() setupFn,
-    required FutureOr<dynamic> Function() actionFn,
-    required Future<_TestResult?> Function() teardownFn,
-    required List<Expect> Function() assertionsFn,
-    required bool shouldRunAction,
-  }) async {
     // Don't try anything if this is marked as skipped
     if (skip) {
       _result = _TestNeutral.result(_title, message: 'Skipped');
       return _result!;
     }
 
-    // Assign parent context on top of current
-    try {
-      assignContextFn();
-    } catch (err) {
-      _ranSuccessfully = false;
-      _result = _TestFailure.result(
-        _title,
-        'Failed trying to assign context',
-        err: err,
-      );
-      return _result!;
-    }
-
-    final _TestResult? setupFailure = await setupFn();
+    final _TestResult? setupFailure = await _runSetup(testContext);
     if (setupFailure != null) {
       ranSuccessfully = false;
       return setupFailure;
     }
 
-    if (shouldRunAction) {
+    if (action != null) {
       try {
-        final dynamic value = await actionFn();
+        final dynamic value = await action!(testContext);
         if (value != null) {
-          _context.actual = value;
+          testContext.actual = value;
         }
       } catch (err) {
         // We want to continue and try to teardown anything we've set up even if it's all haywire at this point
@@ -190,7 +146,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
     // Don't bother running assertions if we've already come up if this is pass or fail
     if (_result == null) {
-      final List<Expect> asserts = assertionsFn();
+      final List<Expect> asserts = assertions(testContext);
       bool hasFailedATest = false;
 
       for (int i = 0; i < asserts.length; i++) {
@@ -232,7 +188,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
       }
     }
 
-    final _TestResult? teardownFailure = await teardownFn();
+    final _TestResult? teardownFailure = await _runTeardown(testContext);
     if (teardownFailure != null) {
       ranSuccessfully = false;
       return teardownFailure;

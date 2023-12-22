@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cake/cake.dart';
 
 void main() async {
@@ -52,11 +54,42 @@ void main() async {
     ],
     contextBuilder: TimerContext.new,
   );
+
+  int builderCount = 0;
+  TestRunner<TimerContext>(
+    'Context should be built from top down',
+    [
+      Group(
+        'This context should be built second',
+        [
+          Test(
+            'This context should be built last',
+            assertions: (test) => [
+              Expect.isTrue(test.pass),
+              Expect.equals(actual: builderCount, expected: 2),
+            ],
+          ),
+        ],
+      ),
+    ],
+    contextBuilder: () async {
+      final Completer<TimerContext> completer = Completer<TimerContext>();
+      Timer(Duration.zero, () {
+        Future.delayed(const Duration(seconds: 1), () {
+          final context = TimerContext();
+          context.pass = true;
+          builderCount++;
+          completer.complete(context);
+        });
+      });
+      return completer.future;
+    },
+  );
 }
 
 class TimerContext extends Context<int> {
   int timerCount = 0;
-  bool pass = true;
+  bool pass = false;
   TimerContext();
 
   @override

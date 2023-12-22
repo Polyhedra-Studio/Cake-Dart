@@ -55,30 +55,22 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
     required super.contextBuilder,
     super.options,
     super.skip,
-  }) {
-    _assignChildren();
-  }
+  });
 
-  void _assignChildren() {
-    for (Contextual<GroupContext> child in children) {
-      child._assignParent(_contextBuilder, _options);
-    }
+  Future<void> _assignChildren() {
+    return Future.forEach<Contextual<GroupContext>>(
+      children,
+      (child) => child._assignParent(_contextBuilder, _options),
+    );
   }
 
   @override
-  FutureOr<void> _assignParent(
+  Future<void> _assignParent(
     dynamic parentContextBuilder,
     TestOptions? parentOptions,
   ) async {
     super._assignParent(parentContextBuilder, parentOptions);
-    if (_contextBuilder != null) {
-      try {
-        _context = await _contextBuilder!();
-      } catch (err) {
-        throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
-      }
-    }
-    _assignChildren();
+    await _assignChildren();
   }
 
   @override
@@ -116,21 +108,6 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
     GroupContext testContext,
     FilterSettings filterSettings,
   ) async {
-    return _getResultShared(
-      setupFn: () => _runSetup(testContext),
-      teardownFn: () => _runTeardown(testContext),
-      translateContextFn: (child) => child._translateContext(testContext),
-      filterSettings: filterSettings,
-    );
-  }
-
-  Future<_TestResult> _getResultShared({
-    required Future<_TestFailure?> Function() setupFn,
-    required Future<_TestFailure?> Function() teardownFn,
-    required FutureOr<GroupContext> Function(Contextual<GroupContext> child)
-        translateContextFn,
-    required FilterSettings filterSettings,
-  }) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
       return _TestNeutral.result(_title, message: 'Empty - no tests.');
@@ -141,7 +118,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       return _TestNeutral.result(_title, message: 'Skipped.');
     }
 
-    final _TestFailure? setupFailure = await setupFn();
+    final _TestFailure? setupFailure = await _runSetup(testContext);
     if (setupFailure != null) {
       _criticalFailure(setupFailure.message, setupFailure.err);
       return setupFailure;
@@ -158,7 +135,8 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       }
 
       // Create a new context so siblings don't affect each other
-      final GroupContext childContext = await translateContextFn(child);
+      final GroupContext childContext =
+          await child._deepCopyContext(testContext);
       final _TestResult result = await child._run(childContext, filterSettings);
 
       if (result is _TestPass) childSuccessCount++;
@@ -170,7 +148,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       }
     }
 
-    final _TestResult? teardownFailure = await teardownFn();
+    final _TestResult? teardownFailure = await _runTeardown(testContext);
     if (teardownFailure != null) {
       return teardownFailure;
     }

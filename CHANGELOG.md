@@ -1,3 +1,9 @@
+## 5.3.0 (12-22-2023)
+- [ADD] Added a more helpful error message when Context building fails.
+- [FIX] Context is now built from top down (TestRunner -> Group -> Test), like one would intuitively expect rather than building the children and then building the parents. In rare cases, this was causing bugs for very complex or async test setups.
+- [MOD] Context should now only be built once for each item. This should help a little bit with performance with larger test runners. (O(n) vs O(n!), n being the number of items in a test runner.)
+- [MOD] Cleanup and simplification around context assignment under the hood. May have very minor performance boosts.
+
 ## 5.2.0 (12-21-2023)
 - [ADD] ContextBuilder can now be run asynchronously, if needed.
 

@@ -10,19 +10,33 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   }
   Context();
 
-  void copy(Context siblingContext) {
-    addAll(siblingContext);
-    expected = siblingContext.expected;
-    actual = siblingContext.actual;
-    copyExtraParams(siblingContext);
-  }
-
-  void applyParentContext(Context parentContext) {
+  void copy(Context parentContext) {
     addAll(parentContext);
+    expected = parentContext.expected;
+    actual = parentContext.actual;
     copyExtraParams(parentContext);
   }
 
-  void copyExtraParams(Context contextToCopy) {
+  /// Copies extra parameters from parent group to child
+  /// Remember to include this if you create and set named parameters
+  /// outside of using the context map.
+  ///
+  /// Example:
+  ///
+  /// ```dart
+  /// class IntContext extends Context<int> {
+  ///   int count = 0;
+  ///   IntContext();
+  ///
+  ///   @override
+  ///   void copyExtraParams(Context contextToCopyFrom) {
+  ///     if (contextToCopyFrom is IntContext) {
+  ///       count = contextToCopyFrom.count;
+  ///     }
+  ///   }
+  /// }
+  /// ```
+  void copyExtraParams(Context contextToCopyFrom) {
     return;
   }
 
