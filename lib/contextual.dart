@@ -10,7 +10,7 @@ abstract class Contextual<ContextualContext extends Context> {
   // ignore: prefer_final_fields
   late ContextualContext _context;
 
-  ContextualContext Function()? _contextBuilder;
+  FutureOr<ContextualContext> Function()? _contextBuilder;
   int _parentCount = 0;
   _TestResult? _result;
   final List<_TestResult> _messages = [];
@@ -20,7 +20,7 @@ abstract class Contextual<ContextualContext extends Context> {
     this._title, {
     required this.setup,
     required this.teardown,
-    ContextualContext Function()? contextBuilder,
+    FutureOr<ContextualContext> Function()? contextBuilder,
     TestOptions? options,
     this.skip = false,
   })  : _contextBuilder = contextBuilder,
@@ -46,7 +46,10 @@ abstract class Contextual<ContextualContext extends Context> {
     return _result!;
   }
 
-  void _assignParent(dynamic parentContextBuilder, TestOptions? parentOptions) {
+  FutureOr<void> _assignParent(
+    dynamic parentContextBuilder,
+    TestOptions? parentOptions,
+  ) {
     _parentCount++;
     // Assign and inherit the parent contextBuilder
     if (parentContextBuilder != null && _contextBuilder == null) {
@@ -93,11 +96,11 @@ abstract class Contextual<ContextualContext extends Context> {
     return null;
   }
 
-  ContextualContext _translateContext(Context oldContext) {
+  FutureOr<ContextualContext> _translateContext(Context oldContext) async {
     if (_contextBuilder == null) {
       return Context.deepCopy(oldContext) as ContextualContext;
     }
-    final ContextualContext context = _contextBuilder!();
+    final ContextualContext context = await _contextBuilder!();
     context.copy(oldContext);
     return context;
   }

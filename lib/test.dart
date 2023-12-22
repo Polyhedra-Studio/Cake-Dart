@@ -114,11 +114,12 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
   }
 
   @override
-  void _assignParent(dynamic parentContextBuilder, TestOptions? parentOptions) {
+  FutureOr<void> _assignParent(
+      dynamic parentContextBuilder, TestOptions? parentOptions) async {
     super._assignParent(parentContextBuilder, parentOptions);
     if (_contextBuilder != null) {
       try {
-        _context = _contextBuilder!();
+        _context = await _contextBuilder!();
       } catch (err) {
         throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
       }

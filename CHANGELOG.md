@@ -1,3 +1,6 @@
+## 5.2.0 (12-21-2023)
+- [ADD] ContextBuilder can now be run asynchronously, if needed.
+
 ## 5.1.0 (12-19-2023)
 - [ADD][CLI] Added Help flag (`-h` or `--help`) to show help in non-interactive mode
 - [MOD][CLI] Interactive mode can also be turned on with the `--interactive` flag (previously just `-i` before)

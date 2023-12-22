@@ -66,14 +66,14 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   }
 
   @override
-  void _assignParent(
+  FutureOr<void> _assignParent(
     dynamic parentContextBuilder,
     TestOptions? parentOptions,
-  ) {
+  ) async {
     super._assignParent(parentContextBuilder, parentOptions);
     if (_contextBuilder != null) {
       try {
-        _context = _contextBuilder!();
+        _context = await _contextBuilder!();
       } catch (err) {
         throw 'Cake Test Runner: Issue setting up test "$_title". Test context is getting a different type than expected. Check parent groups and test runners.';
       }
@@ -127,7 +127,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   Future<_TestResult> _getResultShared({
     required Future<_TestFailure?> Function() setupFn,
     required Future<_TestFailure?> Function() teardownFn,
-    required GroupContext Function(Contextual<GroupContext> child)
+    required FutureOr<GroupContext> Function(Contextual<GroupContext> child)
         translateContextFn,
     required FilterSettings filterSettings,
   }) async {
@@ -158,7 +158,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
       }
 
       // Create a new context so siblings don't affect each other
-      final GroupContext childContext = translateContextFn(child);
+      final GroupContext childContext = await translateContextFn(child);
       final _TestResult result = await child._run(childContext, filterSettings);
 
       if (result is _TestPass) childSuccessCount++;

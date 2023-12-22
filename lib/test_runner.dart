@@ -52,12 +52,16 @@ class _TestRunner<TestRunnerContext extends Context>
   _TestRunner(
     super._title,
     super.children, {
-    required TestRunnerContext Function() contextBuilder,
+    required FutureOr<TestRunnerContext> Function() contextBuilder,
     super.options,
     super.skip,
   }) : super(contextBuilder: contextBuilder) {
+    _kickOff();
+  }
+
+  Future<void> _kickOff() async {
     // Since this is the root that kicks off the rest of the tests, build that context
-    _context = contextBuilder();
+    _context = await _contextBuilder!();
     _runAll();
   }
 
