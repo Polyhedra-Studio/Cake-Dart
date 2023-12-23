@@ -1,3 +1,7 @@
+## 5.4.0 (12-22-2023)
+- [ADD][TestRunner] Added setup and teardown stages to TestRunner. Originally this was intentionally left out to encourage creating one TestRunner per file and having Groups be the controller of setup and teardown, but the end result did not have that effect. Instead it just forced making one massive parent group that had a lot of duplication with the parent TestRunner. The rules around one TestRunner per file have relaxed anyways (there's examples in this repo, even) so the point was very moot.
+- [ADD][TestRunner] Added a OnComplete hook to TestRunner that fires a callback with test results in a string, if any. 
+
 ## 5.3.0 (12-22-2023)
 - [ADD] Added a more helpful error message when Context building fails.
 - [FIX] Context is now built from top down (TestRunner -> Group -> Test), like one would intuitively expect rather than building the children and then building the parents. In rare cases, this was causing bugs for very complex or async test setups.

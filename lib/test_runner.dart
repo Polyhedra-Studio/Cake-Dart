@@ -7,6 +7,9 @@ class TestRunner<TestRunnerContext extends Context>
     super.children, {
     required super.contextBuilder,
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   });
 
   TestRunner.skip(
@@ -14,6 +17,9 @@ class TestRunner<TestRunnerContext extends Context>
     super.children, {
     required super.contextBuilder,
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   }) : super(skip: true);
 }
 
@@ -22,12 +28,18 @@ class TestRunnerOf<ExpectedType> extends _TestRunner<Context<ExpectedType>> {
     super._title,
     super.children, {
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   }) : super(contextBuilder: Context<ExpectedType>.new);
 
   TestRunnerOf.skip(
     super._title,
     super.children, {
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   }) : super(skip: true, contextBuilder: Context<ExpectedType>.new);
 }
 
@@ -36,18 +48,25 @@ class TestRunnerDefault extends _TestRunner<Context> {
     super._title,
     super.children, {
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   }) : super(contextBuilder: Context.new);
 
   TestRunnerDefault.skip(
     super._title,
     super.children, {
     super.options,
+    super.setup,
+    super.teardown,
+    super.onComplete,
   }) : super(skip: true, contextBuilder: Context.new);
 }
 
 class _TestRunner<TestRunnerContext extends Context>
     extends _Group<TestRunnerContext> {
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
+  final OnComplete? onComplete;
 
   _TestRunner(
     super._title,
@@ -55,6 +74,9 @@ class _TestRunner<TestRunnerContext extends Context>
     required FutureOr<TestRunnerContext> Function() contextBuilder,
     super.options,
     super.skip,
+    super.setup,
+    super.teardown,
+    this.onComplete,
   }) : super(contextBuilder: contextBuilder) {
     _initialize();
   }
@@ -64,8 +86,8 @@ class _TestRunner<TestRunnerContext extends Context>
     // the testing lifecycle here
 
     // Step 0: Preflight checks
-    if (skip) return;
-    if (!_shouldRunWithFilter(filterSettings)) return;
+    if (skip) return complete();
+    if (!_shouldRunWithFilter(filterSettings)) return complete();
 
     // Step 1: Setup
     //  `- 1a: Pass inheritable information down from parent to children
@@ -90,6 +112,8 @@ class _TestRunner<TestRunnerContext extends Context>
 
     // Step 3: Report results
     report(filterSettings);
+
+    // Step 4: Fire OnComplete Hook (Run under .report() or earlier)
   }
 
   @override
@@ -147,5 +171,15 @@ class _TestRunner<TestRunnerContext extends Context>
     if (_result is _TestNeutral) {
       Printer.neutral(message);
     }
+
+    complete(message);
+  }
+
+  void complete([String? message]) {
+    if (onComplete != null) {
+      onComplete!(message ?? '');
+    }
   }
 }
+
+typedef OnComplete = void Function(String message);
