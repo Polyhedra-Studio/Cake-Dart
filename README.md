@@ -57,16 +57,16 @@ You can also define a context that can pass variables from parents and test stag
 
 
 # Expect Matches
-enum ExpectType {
-  equals,
-  isNotEqual,
-  isNull,
-  isNotNull,
-  isType, **
-  isTrue,
-  isFalse,
-}
+  - equals
+  - isEqual *
+  - isNotEqual
+  - isNull
+  - isNotNull
+  - isType **
+  - isTrue
+  - isFalse
 
+* equals and isEqual can be used interchangeably.
 ** isType will need a generic defined or else it will always pass as true as it thinks the type is `dynamic`.
 
 # How to run the test runner

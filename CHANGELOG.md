@@ -1,3 +1,7 @@
+## 5.5.0 (12-24-2023)
+- [ADD][Expect] Added the .isEqual expect type. This works exactly as the .equals expect type.
+- [MINOR-BREAKING] Removed the `Expect(ExpectType)` style constructor for expects. This generally was not being used and was stopping the Expect class from being expandable for other type of Expects. This also now mirrors the [Cake-Ruby](https://github.com/Polyhedra-Studio/Cake-Ruby) style for better maintainability between the two libraries.
+
 ## 5.4.0 (12-22-2023)
 - [ADD][TestRunner] Added setup and teardown stages to TestRunner. Originally this was intentionally left out to encourage creating one TestRunner per file and having Groups be the controller of setup and teardown, but the end result did not have that effect. Instead it just forced making one massive parent group that had a lot of duplication with the parent TestRunner. The rules around one TestRunner per file have relaxed anyways (there's examples in this repo, even) so the point was very moot.
 - [ADD][TestRunner] Added a OnComplete hook to TestRunner that fires a callback with test results in a string, if any. 

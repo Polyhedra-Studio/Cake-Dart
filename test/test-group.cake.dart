@@ -3,13 +3,6 @@ import 'package:cake/cake.dart';
 void main(List<String> arguments) async {
   TestRunnerDefault('Test Groups', [
     Group('Should run all children tests', [
-      // Generic Constructor
-      Test(
-        'True is true - assertion',
-        assertions: ((context) => [
-              Expect(ExpectType.equals, expected: true, actual: true),
-            ]),
-      ),
       Test(
         'True is true, set in setup',
         setup: (context) {

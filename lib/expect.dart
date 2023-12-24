@@ -3,76 +3,97 @@ part of 'cake.dart';
 class Expect<ExpectedType> {
   final ExpectedType? _expected;
   final ExpectedType? _actual;
-  final ExpectType type;
 
-  Expect(
-    this.type, {
+  Expect({
     required ExpectedType? actual,
     required ExpectedType? expected,
   })  : _actual = actual,
         _expected = expected;
-  Expect.equals({
+
+  /// Checks if actual == expected
+  ///
+  /// Synonym for [Expect.isEqual]
+  factory Expect.equals({
     required ExpectedType? actual,
     required ExpectedType? expected,
-  })  : type = ExpectType.equals,
-        _actual = actual,
-        _expected = expected;
-  Expect.isNotEqual({
-    required ExpectedType? actual,
-    required ExpectedType? notExpected,
-  })  : type = ExpectType.isNotEqual,
-        _actual = actual,
-        _expected = notExpected;
-  Expect.isNull(ExpectedType? actual)
-      : type = ExpectType.isNull,
-        _actual = actual,
-        _expected = null;
-  Expect.isNotNull(ExpectedType? actual)
-      : type = ExpectType.isNotNull,
-        _actual = actual,
-        _expected = null;
-  Expect.isType(dynamic actual)
-      : type = ExpectType.isType,
-        _actual = actual,
-        _expected = null;
-  Expect.isTrue(ExpectedType? actual)
-      : type = ExpectType.isTrue,
-        _actual = actual,
-        _expected = null;
-  Expect.isFalse(ExpectedType? actual)
-      : type = ExpectType.isFalse,
-        _actual = actual,
-        _expected = null;
-
-  _TestResult _run() {
-    switch (type) {
-      case ExpectType.equals:
-        return _equals();
-      case ExpectType.isNotEqual:
-        return _isNotEqual();
-      case ExpectType.isNull:
-        return _isNull();
-      case ExpectType.isNotNull:
-        return _isNotNull();
-      case ExpectType.isType:
-        return _isType();
-      case ExpectType.isTrue:
-        return _isTrue();
-      case ExpectType.isFalse:
-        return _isFalse();
-    }
+  }) {
+    return _ExpectEquals(actual: actual, expected: expected);
   }
 
-  _TestResult _equals() {
+  /// Checks if actual == expected
+  ///
+  /// Synonym for [Expect.equals]
+  factory Expect.isEqual({
+    required ExpectedType? actual,
+    required ExpectedType? expected,
+  }) {
+    return _ExpectEquals(actual: actual, expected: expected);
+  }
+
+  /// Checks if actual != expected
+  factory Expect.isNotEqual({
+    required ExpectedType? actual,
+    required ExpectedType? notExpected,
+  }) {
+    return _ExpectIsNotEqual(actual: actual, expected: notExpected);
+  }
+
+  /// Checks if actual is null
+  factory Expect.isNull(ExpectedType? actual) {
+    return _ExpectIsNull(actual: actual);
+  }
+
+  /// Checks if actual is not null
+  factory Expect.isNotNull(ExpectedType? actual) {
+    return _ExpectIsNotNull(actual: actual);
+  }
+
+  /// Checks if actual is of type
+  factory Expect.isType(dynamic actual) {
+    return _ExpectIsType(actual: actual);
+  }
+
+  /// Checks if actual is true
+  factory Expect.isTrue(ExpectedType? actual) {
+    return _ExpectIsTrue(actual: actual);
+  }
+
+  /// Checks if actual is false
+  factory Expect.isFalse(ExpectedType? actual) {
+    return _ExpectIsFalse(actual: actual);
+  }
+
+  _TestResult _run() {
+    return _TestNeutral();
+  }
+}
+
+class _ExpectEquals<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectEquals({
+    required super.actual,
+    required super.expected,
+  });
+
+  @override
+  _TestResult _run() {
     if (_expected == _actual) {
       return _TestPass();
     } else {
       return _TestFailure(
-          'Equality failed: Expected $_expected, got $_actual.');
+        'Equality failed: Expected $_expected, got $_actual.',
+      );
     }
   }
+}
 
-  _TestResult _isNotEqual() {
+class _ExpectIsNotEqual<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsNotEqual({
+    required super.actual,
+    required super.expected,
+  });
+
+  @override
+  _TestResult _run() {
     // For the sake of verbosity, _expected should really be called _notExpected
     // but there's no need to create a new variable just for that.
     if (_expected != _actual) {
@@ -83,24 +104,45 @@ class Expect<ExpectedType> {
       );
     }
   }
+}
 
-  _TestResult _isNull() {
+class _ExpectIsNull<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsNull({
+    required super.actual,
+  }) : super(expected: null);
+
+  @override
+  _TestResult _run() {
     if (_actual == null) {
       return _TestPass();
     } else {
       return _TestFailure('IsNull failed: Expected $_actual to be null.');
     }
   }
+}
 
-  _TestResult _isNotNull() {
+class _ExpectIsNotNull<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsNotNull({
+    required super.actual,
+  }) : super(expected: null);
+
+  @override
+  _TestResult _run() {
     if (_actual != null) {
       return _TestPass();
     } else {
       return _TestFailure('IsNotNull failed: $_actual is null.');
     }
   }
+}
 
-  _TestResult _isType() {
+class _ExpectIsType<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsType({
+    required super.actual,
+  }) : super(expected: null);
+
+  @override
+  _TestResult _run() {
     if (_actual is ExpectedType) {
       return _TestPass();
     } else {
@@ -109,30 +151,34 @@ class Expect<ExpectedType> {
       );
     }
   }
+}
 
-  _TestResult _isTrue() {
+class _ExpectIsTrue<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsTrue({
+    required super.actual,
+  }) : super(expected: null);
+
+  @override
+  _TestResult _run() {
     if (_actual == true) {
       return _TestPass();
     } else {
       return _TestFailure('IsTrue failed: Expected $_actual to be true.');
     }
   }
+}
 
-  _TestResult _isFalse() {
+class _ExpectIsFalse<ExpectedType> extends Expect<ExpectedType> {
+  _ExpectIsFalse({
+    required super.actual,
+  }) : super(expected: null);
+
+  @override
+  _TestResult _run() {
     if (_actual == false) {
       return _TestPass();
     } else {
       return _TestFailure('IsFalse failed: Expected $_actual to be false.');
     }
   }
-}
-
-enum ExpectType {
-  equals,
-  isNotEqual,
-  isNull,
-  isNotNull,
-  isType,
-  isTrue,
-  isFalse,
 }
