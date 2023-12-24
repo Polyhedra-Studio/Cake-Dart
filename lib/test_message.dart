@@ -3,16 +3,24 @@ part of 'cake.dart';
 class TestMessage extends _TestResult {
   String? message;
 
+  @override
+  void Function(String message) printer = Printer.neutral;
+
   TestMessage(super.testTitle, {this.message});
 
   @override
   void report({int spacerCount = 0}) {
-    super.report(spacerCount: spacerCount);
+    setSpacer(spacerCount: spacerCount);
+    Printer.neutral(spacer + formatMessage());
+  }
 
+  @override
+  String formatMessage() {
+    String formatMessage = testTitle;
     if (message != null) {
-      Printer.neutral('$spacer$testTitle: ${message!}');
-    } else {
-      Printer.neutral(spacer + testTitle);
+      formatMessage += ': $message';
     }
+
+    return formatMessage;
   }
 }

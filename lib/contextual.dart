@@ -34,7 +34,7 @@ abstract class Contextual<ContextualContext extends Context> {
     FilterSettings filterSettings,
   ) async {
     if (skip) {
-      _result = _TestNeutral.result(_title, message: 'Skipped');
+      _result = _TestNeutral(_title, message: 'Skipped');
     } else {
       _result = await _getResult(testContext, filterSettings);
     }
@@ -45,8 +45,9 @@ abstract class Contextual<ContextualContext extends Context> {
   FutureOr<void> _assignParent(
     dynamic parentContextBuilder,
     TestOptions? parentOptions,
+    int parentCount,
   ) {
-    _parentCount++;
+    _parentCount = parentCount + 1;
     // Assign and inherit the parent contextBuilder
     if (parentContextBuilder != null && _contextBuilder == null) {
       _contextBuilder = parentContextBuilder;
@@ -64,7 +65,7 @@ abstract class Contextual<ContextualContext extends Context> {
       try {
         await setup!(context);
       } catch (err) {
-        return _TestFailure.result(_title, 'Failed during setup', err: err);
+        return _TestFailure(_title, 'Failed during setup', err: err);
       }
     }
     return null;
@@ -77,14 +78,14 @@ abstract class Contextual<ContextualContext extends Context> {
         await teardown!(testContext);
       } catch (err) {
         if (_result is _TestPass) {
-          return _TestFailure.result(
+          return _TestFailure(
             _title,
             'Tests passed, but failed during teardown.',
             err: err,
           );
         } else {
           _messages.add(
-            _TestFailure.result(_title, 'Failed during teardown', err: err),
+            _TestFailure(_title, 'Failed during teardown', err: err),
           );
         }
       }
@@ -121,14 +122,14 @@ abstract class Contextual<ContextualContext extends Context> {
    * Used for reporting critical test-stopping issues
    */
   void _criticalFailure(String errorMessage, Object? err) {
-    _result = _TestFailure.result(_title, errorMessage, err: err);
+    _result = _TestFailure(_title, errorMessage, err: err);
   }
 
   /*
    * Used for reporting when this test cannot run due to a parent having a critical issue.
    */
   void _criticalInconclusive() {
-    _result = _TestNeutral.result(
+    _result = _TestNeutral(
       _title,
       message: 'Issue with parent - Skipped.',
     );

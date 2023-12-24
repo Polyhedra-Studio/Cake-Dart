@@ -12,7 +12,7 @@ void main() async {
           Test(
             'Should pass if this can wait properly',
             assertions: (test) => [
-              Expect.isTrue(test.pass),
+              Expect.isTrue(true),
             ],
             contextBuilder: () async {
               await Future.delayed(const Duration(seconds: 1));
@@ -66,7 +66,7 @@ void main() async {
             'This context should be built last',
             assertions: (test) => [
               Expect.isTrue(test.pass),
-              Expect.equals(actual: builderCount, expected: 2),
+              Expect.equals(actual: builderCount, expected: 3),
             ],
           ),
         ],

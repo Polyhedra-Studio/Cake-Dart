@@ -1,16 +1,21 @@
-part of 'cake.dart';
+part of '../cake.dart';
 
 class _TestFailure extends _TestResult {
   String message;
   Object? err;
-  int? errorIndex;
-  _TestFailure.result(super.testTitle, this.message, {this.err});
-  _TestFailure(this.message) : super('');
+
+  @override
+  String formatMessage() {
+    return '[X] $testTitle: $message';
+  }
+
+  @override
+  void Function(String message) printer = Printer.fail;
+  _TestFailure(super.testTitle, this.message, {this.err});
 
   @override
   void report({int spacerCount = 0}) {
     super.report(spacerCount: spacerCount);
-    Printer.fail(spacer + _formatMessage());
     if (err != null) {
       // Extra space is to compensate for the [X]
       Printer.fail('$spacer    $err');
@@ -21,16 +26,6 @@ class _TestFailure extends _TestResult {
         // some terminals recognize this as a stack trace.
         print(stack);
       }
-    }
-  }
-
-  String _formatMessage() {
-    if (testTitle.isNotEmpty) {
-      return '[X] $testTitle: $message';
-    } else if (errorIndex != null) {
-      return '    [#$errorIndex] $message';
-    } else {
-      return '    $message';
     }
   }
 }

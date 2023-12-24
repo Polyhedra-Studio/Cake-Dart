@@ -1,4 +1,4 @@
-part of 'cake.dart';
+part of '../cake.dart';
 
 class Expect<ExpectedType> {
   final ExpectedType? _expected;
@@ -63,8 +63,8 @@ class Expect<ExpectedType> {
     return _ExpectIsFalse(actual: actual);
   }
 
-  _TestResult _run() {
-    return _TestNeutral();
+  AssertResult _run() {
+    return AssertNeutral();
   }
 }
 
@@ -75,11 +75,11 @@ class _ExpectEquals<ExpectedType> extends Expect<ExpectedType> {
   });
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_expected == _actual) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure(
+      return AssertFailure(
         'Equality failed: Expected $_expected, got $_actual.',
       );
     }
@@ -93,13 +93,13 @@ class _ExpectIsNotEqual<ExpectedType> extends Expect<ExpectedType> {
   });
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     // For the sake of verbosity, _expected should really be called _notExpected
     // but there's no need to create a new variable just for that.
     if (_expected != _actual) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure(
+      return AssertFailure(
         'Inequality failed: Expected $_actual to not equal $_expected.',
       );
     }
@@ -112,11 +112,11 @@ class _ExpectIsNull<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_actual == null) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure('IsNull failed: Expected $_actual to be null.');
+      return AssertFailure('IsNull failed: Expected $_actual to be null.');
     }
   }
 }
@@ -127,11 +127,11 @@ class _ExpectIsNotNull<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_actual != null) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure('IsNotNull failed: $_actual is null.');
+      return AssertFailure('IsNotNull failed: $_actual is null.');
     }
   }
 }
@@ -142,11 +142,11 @@ class _ExpectIsType<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_actual is ExpectedType) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure(
+      return AssertFailure(
         'IsType failed: Expected $_actual to be $ExpectedType.',
       );
     }
@@ -159,11 +159,11 @@ class _ExpectIsTrue<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_actual == true) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure('IsTrue failed: Expected $_actual to be true.');
+      return AssertFailure('IsTrue failed: Expected $_actual to be true.');
     }
   }
 }
@@ -174,11 +174,11 @@ class _ExpectIsFalse<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  _TestResult _run() {
+  AssertResult _run() {
     if (_actual == false) {
-      return _TestPass();
+      return AssertPass();
     } else {
-      return _TestFailure('IsFalse failed: Expected $_actual to be false.');
+      return AssertFailure('IsFalse failed: Expected $_actual to be false.');
     }
   }
 }

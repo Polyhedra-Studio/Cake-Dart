@@ -1,3 +1,11 @@
+## 5.5.1 (12-24-2023)
+- [FIX][CLI] Fixed reporting not showing individual failing tests when there's more than one test runner in a file.
+- [MOD][Reporter] Made formatting more consistent between assertions. Changed formatting to use a pipe instead of the standard ascii dropdown to make results a bit cleaner.
+- [MOD][Reporter] When an asynchronous test is run synchronously, it will now consider the test as failing rather than inconclusive. (Technically, "inconclusive" is the correct word since hasn't received a pass/fail yet, however this happening is usually an error that should indicate that something has gone wrong.)
+- [MOD][Reporter] More consistent messaging when an assert fails with a critical error.
+- [FIX][Reporter] Fixed indentation on groups.
+- [FIX] Refactored TestResult to expose AssertResults to allow for custom Expects to be written. This also better matches what's in [Cake-Ruby](https://github.com/Polyhedra-Studio/Cake-Ruby) as well.
+
 ## 5.5.0 (12-24-2023)
 - [ADD][Expect] Added the .isEqual expect type. This works exactly as the .equals expect type.
 - [MINOR-BREAKING] Removed the `Expect(ExpectType)` style constructor for expects. This generally was not being used and was stopping the Expect class from being expandable for other type of Expects. This also now mirrors the [Cake-Ruby](https://github.com/Polyhedra-Studio/Cake-Ruby) style for better maintainability between the two libraries.

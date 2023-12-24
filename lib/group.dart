@@ -60,7 +60,7 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   Future<void> _assignChildren() {
     return Future.forEach<Contextual<GroupContext>>(
       children,
-      (child) => child._assignParent(_contextBuilder, _options),
+      (child) => child._assignParent(_contextBuilder, _options, _parentCount),
     );
   }
 
@@ -68,8 +68,9 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   Future<void> _assignParent(
     dynamic parentContextBuilder,
     TestOptions? parentOptions,
+    int parentCount,
   ) async {
-    super._assignParent(parentContextBuilder, parentOptions);
+    super._assignParent(parentContextBuilder, parentOptions, parentCount);
     await _assignChildren();
   }
 
@@ -110,12 +111,12 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
   ) async {
     // This is just a stub if there's no children - do nothing.
     if (children.isEmpty) {
-      return _TestNeutral.result(_title, message: 'Empty - no tests.');
+      return _TestNeutral(_title, message: 'Empty - no tests.');
     }
 
     // This has been marked as skipped - do nothing.
     if (skip) {
-      return _TestNeutral.result(_title, message: 'Skipped.');
+      return _TestNeutral(_title, message: 'Skipped.');
     }
 
     final _TestFailure? setupFailure = await _runSetup(testContext);
@@ -154,14 +155,14 @@ class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
     }
 
     if (childFailCount > 0) {
-      return _TestFailure.result(_title, 'Some tests failed.');
+      return _TestFailure(_title, 'Some tests failed.');
     }
 
     if (childSuccessCount < 1) {
-      return _TestNeutral.result(_title);
+      return _TestNeutral(_title);
     }
 
-    return _TestPass.result(_title);
+    return _TestPass(_title);
   }
 
   @override

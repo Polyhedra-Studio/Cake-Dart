@@ -63,7 +63,7 @@ class Test<TestContext extends Context> extends _Test<TestContext> {
 class _Test<TestContext extends Context> extends Contextual<TestContext> {
   final FutureOr<dynamic> Function(TestContext test)? action;
   final List<Expect<dynamic>> Function(TestContext test) assertions;
-  final List<_TestResult> assertFailures = [];
+  final List<AssertResult> assertFailures = [];
 
   TestOptions get options => _options ?? const TestOptions();
 
@@ -108,7 +108,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
   @override
   void report(FilterSettings filterSettings) {
     _result!.report(spacerCount: _parentCount);
-    for (_TestResult element in assertFailures) {
+    for (AssertResult element in assertFailures) {
       element.report(spacerCount: _parentCount);
     }
   }
@@ -120,7 +120,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
   ) async {
     // Don't try anything if this is marked as skipped
     if (skip) {
-      _result = _TestNeutral.result(_title, message: 'Skipped');
+      _result = _TestNeutral(_title, message: 'Skipped');
       return _result!;
     }
 
@@ -138,8 +138,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
         }
       } catch (err) {
         // We want to continue and try to teardown anything we've set up even if it's all haywire at this point
-        _result =
-            _TestFailure.result(_title, 'Failed during action.', err: err);
+        _result = _TestFailure(_title, 'Failed during action.', err: err);
         ranSuccessfully = false;
       }
     }
@@ -151,30 +150,30 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
       for (int i = 0; i < asserts.length; i++) {
         final Expect expect = asserts[i];
-        _TestResult assertResult;
+        AssertResult assertResult;
         // Skip rest of assertions if an assert has failed already,
         // allowing a bypass with an option flag.
         if (hasFailedATest && options.failOnFirstAssert) {
-          assertResult = _TestNeutral.result(
-            '[#$i] Skipped',
-            message: 'Previous assert failed.',
+          assertResult = AssertNeutral(
+            message: 'Skipped: Previous assert failed.',
+            index: i,
           );
           assertFailures.add(assertResult);
         } else {
           try {
             assertResult = expect._run();
           } catch (err) {
-            assertResult = _TestFailure.result(
-              _title,
+            assertResult = AssertFailure(
               'Failed while running assertions.',
               err: err,
             );
           }
 
-          if (assertResult is _TestFailure) {
-            if (asserts.length > 1) {
-              assertResult.errorIndex = i;
-            }
+          if (asserts.length > 1) {
+            assertResult.index = i;
+          }
+
+          if (assertResult is AssertFailure) {
             assertFailures.add(assertResult);
             hasFailedATest = true;
           }
@@ -182,9 +181,9 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
       }
 
       if (assertFailures.isEmpty) {
-        _result = _TestPass.result(_title);
+        _result = _TestPass(_title);
       } else {
-        _result = _TestFailure.result(_title, 'Assert failed.');
+        _result = _TestFailure(_title, 'Assert failed.');
       }
     }
 
@@ -196,10 +195,9 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
 
     if (_result == null) {
       ranSuccessfully = false;
-      _result = _TestNeutral.result(
+      _result = _TestFailure(
         _title,
-        message:
-            'Expected result by now! Is this something running asynchronously?',
+        'Expected result by now! Is this something running asynchronously?',
       );
     }
 

@@ -25,7 +25,7 @@ class Collector {
 
     if (failures > 0) {
       Printer.fail(summary);
-      for (var element in collectors) {
+      for (TestRunnerCollector element in collectors) {
         element.printErrors();
       }
     } else if (successes == 0) {
@@ -79,7 +79,7 @@ List<TestRunnerCollector> testRunnerOutputParser(String stdout) {
   int index = 0;
   while (index < lines.length - 1) {
     final TestRunnerCollector testRunnerCollector =
-        _testRunnerOutputParser(lines, index);
+        _summaryParser(lines, index);
     testRunnerOutputs.add(testRunnerCollector);
     index = testRunnerCollector.endIndex;
   }
@@ -87,7 +87,7 @@ List<TestRunnerCollector> testRunnerOutputParser(String stdout) {
   return testRunnerOutputs;
 }
 
-TestRunnerCollector _testRunnerOutputParser(
+TestRunnerCollector _summaryParser(
   List<String> lines,
   int startingIndex,
 ) {
@@ -104,7 +104,7 @@ TestRunnerCollector _testRunnerOutputParser(
   final RegExp failedLine = RegExp(r'(\d*) failed\.');
   final RegExp neutralLine = RegExp(r'(\d*) skipped\/inconclusive\.');
   int i = startingIndex;
-  for (i; (i < lines.length - 1 || atSummaryLine == 7); i++) {
+  for (i; i < lines.length - 1; i++) {
     final String line = lines[i];
 
     if (line.contains(summaryLine)) {
@@ -143,6 +143,11 @@ TestRunnerCollector _testRunnerOutputParser(
       atSummaryLine++;
     } else {
       testOutput.add(line);
+    }
+
+    if (atSummaryLine == 7) {
+      i++;
+      break;
     }
   }
 
