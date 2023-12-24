@@ -1,6 +1,6 @@
 name: cake
 description: The lightweight, explicit testing framework for Dart.
-version: 5.5.1
+version: 5.5.2
 repository: https://github.com/Polyhedra-Studio/Cake.git
 
 environment:

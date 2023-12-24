@@ -63,7 +63,7 @@ class Expect<ExpectedType> {
     return _ExpectIsFalse(actual: actual);
   }
 
-  AssertResult _run() {
+  AssertResult run() {
     return AssertNeutral();
   }
 }
@@ -75,7 +75,7 @@ class _ExpectEquals<ExpectedType> extends Expect<ExpectedType> {
   });
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_expected == _actual) {
       return AssertPass();
     } else {
@@ -93,7 +93,7 @@ class _ExpectIsNotEqual<ExpectedType> extends Expect<ExpectedType> {
   });
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     // For the sake of verbosity, _expected should really be called _notExpected
     // but there's no need to create a new variable just for that.
     if (_expected != _actual) {
@@ -112,7 +112,7 @@ class _ExpectIsNull<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_actual == null) {
       return AssertPass();
     } else {
@@ -127,7 +127,7 @@ class _ExpectIsNotNull<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_actual != null) {
       return AssertPass();
     } else {
@@ -142,7 +142,7 @@ class _ExpectIsType<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_actual is ExpectedType) {
       return AssertPass();
     } else {
@@ -159,7 +159,7 @@ class _ExpectIsTrue<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_actual == true) {
       return AssertPass();
     } else {
@@ -174,7 +174,7 @@ class _ExpectIsFalse<ExpectedType> extends Expect<ExpectedType> {
   }) : super(expected: null);
 
   @override
-  AssertResult _run() {
+  AssertResult run() {
     if (_actual == false) {
       return AssertPass();
     } else {

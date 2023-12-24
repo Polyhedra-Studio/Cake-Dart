@@ -1,3 +1,6 @@
+## 5.5.2 (12-24-2023)
+- [MOD][Expect] Made .run() public.
+
 ## 5.5.1 (12-24-2023)
 - [FIX][CLI] Fixed reporting not showing individual failing tests when there's more than one test runner in a file.
 - [MOD][Reporter] Made formatting more consistent between assertions. Changed formatting to use a pipe instead of the standard ascii dropdown to make results a bit cleaner.

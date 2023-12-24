@@ -161,7 +161,7 @@ class _Test<TestContext extends Context> extends Contextual<TestContext> {
           assertFailures.add(assertResult);
         } else {
           try {
-            assertResult = expect._run();
+            assertResult = expect.run();
           } catch (err) {
             assertResult = AssertFailure(
               'Failed while running assertions.',
