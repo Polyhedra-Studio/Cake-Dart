@@ -1,5 +1,6 @@
 part of '../cake.dart';
 
+/// Returned after an [Expect] has failed
 class AssertFailure extends AssertResult {
   final String errorMessage;
   final Object? err;

@@ -1,7 +1,14 @@
-## 5.5.2 (12-24-2023)
+## 6.0.0 (2023-12-27)
+- [ADD][CLI] Added support for [Cake-Flutter](https://github.com/Polyhedra-Studio/Cake-Flutter)
+- [ADD][CLI] Added --flutter flag to force Cake to run in Flutter test mode. This is only needed if the cake_flutter package is not directly imported.
+- [META] Added example folder with `api.cake.dart` example to show a full semi-realistic version of a test suite.
+- [META] Improved README.md with better formatting for header, more examples, and instructions for Flutter.
+- [META] Added more dartdoc comments on common outward-facing classes.
+
+## 5.5.2 (2023-12-24)
 - [MOD][Expect] Made .run() public.
 
-## 5.5.1 (12-24-2023)
+## 5.5.1 (2023-12-24)
 - [FIX][CLI] Fixed reporting not showing individual failing tests when there's more than one test runner in a file.
 - [MOD][Reporter] Made formatting more consistent between assertions. Changed formatting to use a pipe instead of the standard ascii dropdown to make results a bit cleaner.
 - [MOD][Reporter] When an asynchronous test is run synchronously, it will now consider the test as failing rather than inconclusive. (Technically, "inconclusive" is the correct word since hasn't received a pass/fail yet, however this happening is usually an error that should indicate that something has gone wrong.)
@@ -9,7 +16,7 @@
 - [FIX][Reporter] Fixed indentation on groups.
 - [FIX] Refactored TestResult to expose AssertResults to allow for custom Expects to be written. This also better matches what's in [Cake-Ruby](https://github.com/Polyhedra-Studio/Cake-Ruby) as well.
 
-## 5.5.0 (12-24-2023)
+## 5.5.0 (2023-12-24)
 - [ADD][Expect] Added the .isEqual expect type. This works exactly as the .equals expect type.
 - [MINOR-BREAKING] Removed the `Expect(ExpectType)` style constructor for expects. This generally was not being used and was stopping the Expect class from being expandable for other type of Expects. This also now mirrors the [Cake-Ruby](https://github.com/Polyhedra-Studio/Cake-Ruby) style for better maintainability between the two libraries.
 

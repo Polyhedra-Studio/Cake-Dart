@@ -1,5 +1,9 @@
 part of 'cake.dart';
 
+/// Create a TestRunner with a Custom [Context]
+///
+/// The root node for any tests. Automatically runs once created. Do not include
+/// TestRunners inside other Groups.
 class TestRunner<TestRunnerContext extends Context>
     extends _TestRunner<TestRunnerContext> {
   TestRunner(
@@ -12,6 +16,8 @@ class TestRunner<TestRunnerContext extends Context>
     super.onComplete,
   });
 
+  /// Skipped. This will not run any of the stages or children within this
+  /// test runner.
   TestRunner.skip(
     super._title,
     super.children, {
@@ -23,6 +29,10 @@ class TestRunner<TestRunnerContext extends Context>
   }) : super(skip: true);
 }
 
+/// Create a TestRunner with a Default [Context] of an [ExpectedType]
+///
+/// The root node for any tests. Automatically runs once created. Do not include
+/// TestRunners inside other Groups.
 class TestRunnerOf<ExpectedType> extends _TestRunner<Context<ExpectedType>> {
   TestRunnerOf(
     super._title,
@@ -33,6 +43,8 @@ class TestRunnerOf<ExpectedType> extends _TestRunner<Context<ExpectedType>> {
     super.onComplete,
   }) : super(contextBuilder: Context<ExpectedType>.new);
 
+  /// Skipped. This will not run any of the stages or children within this
+  /// test runner.
   TestRunnerOf.skip(
     super._title,
     super.children, {
@@ -43,6 +55,10 @@ class TestRunnerOf<ExpectedType> extends _TestRunner<Context<ExpectedType>> {
   }) : super(skip: true, contextBuilder: Context<ExpectedType>.new);
 }
 
+/// Create a TestRunner with a Default [Context] with no or dynamic [ExpectedType]
+///
+/// The root node for any tests. Automatically runs once created. Do not include
+/// TestRunners inside other Groups.
 class TestRunnerDefault extends _TestRunner<Context> {
   TestRunnerDefault(
     super._title,
@@ -53,6 +69,8 @@ class TestRunnerDefault extends _TestRunner<Context> {
     super.onComplete,
   }) : super(contextBuilder: Context.new);
 
+  /// Skipped. This will not run any of the stages or children within this
+  /// test runner.
   TestRunnerDefault.skip(
     super._title,
     super.children, {
@@ -182,4 +200,8 @@ class _TestRunner<TestRunnerContext extends Context>
   }
 }
 
+/// Callback for when all tests have finished within a test runner
+///
+/// Returns output summary of tests, identical to what is returned by
+/// [Printer.summary()]
 typedef OnComplete = void Function(String message);

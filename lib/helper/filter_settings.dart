@@ -1,3 +1,6 @@
+/// Stores test filters set via the command line
+///
+/// Used mostly internally. See [README.md#flags] for more information
 class FilterSettings {
   final String? generalSearchTerm;
   final String? testFilterTerm;

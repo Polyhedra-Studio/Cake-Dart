@@ -1,5 +1,6 @@
 part of '../cake.dart';
 
+/// For better formatting when output by the [Printer]
 mixin Result {
   abstract void Function(String message) printer;
 

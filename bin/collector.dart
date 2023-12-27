@@ -103,6 +103,7 @@ TestRunnerCollector _summaryParser(
   final RegExp successLine = RegExp(r'(\d*) passed\.');
   final RegExp failedLine = RegExp(r'(\d*) failed\.');
   final RegExp neutralLine = RegExp(r'(\d*) skipped\/inconclusive\.');
+  final RegExp flutterLine = RegExp(r'\d\d:\d\d \+\d:');
   int i = startingIndex;
   for (i; i < lines.length - 1; i++) {
     final String line = lines[i];
@@ -146,6 +147,16 @@ TestRunnerCollector _summaryParser(
     }
 
     if (atSummaryLine == 7) {
+      // Ignore lines output by the flutter test runner
+      final String cleanLine = line.trim();
+      if (cleanLine.isEmpty ||
+          cleanLine ==
+              'Waiting for another flutter command to release the startup lock...' ||
+          cleanLine == 'No tests were found.' ||
+          cleanLine.startsWith('Changing current working directory to:') ||
+          cleanLine.contains(flutterLine)) {
+        continue;
+      }
       i++;
       break;
     }

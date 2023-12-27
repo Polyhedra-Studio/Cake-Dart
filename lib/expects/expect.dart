@@ -1,9 +1,15 @@
 part of '../cake.dart';
 
+/// Expects are used in [Test.assertions] to check if an assertion is true or
+/// false.
+///
+/// Will return [AssertResult] depending if assertion passes, fails, or is
+/// inconclusive.
 class Expect<ExpectedType> {
   final ExpectedType? _expected;
   final ExpectedType? _actual;
 
+  /// Do not use in tests. This is exposed for extensibility.
   Expect({
     required ExpectedType? actual,
     required ExpectedType? expected,

@@ -35,13 +35,39 @@ class Runner {
           : true,
     )
         .map<Future<void>>((file) async {
+      // Read file in order to process it as flutter or not
+      bool runFlutter = false;
+      final String contents = await File(file.path).readAsString();
+      if (settings.forceFlutter ||
+          contents
+              .contains("import 'package:cake_flutter/cake_flutter.dart'")) {
+        runFlutter = true;
+      }
+
+      final List<String> processArgs = [];
+      if (runFlutter) {
+        processArgs.add('test');
+      }
+
       // If we're filtering by a keyword, this needs to be passed via define
-      final List<String> processArgs = settings.testFilter.toProperties();
+      processArgs.addAll(settings.testFilter.toProperties());
       processArgs.add(file.path);
 
-      return Process.run('dart', processArgs).then((ProcessResult result) {
+      final Future<ProcessResult> process = Process.run(
+        runFlutter ? 'flutter' : 'dart',
+        processArgs,
+        workingDirectory: file.parent.path,
+      );
+
+      return process.then((ProcessResult result) {
         if (result.stderr is String && result.stderr.isNotEmpty) {
-          print(result.stderr);
+          final String errorClean = result.stderr.trim();
+          // These two messages are given by flutter test and can be safely ignored
+          if (!(errorClean ==
+                  'Waiting for another flutter command to release the startup lock...' ||
+              errorClean == 'No tests were found.')) {
+            print(result.stderr);
+          }
         }
         final List<TestRunnerCollector> testRunnerCollectors =
             testRunnerOutputParser(result.stdout);

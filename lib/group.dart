@@ -1,5 +1,9 @@
 part of 'cake.dart';
 
+/// Create a Group with a Default [Context] of an [ExpectedType]
+///
+/// Groups are used to organize tests, block common setup and teardown stages,
+/// and help with readability.
 class GroupOf<ExpectedType> extends _Group<Context<ExpectedType>> {
   GroupOf(
     super._title,
@@ -11,6 +15,8 @@ class GroupOf<ExpectedType> extends _Group<Context<ExpectedType>> {
           contextBuilder: Context<ExpectedType>.new,
         );
 
+  /// Skipped. This will not run any of the stages or children within this
+  /// group.
   GroupOf.skip(
     super._title,
     super.children, {
@@ -20,6 +26,10 @@ class GroupOf<ExpectedType> extends _Group<Context<ExpectedType>> {
   }) : super(contextBuilder: Context<ExpectedType>.new, skip: true);
 }
 
+/// Create a Group with a Custom [Context]
+///
+/// Groups are used to organize tests, block common setup and teardown stages,
+/// and help with readability.
 class Group<GroupContext extends Context> extends _Group<GroupContext> {
   Group(
     super._title,
@@ -30,6 +40,8 @@ class Group<GroupContext extends Context> extends _Group<GroupContext> {
     super.options,
   });
 
+  /// Skipped. This will not run any of the stages or children within this
+  /// group.
   Group.skip(
     super._title,
     super.children, {

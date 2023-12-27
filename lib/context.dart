@@ -1,5 +1,12 @@
 part of 'cake.dart';
 
+/// Context is how information can be passed from stage to stage.
+///
+/// This is passed as an argument on each stage and and is an
+/// inheritable object that is passed from parent to children. By default, test
+/// has an [actual] value, an [expected] value, and an additional map to pass
+/// information through ad-hoc. The default Context is called by using the
+/// [TestRunnerDefault] constructor.
 class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
   ExpectedType? expected;

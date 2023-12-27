@@ -1,5 +1,7 @@
 part of 'cake.dart';
 
+/// Contextual is the base class for all Cake testing objects, such as [Test],
+/// [Group], and [TestRunner].
 abstract class Contextual<ContextualContext extends Context> {
   final String _title;
   final FutureOr<void> Function(ContextualContext test)? setup;

@@ -1,5 +1,10 @@
 part of 'cake.dart';
 
+/// Create a Test with a Default [Context] of an [ExpectedType]
+///
+/// Tests are where you write your [action] and [assertions]. They will return a
+/// [_TestResult] when ran, determining if the test passed, failed, or is
+/// inconclusive (skipped).
 class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
   TestOf(
     super._title, {
@@ -10,6 +15,7 @@ class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
     super.options,
   }) : super(contextBuilder: Context<ExpectedType>.new);
 
+  /// Skipped. This will not run any of the stages within this test.
   TestOf.skip(
     super._title, {
     super.setup,
@@ -22,6 +28,7 @@ class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
           skip: true,
         );
 
+  /// Stubbed. This will be skipped and is meant to be used as a placeholder.
   TestOf.stub(super._title)
       : super(
           contextBuilder: Context<ExpectedType>.new,
@@ -30,6 +37,11 @@ class TestOf<ExpectedType> extends _Test<Context<ExpectedType>> {
         );
 }
 
+/// Create a Test with a Custom [Context]
+///
+/// Tests are where you write your [action] and [assertions]. They will return a
+/// [_TestResult] when ran, determining if the test passed, failed, or is
+/// inconclusive (skipped).
 class Test<TestContext extends Context> extends _Test<TestContext> {
   Test(
     super._title, {
@@ -41,6 +53,7 @@ class Test<TestContext extends Context> extends _Test<TestContext> {
     super.options,
   });
 
+  /// Skipped. This will not run any of the stages within this test.
   Test.skip(
     super._title, {
     super.setup,
@@ -51,6 +64,7 @@ class Test<TestContext extends Context> extends _Test<TestContext> {
     super.options,
   }) : super(skip: true);
 
+  /// Stubbed. This will be skipped and is meant to be used as a placeholder.
   Test.stub(
     super._title, {
     super.contextBuilder,

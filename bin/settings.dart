@@ -7,6 +7,7 @@ class CakeSettings {
   final FilterSettings testFilter;
   final bool interactive;
   final bool showHelp;
+  final bool forceFlutter;
 
   CakeSettings(List<String> args)
       : verbose = args.contains('-v') || args.contains('--verbose'),
@@ -14,6 +15,7 @@ class CakeSettings {
         isVsCode = args.contains('--vs-code'),
         interactive = args.contains('-i') || args.contains('--interactive'),
         showHelp = args.contains('-h') || args.contains('--help'),
+        forceFlutter = args.contains('--flutter'),
         testFilter = FilterSettings(
           generalSearchTerm: _getFromArgs(args, '-t'),
           testFilterTerm: _getFromArgs(args, '--tt'),

@@ -1,5 +1,8 @@
 part of 'cake.dart';
 
+/// Outputs a message to the console
+///
+/// Used for overall system messages or errors.
 class TestMessage extends _TestResult {
   String? message;
 

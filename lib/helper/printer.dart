@@ -1,5 +1,6 @@
 import 'dart:math';
 
+/// Collection of print commands to set colors and format summary text.
 class Printer {
   static void pass(String message) {
     print('\x1B[32m$message\x1B[0m');
