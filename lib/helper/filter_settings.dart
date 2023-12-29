@@ -76,11 +76,13 @@ class FilterSettings {
     return (testRunnerSearchFor != null && testRunnerSearchFor!.isNotEmpty);
   }
 
-  List<String> toProperties() {
+  List<String> toProperties({required bool isFlutter}) {
     final List<String> props = [];
+    final String Function(String, String) buildFn =
+        isFlutter ? _buildDartDefine : _buildDefine;
     if (hasGeneralSearchTerm) {
       props.add(
-        _buildDefine(
+        buildFn(
           _FilterSettingProps.generalSearchTerm,
           generalSearchTerm!,
         ),
@@ -88,31 +90,30 @@ class FilterSettings {
     }
     if (hasTestFilterTerm) {
       props.add(
-        _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!),
+        buildFn(_FilterSettingProps.testFilterTerm, testFilterTerm!),
       );
     }
     if (hasTestSearchFor) {
-      props
-          .add(_buildDefine(_FilterSettingProps.testSearchFor, testSearchFor!));
+      props.add(buildFn(_FilterSettingProps.testSearchFor, testSearchFor!));
     }
     if (hasGroupFilterTerm) {
       props.add(
-        _buildDefine(_FilterSettingProps.groupFilterTerm, groupFilterTerm!),
+        buildFn(_FilterSettingProps.groupFilterTerm, groupFilterTerm!),
       );
     }
     if (hasGroupSearchFor) {
       props.add(
-        _buildDefine(_FilterSettingProps.groupSearchFor, groupSearchFor!),
+        buildFn(_FilterSettingProps.groupSearchFor, groupSearchFor!),
       );
     }
     if (hasTestFilterTerm) {
       props.add(
-        _buildDefine(_FilterSettingProps.testFilterTerm, testFilterTerm!),
+        buildFn(_FilterSettingProps.testFilterTerm, testFilterTerm!),
       );
     }
     if (hasTestRunnerSearchFor) {
       props.add(
-        _buildDefine(
+        buildFn(
           _FilterSettingProps.testRunnerSearchFor,
           testRunnerSearchFor!,
         ),
@@ -122,6 +123,8 @@ class FilterSettings {
   }
 
   String _buildDefine(String key, String value) => '--define=$key=$value';
+  String _buildDartDefine(String key, String value) =>
+      '--dart-define=$key=$value';
 }
 
 class _FilterSettingProps {

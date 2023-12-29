@@ -1,3 +1,7 @@
+## 6.0.1 (2023-12-29)
+- [FIX][CLI] Fixed testing flags to work with Flutter tests
+- [FIX][CLI] Better filtering of Flutter test messages
+
 ## 6.0.0 (2023-12-27)
 - [ADD][CLI] Added support for [Cake-Flutter](https://github.com/Polyhedra-Studio/Cake-Flutter)
 - [ADD][CLI] Added --flutter flag to force Cake to run in Flutter test mode. This is only needed if the cake_flutter package is not directly imported.

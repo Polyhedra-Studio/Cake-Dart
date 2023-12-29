@@ -103,7 +103,7 @@ TestRunnerCollector _summaryParser(
   final RegExp successLine = RegExp(r'(\d*) passed\.');
   final RegExp failedLine = RegExp(r'(\d*) failed\.');
   final RegExp neutralLine = RegExp(r'(\d*) skipped\/inconclusive\.');
-  final RegExp flutterLine = RegExp(r'\d\d:\d\d \+\d:');
+  final RegExp flutterLine = RegExp(r'\d+:\d+ \+\d+.*');
   int i = startingIndex;
   for (i; i < lines.length - 1; i++) {
     final String line = lines[i];

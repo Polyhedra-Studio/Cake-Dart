@@ -50,7 +50,8 @@ class Runner {
       }
 
       // If we're filtering by a keyword, this needs to be passed via define
-      processArgs.addAll(settings.testFilter.toProperties());
+      processArgs
+          .addAll(settings.testFilter.toProperties(isFlutter: runFlutter));
       processArgs.add(file.path);
 
       final Future<ProcessResult> process = Process.run(
