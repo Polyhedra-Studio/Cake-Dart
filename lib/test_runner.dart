@@ -86,6 +86,9 @@ class _TestRunner<TestRunnerContext extends Context>
   final FilterSettings filterSettings = FilterSettings.fromEnvironment();
   final OnComplete? onComplete;
 
+  @override
+  String get contextualType => 'TestRunner';
+
   _TestRunner(
     super._title,
     super.children, {
@@ -114,6 +117,10 @@ class _TestRunner<TestRunnerContext extends Context>
     TestRunnerContext context;
     try {
       context = await _contextBuilder!();
+      context.setContextualInformation(
+        title: _title,
+        contextualType: contextualType,
+      );
     } catch (err) {
       _criticalFailure('Failed during initial context building stage.', err);
       report(filterSettings);

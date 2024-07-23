@@ -130,6 +130,49 @@ void main() async {
       ]),
     ],
   );
+
+  TestRunnerDefault(
+    'Context Meta Information',
+    [
+      Group('Title: Group', [
+        Test(
+          'Title: Test',
+          assertions: (test) => [
+            Expect.equals(actual: test.title, expected: 'Title: Test'),
+          ],
+        ),
+      ]),
+      Test(
+        'Title: Direct child test',
+        assertions: (test) => [
+          Expect.equals(
+            actual: test.title,
+            expected: 'Title: Direct child test',
+          ),
+        ],
+      ),
+      Group(
+        'Contextual Type: Group',
+        [
+          Test(
+            'Contextual Type: Test',
+            assertions: (test) => [
+              Expect.equals(actual: test.contextualType, expected: 'Test'),
+            ],
+          ),
+        ],
+      ),
+      Test(
+        'Contextual Type: Direct child test',
+        assertions: (test) => [
+          Expect.equals(
+            actual: test.contextualType,
+            expected: 'Test',
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 class _Extended extends Context {

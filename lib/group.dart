@@ -53,6 +53,9 @@ class Group<GroupContext extends Context> extends _Group<GroupContext> {
 }
 
 class _Group<GroupContext extends Context> extends Contextual<GroupContext> {
+  @override
+  String get contextualType => 'Group';
+
   final List<Contextual<GroupContext>> children;
   int testSuccessCount = 0;
   int testFailCount = 0;

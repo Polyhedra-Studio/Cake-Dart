@@ -75,6 +75,9 @@ class Test<TestContext extends Context> extends _Test<TestContext> {
 }
 
 class _Test<TestContext extends Context> extends Contextual<TestContext> {
+  @override
+  String get contextualType => 'Test';
+
   final FutureOr<dynamic> Function(TestContext test)? action;
   final List<Expect<dynamic>> Function(TestContext test) assertions;
   final List<AssertResult> assertFailures = [];

@@ -11,6 +11,10 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
   ExpectedType? expected;
   ExpectedType? actual;
+  String? _title;
+  String get title => _title ?? '';
+  String? _contextualType;
+  String get contextualType => _contextualType ?? 'Unknown';
 
   Context.deepCopy(Context siblingContext) {
     copy(siblingContext);
@@ -22,6 +26,14 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
     expected = parentContext.expected;
     actual = parentContext.actual;
     copyExtraParams(parentContext);
+  }
+
+  void setContextualInformation({
+    required String title,
+    required String contextualType,
+  }) {
+    _title = title;
+    _contextualType = contextualType;
   }
 
   /// Copies extra parameters from parent group to child

@@ -1,3 +1,6 @@
+## 6.1.0 (2024-07-23)
+- [ADD][Context] Added meta information about the current context, such as test title and context type (TestRunner, Group, or Test).
+
 ## 6.0.1 (2023-12-29)
 - [FIX][CLI] Fixed testing flags to work with Flutter tests
 - [FIX][CLI] Better filtering of Flutter test messages

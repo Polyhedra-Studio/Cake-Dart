@@ -4,6 +4,7 @@ part of 'cake.dart';
 /// [Group], and [TestRunner].
 abstract class Contextual<ContextualContext extends Context> {
   final String _title;
+  String get contextualType;
   final FutureOr<void> Function(ContextualContext test)? setup;
   final FutureOr<void> Function(ContextualContext test)? teardown;
   final bool skip;
@@ -109,7 +110,12 @@ abstract class Contextual<ContextualContext extends Context> {
   FutureOr<ContextualContext?> _buildContext() async {
     if (_contextBuilder != null) {
       try {
-        return await _contextBuilder!();
+        final ContextualContext context = await _contextBuilder!();
+        context.setContextualInformation(
+          title: _title,
+          contextualType: contextualType,
+        );
+        return context;
       } catch (err) {
         _criticalFailure(
           'Failed during context building stage. If you are using a custom context, check that typing between parents and children is valid.',
