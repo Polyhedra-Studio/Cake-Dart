@@ -11,10 +11,14 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
   final Map<String, dynamic> _context = {};
   ExpectedType? expected;
   ExpectedType? actual;
+
   String? _title;
   String get title => _title ?? '';
+
   String? _contextualType;
   String get contextualType => _contextualType ?? 'Unknown';
+
+  final MockCollection mocks = MockCollection();
 
   Context.deepCopy(Context siblingContext) {
     copy(siblingContext);
@@ -25,6 +29,7 @@ class Context<ExpectedType> extends Object implements Map<String, dynamic> {
     addAll(parentContext);
     expected = parentContext.expected;
     actual = parentContext.actual;
+    mocks.addAll(parentContext.mocks);
     copyExtraParams(parentContext);
   }
 

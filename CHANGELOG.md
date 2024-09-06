@@ -1,3 +1,7 @@
+## 6.2.0 (2024-07-30)
+- [ADD][Mock] Added built-in mocking. This functionality can be extended to use third party libraries or be used standalone using MockableFunctions.
+- [ADD][Expect] Added the MockExpect class to extend off of the Expect class. These functions help with quickly asserting if a mock has been called or not, and if they've been called with certain arguments.
+
 ## 6.1.0 (2024-07-23)
 - [ADD][Context] Added meta information about the current context, such as test title and context type (TestRunner, Group, or Test).
 
