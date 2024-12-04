@@ -11,6 +11,7 @@ abstract class MockBase<T> {
   int callCount = 0;
   List<CallArgs?> callArgs = [];
 
+  List<CallArgs?> get history => List.unmodifiable(callArgs);
   bool get called => callCount > 0;
 
   void reset() {}

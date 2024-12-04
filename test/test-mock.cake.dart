@@ -83,9 +83,13 @@ void main() async {
             mock.call();
             return mock;
           },
-          assertions: (test) => [
-            MockExpect.calledOnce(test.actual),
-          ],
+          assertions: (test) {
+            final AssertResult result =
+                MockExpect.calledOnce(test.actual as MockableFunction).run();
+            return [
+              Expect<AssertFailure>.isType(result),
+            ];
+          },
         ),
         Test(
           'MockExpect.calledN passes if called N times',
@@ -106,9 +110,13 @@ void main() async {
             mock.call();
             return mock;
           },
-          assertions: (test) => [
-            MockExpect.calledN(test.actual, n: 2),
-          ],
+          assertions: (test) {
+            final AssertResult result =
+                MockExpect.calledN(test.actual as MockableFunction, n: 2).run();
+            return [
+              Expect<AssertFailure>.isType(result),
+            ];
+          },
         ),
         Test(
           'MockExpect.notCalled passes if not called',
@@ -125,7 +133,13 @@ void main() async {
             mock.call();
             return mock;
           },
-          assertions: (test) => [MockExpect.notCalled(test.actual)],
+          assertions: (test) {
+            final AssertResult result =
+                MockExpect.notCalled(test.actual as MockableFunction).run();
+            return [
+              Expect<AssertFailure>.isType(result),
+            ];
+          },
         ),
         Test(
           'MockExpect.calledWith passes if called with args',
@@ -158,6 +172,184 @@ void main() async {
             ),
           ],
         ),
+        Group('MockExpect.calledInOrder', [
+          Test(
+            'Should pass if sequence is empty',
+            action: (test) {
+              final MockableFunction mock = MockableFunction();
+              mock.call(['arg1']);
+              mock.call(['arg2']);
+              mock.call(['arg3']);
+              return mock;
+            },
+            assertions: (test) => [
+              MockExpect.calledInOrder(test.actual, sequence: []),
+            ],
+          ),
+          Test(
+            'Should fail if sequence is bigger than call history',
+            action: (test) {
+              final MockableFunction mock = MockableFunction();
+              mock.call(['arg1']);
+              return mock;
+            },
+            assertions: (test) {
+              final AssertResult result = MockExpect.calledInOrder(
+                test.actual as MockableFunction,
+                sequence: [
+                  CallArgs(['arg1']),
+                  CallArgs(['arg2']),
+                  CallArgs(['arg3']),
+                ],
+              ).run();
+
+              return [
+                Expect<AssertFailure>.isType(result),
+              ];
+            },
+          ),
+          Group('Strict mode', [
+            Test(
+              'Strict mode passes if called in order',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg2']);
+                mock.call(['arg3']);
+                return mock;
+              },
+              assertions: (test) => [
+                MockExpect.calledInOrder(
+                  test.actual,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                ),
+              ],
+            ),
+            Test(
+              'Strict mode does not pass if extra calls are made between the sequence',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg2']);
+                mock.call(['extra should make this fail']);
+                mock.call(['arg3']);
+                return mock;
+              },
+              assertions: (test) {
+                final AssertResult result = MockExpect.calledInOrder(
+                  test.actual as MockableFunction,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                ).run();
+
+                return [
+                  Expect<AssertFailure>.isType(result),
+                ];
+              },
+            ),
+            Test(
+              'calledInOrder should fail if not called in order',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg3']);
+                mock.call(['arg2']);
+                return mock;
+              },
+              assertions: (test) {
+                final AssertResult result = MockExpect.calledInOrder(
+                  test.actual as MockableFunction,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                ).run();
+
+                return [
+                  Expect<AssertFailure>.isType(result),
+                ];
+              },
+            ),
+          ]),
+          Group('Allow extra calls', [
+            Test(
+              'Allowing calls passes if called in order',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg2']);
+                mock.call(['arg3']);
+                return mock;
+              },
+              assertions: (test) => [
+                MockExpect.calledInOrder(
+                  test.actual,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                  allowExtraCalls: true,
+                ),
+              ],
+            ),
+            Test(
+              'Allowing calls should pass if extra calls are made between the sequence',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg2']);
+                mock.call(['extra should not make this fail']);
+                mock.call(['arg3']);
+                return mock;
+              },
+              assertions: (test) => [
+                MockExpect.calledInOrder(
+                  test.actual as MockableFunction,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                  allowExtraCalls: true,
+                ),
+              ],
+            ),
+            Test(
+              'calledInOrder should fail if not called in order - allow extra calls',
+              action: (test) {
+                final MockableFunction mock = MockableFunction();
+                mock.call(['arg1']);
+                mock.call(['arg3']);
+                mock.call(['arg2']);
+                return mock;
+              },
+              assertions: (test) {
+                final AssertResult result = MockExpect.calledInOrder(
+                  test.actual as MockableFunction,
+                  sequence: [
+                    CallArgs(['arg1']),
+                    CallArgs(['arg2']),
+                    CallArgs(['arg3']),
+                  ],
+                  allowExtraCalls: true,
+                ).run();
+
+                return [
+                  Expect<AssertFailure>.isType(result),
+                ];
+              },
+            ),
+          ]),
+        ]),
       ],
     ),
   ]);

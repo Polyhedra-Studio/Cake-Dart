@@ -54,12 +54,22 @@ abstract class _MockableBase<T> extends MockBase<T> {
   /// Reverts all to the original values, so resets the call count, clears call
   /// args, and clears out any next calls.
   @override
-  void reset({bool clearValue = true}) {
+  void reset({
+    bool clearValue = true,
+    bool clearArgs = true,
+    bool clearCount = true,
+  }) {
     if (clearValue) {
       value = originalValue;
     }
-    callCount = 0;
-    callArgs.clear();
+
+    if (clearCount) {
+      callCount = 0;
+    }
+
+    if (clearArgs) {
+      callArgs.clear();
+    }
     _throwNextCall = false;
     _e = null;
     _returnNextCall = false;

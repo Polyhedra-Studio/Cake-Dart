@@ -3,11 +3,16 @@ part of '../cake.dart';
 class CallArgs {
   final List<dynamic>? args;
   final Map<String, dynamic>? namedArgs;
-  CallArgs([this.args, this.namedArgs]);
+  final DateTime timestamp;
+  CallArgs([this.args, this.namedArgs]) : timestamp = DateTime.now();
 
   @override
   String toString() {
     return '(Args: $args, Named Args: $namedArgs)';
+  }
+
+  String toStringVerbose() {
+    return '(${timestamp.toIso8601String()} - Args: $args, Named Args: $namedArgs)';
   }
 
   @override

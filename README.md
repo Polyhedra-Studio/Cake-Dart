@@ -7,6 +7,13 @@
     <p>Running this in VS Code? Install the <a href="https://marketplace.visualstudio.com/items?itemName=Polyhedra.cake-dart-vs">Cake VS-Code extension</a> to run tests inside your IDE, snippets, and more.</p>
 </div>
 
+# Features
+  - **Lightweight & Flexible**: Easy to set up, fast to run, and works seamlessly with Dart and Flutter.
+  - **Clear Test Organization**: Group and structure tests for better readability. Share reusable data across multiple levels with flexible context options.
+  - **Built-in Mocking**: Includes an optional lightweight mocking framework with call tracking, argument history, and flexible matchers.
+  - **Structured Test Flow**: Write clean, atomic tests by defining setup, action, assertion, and teardown stages for focused, maintainable testing.
+  - **IDE Integration**: Native support for the [Cake VSCode extension](https://marketplace.visualstudio.com/items?itemName=Polyhedra.cake-dart-vs), enabling in-editor test execution, debugging, test coverage visualization, and an enhanced developer experience.
+
 # Getting started
 ## Installing
 
@@ -77,13 +84,99 @@ TestRunnerOf<String>('API Service Test', [
 ### Organization
 Cake relies on a hierarchy to organize tests. All tests _must_ be wrapped in a TestRunner. From there, you can list Tests directly or further nest them into groups. It's recommended to have one TestRunner per file.
 
+```dart
+import 'package:cake/cake.dart';
+
+void main() {
+  TestRunnerDefault('Example Test Runner', [
+    Group('Example Group', [
+      Test(
+        'Test inside a group',
+        assertions: (test) => [Expect.isTrue(true)],
+      ),
+      Group('Nested Group', []),
+    ]),
+    Test(
+        'Test directly under TestRunner',
+        assertions: (test) => [Expect.isTrue(true)],
+      ),
+  ]);
+}
+```
+
 ### Stages
 Cake encourages developers to write clean, simple, atomic tests by defining separate stages for each test. You might recognize this from the "Arrange-Act-Assert" or "Given-When-Then" style of writing unit tests. Here, you could analogue this to "Setup-Action-Assertions" (with additional teardown if needed).
 
 All stages can be written as asynchronous, if needed.
 
+```dart
+Test(
+  'Stages Example',
+  setup: (test) {
+    // Generally the Setup stage is used to create any mocks, preparing the environment,
+    // or in general, anything that isn't the action step.
+    test.value = 'setup';
+  },
+  action: (test) {
+    // The action stage should include the part of the test that changes in order
+    // to test against the assertions.
+    // This function allows for returning a value, which will assign to the test's "actual"
+    // value, although this is not required.
+    return test.value == 'setup';
+  },
+  assertions: (test) => [
+    // Assertions must return a collection of Expects.
+    Expect<String>.isType(test.value),
+    Expect.isTrue(test.actual),
+  ],
+  teardown: (test) => test.value = 'teardown',
+),
+```
+
 #### Setup & Teardown
 Setup and teardown is inherited from parents to children tests and groups. So you can write your initial setup logic in the root TestRunner, and then run any specific set up later in a group or test to specifically arrange for that functionality being tested on. All setup is run before any action. All teardown is run after all assertions have completed, and will run regardless if any issues occurred during testing.
+
+```dart
+String outsideValue = 'Tests not run';
+
+TestRunnerDefault(
+  'Test Runner with setup and teardown',
+  [
+    Test(
+      'This test should have the parent context included',
+      assertions: (test) => [
+        Expect.equals(actual: test.value, expected: 'Test Runner Setup'),
+      ],
+    ),
+    Group(
+      'Can override and pass down context',
+      [
+        Test(
+          'Child has parent context',
+          assertions: (test) => [
+            Expect.equals(actual: test.value, expected: 'Group Setup'),
+          ],
+        ),
+      ],
+      setup: (test) {
+        test.value = 'Group Setup';
+      },
+      teardown: (test) {
+        test.value = 'Test Runner Setup';
+      }
+    ),
+  ],
+  setup: (test) {
+    outsideValue = 'Tests are running';
+    test.value = 'Test Runner Setup';
+  },
+  teardown: (test) {
+    outsideValue = 'Tests have run';
+  }
+);
+
+print(outsideValue); // Should output "Tests have run"
+```
 
 #### Action
 The action stage is meant to highlight the action being taken to test the outcome. This would be something like clicking a button, sending an API call, or running a function. Just remember that only _one_ action can be run during a test. If you find that your action function is large or encompassing a lot of code, that is usually a sign that it needs to broken into multiple tests or into the setup function.
@@ -193,6 +286,128 @@ class ExtraContext extends Context {
 ** equals and isEqual can be used interchangeably.
 
 *** isType will need a generic defined or else it will always pass as true as it thinks the type is `dynamic`.
+
+## Mocking
+Cake includes an optional, basic mocking library. You can, of course, use any mocking library of choice. In fact, you can extend the MockBase to wrap around a 3rd party library and still get all the benefits included with Cake's library. See `mock_base.dart` and `mockable_function.dart` for examples on how to do this. `MockableFunction` is 
+
+### Mock Functionality
+
+### `call()`
+Mocks can be called directly with `call()`, which will increase the `callCount` by 1. If using `MockableFunction` (the default mocking library in Cake), you can provide call arguments to be tracked with `history`.
+
+### `value`
+Mocks can be set to return a specific default value when called. If using `MockableFunction`, this can be set on the constructor.
+
+### `returnNextCall()`
+Overrides the default `value` for a provided one only for the next time the mock is called. Will reset back to the default value after the next call. Calling `reset()` will also clear this override regardless if the mock has been called or not.
+
+### `throwNextCall()`
+Overrides the default `value` to throw a given error for only the next time the mock is called. Will reset back to the default value without errors after the next call. Calling `reset()` will also clear this override regardless if the mock has been called or not.
+
+### `pause()` and `resume()`
+Pause will stop incrementing the call count and call arguments will not be recorded. The default value of a mock will be used on call unless `pausedValue` is provided. This will also pause `returnNextCall` and `throwNextCall` values unless `respectNextCall` flag is turned on.
+
+Use `resume` to revert back to normal behavior.
+
+### Example usage
+
+- Mocking a function
+```dart
+import 'package:cake/cake.dart';
+
+void main() async {
+  TestRunnerDefault('Mocks', [
+    Group('Mocking Functions', [
+      Test(
+        'Can create a mockable function',
+        action: (test) => MockableFunction(),
+        assertions: (test) => [
+          Expect.isTrue(true),
+        ],
+      ),
+      Test(
+        'Mocks can be called and will return their value',
+        action: (test) {
+          final MockableFunction mock = MockableFunction(true);
+          return mock.call([1, 2, 3], {'a': 'b'});
+        },
+        assertions: (test) => [
+          Expect.isTrue(test.actual),
+        ],
+      ),
+      Test(
+        'Mocks can be called multiple times',
+        action: (test) {
+          final MockableFunction mock = MockableFunction(true);
+          mock.call([1, 2, 3], {'a': 'b'});
+          mock.call([1, 2, 3], {'a': 'b'});
+          return mock;
+        },
+        assertions: (test) => [
+          MockExpect.calledN(test.actual, n: 2),
+          MockExpect.calledWith(
+            test.actual,
+            args: [1, 2, 3],
+            namedArgs: {'a': 'b'},
+          ),
+        ],
+      ),
+      Test(
+        'Mocks can be reset',
+        action: (test) {
+          final MockableFunction mock = MockableFunction(true);
+          mock.call([1, 2, 3], {'a': 'b'});
+          mock.reset();
+          return mock;
+        },
+        assertions: (test) => [
+          MockExpect.notCalled(test.actual),
+        ],
+      ),
+    ]),
+  ]);
+}
+```
+
+- Mocking a function inside a class
+
+```dart
+class MockClass extends ClassToMock {
+  final MockableFunctionOf<String> mock = MockableFunctionOf<String>('foobar');
+  ///
+  @override
+  String mockedFunction(String foo, {String? bar}) {
+    return mock.call(args: [foo], namedArgs: {'bar': bar});
+  }
+}
+```
+
+
+### Mock Expects
+  - called
+
+    Checks if the mock has been called.
+  - calledOnce
+
+    Checks if the mock has been called exactly one time.
+  - calledN
+
+    Checks if the mock has been called exactly N times.
+  - notCalled
+
+    Checks if the mock has not been called.
+  - calledWith
+
+    Checks if any of the calls has the given arguments.
+  - calledWithLast
+
+    Checks if the last call made had the given arguments.
+  - calledInOrder
+
+    Checks if the call history has the given sequence in order. Turning on `allowExtraCalls` will ignore any calls between the sequence.
+  - calledHistory
+
+    Checks if the entire call history matches exactly the given sequence.
 
 
 ## Options

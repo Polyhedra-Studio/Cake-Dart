@@ -1,3 +1,8 @@
+## 6.3.0 (2024-12-04)
+- [ADD][Mock] Added a timestamp to call args.
+- [ADD][Mock] Added MockExpect.calledInOrder and MockExpect.calledHistory. `calledHistory` will compare exactly the entire call history of a mock to the expected value. `calledInOrder` will check history for a series of calls being in sequence. Turning on `allowExtraCalls` will ignore any calls between the sequence.
+- [ADD][Mock] Added more options to `reset` to specify what should be cleared.
+
 ## 6.2.0 (2024-07-30)
 - [ADD][Mock] Added built-in mocking. This functionality can be extended to use third party libraries or be used standalone using MockableFunctions.
 - [ADD][Expect] Added the MockExpect class to extend off of the Expect class. These functions help with quickly asserting if a mock has been called or not, and if they've been called with certain arguments.
